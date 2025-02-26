@@ -4,7 +4,7 @@ import 'package:mad_group_project/home.dart';
 
 void main() {
   runApp(MaterialApp(
-    home: AddItems()
+    home: Home()
   ));
 }
 
