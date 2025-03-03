@@ -49,7 +49,7 @@ class _SignInSelectionState extends State<SignInSelection> {
                                 children: [
                                   Image(width:35, height:35,image: AssetImage("assets/images/googleIcon.png"),),
                                   SizedBox(width: 15,),
-                                  Text("Sign In with Google", style: TextStyle(fontSize: 18),)
+                                  Text("Sign In with Google    ", style: TextStyle(fontSize: 18),)
                                 ],
                               ),
                             ),
