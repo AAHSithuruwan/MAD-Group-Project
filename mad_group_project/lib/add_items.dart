@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mad_group_project/custom_app_bar.dart';
-import 'package:mad_group_project/custom_bottom_navigation_bar.dart';
+import 'package:mad_group_project/main_container.dart';
 import 'package:mad_group_project/custom_floating_action_button.dart';
 import 'package:overflow_view/overflow_view.dart';
 
@@ -243,7 +243,7 @@ class _AddItemsState extends State<AddItems> {
 
       floatingActionButton: CustomFloatingActionButton(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked, // FAB in center
-      bottomNavigationBar: CustomBottomNavigationBar(),
+      bottomNavigationBar: MainContainer(),
     );
   }
 }

@@ -21,11 +21,21 @@ class _CustomAppBarState extends State<CustomAppBar> {
   Widget build(BuildContext context) {
     return AppBar(
       automaticallyImplyLeading: false,
-      title: IconButton(
-          onPressed: (){
-            Navigator.pop(context);
-          },
-          icon: Icon(Icons.arrow_back_ios,size: 35,)),
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          IconButton(
+              onPressed: (){
+                Navigator.pop(context);
+              },
+              icon: Icon(Icons.arrow_back_ios,size: 35,)),
+          widget.title == "Notifications" ?
+              Text("Notifications")
+              :
+              Text(""),
+          Text(""),
+        ],
+      ),
       backgroundColor:  Colors.white,
     );
   }
