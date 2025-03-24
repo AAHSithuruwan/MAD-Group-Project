@@ -30,14 +30,13 @@ class _CreateItemsState extends State<CreateItems> {
           children: [
             // Image at the top
             Image.asset(
-              'assets/images/createItem.png',
+              'assets/images/createItem.PNG',
               width: double.infinity,
               height: imageHeight,
               fit: BoxFit.cover,
             ),
 
             // Container wrapping the content
-
             Transform.translate(
               offset: const Offset(0, -30),
               child: Container(
@@ -45,7 +44,7 @@ class _CreateItemsState extends State<CreateItems> {
                 height: screenHeight + 48, // Full height minus image height
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.only(
+                  borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(30),
                     topRight: Radius.circular(30),
                   ),
@@ -133,30 +132,33 @@ class _CreateItemsState extends State<CreateItems> {
                             ),
                           ),
                         ),
-                        ElevatedButton(
-                          onPressed: () {
-                            if (unitController.text.isNotEmpty) {
-                              setState(() {
-                                addedUnits.add(unitController.text);
-                                unitController.clear();
-                              });
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFFE8F6E9),
-                            foregroundColor: Color(0xFF106A16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.only(
+                        SizedBox(
+                          height: 40,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              if (unitController.text.isNotEmpty) {
+                                setState(() {
+                                  addedUnits.add(unitController.text);
+                                  unitController.clear();
+                                });
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFE8F6E9),
+                              foregroundColor: const Color(0xFF106A16),
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.only(
                                   topRight: Radius.circular(7),
-                                  bottomRight:
-                                      Radius.circular(7)), // Border radius
+                                  bottomRight: Radius.circular(7),
+                                ),
+                              ),
                               side: const BorderSide(
-                                color: Color(0xFF106A16), // Border color
-                                width: 1, // Border width
+                                color: Color(0xFF106A16),
+                                width: 1,
                               ),
                             ),
+                            child: const Text("Add"),
                           ),
-                          child: const Text("Add"),
                         ),
                       ],
                     ),
@@ -179,8 +181,10 @@ class _CreateItemsState extends State<CreateItems> {
                     // Store Name Field with Dropdown
                     const Text(
                       "Store Name",
-                      style:
-                          TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Row(
@@ -189,32 +193,124 @@ class _CreateItemsState extends State<CreateItems> {
                           child: SizedBox(
                             height: 40,
                             child: DropdownButtonFormField<String>(
-                              value: storeNames.isNotEmpty
-                                  ? storeNames.first
-                                  : null,
-                              items: storeNames
-                                  .map((store) => DropdownMenuItem(
-                                        value: store,
-                                        child: Text(store),
-                                      ))
-                                  .toList(),
+                              value:
+                                  storeNames.contains(storeNameController.text)
+                                      ? storeNameController.text
+                                      : null,
+                              items: [
+                                // Add New button at the top of the dropdown menu
+                                DropdownMenuItem(
+                                  enabled:
+                                      false, // Disable selection for this item
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      // Show a dialog to add a new store
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          String newStoreName = "";
+                                          String newStoreLocation = "";
+                                          return AlertDialog(
+                                            title: const Text("Add New Store"),
+                                            content: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                TextField(
+                                                  onChanged: (text) {
+                                                    newStoreName = text;
+                                                  },
+                                                  decoration:
+                                                      const InputDecoration(
+                                                    labelText: "Store Name",
+                                                    border:
+                                                        OutlineInputBorder(),
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 16),
+                                                TextField(
+                                                  onChanged: (text) {
+                                                    newStoreLocation = text;
+                                                  },
+                                                  decoration:
+                                                      const InputDecoration(
+                                                    labelText: "Location",
+                                                    border:
+                                                        OutlineInputBorder(),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.of(context)
+                                                      .pop(); // Close the dialog
+                                                },
+                                                child: const Text("Cancel"),
+                                              ),
+                                              TextButton(
+                                                onPressed: () {
+                                                  if (newStoreName.isNotEmpty &&
+                                                      newStoreLocation
+                                                          .isNotEmpty) {
+                                                    setState(() {
+                                                      storeNames.add(
+                                                          newStoreName); // Add new store
+                                                      storeNameController.text =
+                                                          newStoreName; // Update the TextField
+                                                      addedStores.add(
+                                                          "$newStoreName - $newStoreLocation");
+                                                    });
+                                                  }
+                                                  Navigator.of(context)
+                                                      .pop(); // Close the dialog
+                                                },
+                                                child: const Text("Add"),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(0xFFE8F6E9),
+                                      foregroundColor: const Color(0xFF106A16),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(7),
+                                      ),
+                                    ),
+                                    child: const Text("Add New"),
+                                  ),
+                                ),
+                                // Existing dropdown items
+                                ...storeNames.map((store) => DropdownMenuItem(
+                                      value: store,
+                                      child: Text(store),
+                                    )),
+                              ],
                               onChanged: (value) {
-                                storeNameController.text = value ?? "";
+                                if (value != null && value != "Add New") {
+                                  setState(() {
+                                    storeNameController.text =
+                                        value; // Update the TextField
+                                  });
+                                }
                               },
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(7.0),
-                                      bottomLeft: Radius.circular(7.0)),
+                                      topLeft: Radius.circular(7),
+                                      bottomLeft: Radius.circular(7)),
                                 ),
                                 focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(7.0),
-                                        bottomLeft: Radius.circular(7.0)),
-                                    borderSide: BorderSide(
-                                      color: Color(0xFF106A16),
-                                      width: 1,
-                                    )),
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(7),
+                                      bottomLeft: Radius.circular(7)),
+                                  borderSide: BorderSide(
+                                    color: Color(0xFF106A16),
+                                    width: 1,
+                                  ),
+                                ),
                                 contentPadding:
                                     EdgeInsets.only(bottom: 10.0, left: 10.0),
                               ),
@@ -224,32 +320,33 @@ class _CreateItemsState extends State<CreateItems> {
                             ),
                           ),
                         ),
-                        ElevatedButton(
-                          onPressed: () {
-                            if (storeNameController.text.isNotEmpty) {
-                              setState(
-                                () {
+                        SizedBox(
+                          height: 40,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              if (storeNameController.text.isNotEmpty) {
+                                setState(() {
                                   storeNames.add(storeNameController.text);
                                   storeNameController.clear();
-                                },
-                              );
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFFE8F6E9),
-                            foregroundColor: Color(0xFF106A16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.only(
+                                });
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFE8F6E9),
+                              foregroundColor: const Color(0xFF106A16),
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.only(
                                   topRight: Radius.circular(7),
-                                  bottomRight:
-                                      Radius.circular(7)), // Border radius
+                                  bottomRight: Radius.circular(7),
+                                ),
+                              ),
                               side: const BorderSide(
-                                color: Color(0xFF106A16), // Border color
-                                width: 1, // Border width
+                                color: Color(0xFF106A16),
+                                width: 1,
                               ),
                             ),
+                            child: const Text("Add"),
                           ),
-                          child: const Text("Add"),
                         ),
                       ],
                     ),
@@ -258,23 +355,27 @@ class _CreateItemsState extends State<CreateItems> {
                     // Create Button
                     Align(
                       alignment: Alignment.centerRight,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          // Handle create item logic here
-                          print("Item Created: ${itemNameController.text}");
-                          print("Units: $addedUnits");
-                          print("Store: ${storeNameController.text}");
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFF106A16),
-                          foregroundColor: Colors.white,
-                          textStyle: TextStyle(fontSize: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(
-                                Radius.circular(10)), // Border radius
+                      child: SizedBox(
+                        height: 40,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            // Handle create item logic here
+                            print("Item Created: ${itemNameController.text}");
+                            print("Units: $addedUnits");
+                            print("Store: ${storeNameController.text}");
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF106A16),
+                            foregroundColor: Colors.white,
+                            textStyle: const TextStyle(fontSize: 16),
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(10),
+                              ),
+                            ),
                           ),
+                          child: const Text("Create"),
                         ),
-                        child: const Text("Create"),
                       ),
                     ),
                   ],
