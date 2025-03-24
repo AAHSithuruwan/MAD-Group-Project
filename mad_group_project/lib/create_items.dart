@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 class CreateItems extends StatefulWidget {
@@ -197,6 +199,8 @@ class _CreateItemsState extends State<CreateItems> {
                                   storeNames.contains(storeNameController.text)
                                       ? storeNameController.text
                                       : null,
+                              dropdownColor: Colors
+                                  .white, // Set the background color of the dropdown menu
                               items: [
                                 // Add New button at the top of the dropdown menu
                                 DropdownMenuItem(
