@@ -14,7 +14,7 @@ class _CreateItemsState extends State<CreateItems> {
   final TextEditingController unitController = TextEditingController();
   final TextEditingController storeNameController = TextEditingController();
 
-  List<String> suggestedUnits = ["kg", "g", "liters", "pcs"];
+  List<String> suggestedUnits = ["1kg", "2kg", "200g", "500g"];
   List<String> storeNames = ["Store A", "Store B", "Store C"];
   List<String> addedUnits = [];
   List<String> addedStores = [];
@@ -68,7 +68,7 @@ class _CreateItemsState extends State<CreateItems> {
                       style:
                           TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 16),
                     SizedBox(
                       height: 40,
                       child: TextField(
@@ -166,17 +166,30 @@ class _CreateItemsState extends State<CreateItems> {
                     ),
                     const SizedBox(height: 8),
                     Wrap(
-                      spacing: 0.0,
-                      children: addedUnits
-                          .map((unit) => Chip(
-                                label: Text(unit),
-                                onDeleted: () {
-                                  setState(() {
-                                    addedUnits.remove(unit);
-                                  });
-                                },
-                              ))
-                          .toList(),
+                      spacing: 8.0,
+                      runSpacing: 8.0, // Space between rows
+                      children: suggestedUnits.map((unit) {
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              unitController.text =
+                                  unit; // Set the unit in the text field
+                            });
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFD9D9D9),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 8.0, horizontal: 12.0),
+                            child: Text(
+                              unit,
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                          ),
+                        );
+                      }).toList(),
                     ),
                     const SizedBox(height: 16),
 
