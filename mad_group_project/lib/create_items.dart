@@ -268,6 +268,8 @@ class _CreateItemsState extends State<CreateItems> {
                                                   }
                                                   Navigator.of(context)
                                                       .pop(); // Close the dialog
+                                                  Navigator.of(context)
+                                                      .pop(); // Close the dropdown
                                                 },
                                                 child: const Text("Add"),
                                               ),
