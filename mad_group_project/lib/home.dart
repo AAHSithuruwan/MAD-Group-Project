@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mad_group_project/custom_app_bar.dart';
-import 'package:mad_group_project/custom_bottom_navigation_bar.dart';
+import 'package:mad_group_project/main_container.dart';
 import 'package:mad_group_project/custom_floating_action_button.dart';
 import 'package:overflow_view/overflow_view.dart';
 
@@ -89,8 +89,7 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-      return Scaffold(
-        body: Column(
+      return Column(
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(28,50,28,20),
@@ -347,14 +346,7 @@ class _HomeState extends State<Home> {
               ),
             ),
           ],
-        ),
-        floatingActionButton: Padding(
-          padding: const EdgeInsets.only(top: 30),
-          child: CustomFloatingActionButton(),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked, // FAB in center
-        bottomNavigationBar: CustomBottomNavigationBar(),
-      );
+        );
   }
 }
 
