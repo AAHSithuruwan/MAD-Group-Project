@@ -228,44 +228,178 @@ class _CreateItemsState extends State<CreateItems> {
                                           String newStoreName = "";
                                           String newStoreLocation = "";
                                           return AlertDialog(
-                                            title: const Text("Add New Store"),
+                                            backgroundColor: Colors.white,
+                                            title: Center(
+                                              child: const Text(
+                                                "Add New Store",
+                                                style: TextStyle(
+                                                  color: Color.fromARGB(
+                                                      255, 2, 65, 7),
+                                                  fontSize: 16,
+                                                  // Title text color
+                                                  fontWeight: FontWeight.normal,
+                                                ),
+                                              ),
+                                            ),
                                             content: Column(
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
-                                                TextField(
-                                                  onChanged: (text) {
-                                                    newStoreName = text;
-                                                  },
-                                                  decoration:
-                                                      const InputDecoration(
-                                                    labelText: "Store Name",
-                                                    border:
-                                                        OutlineInputBorder(),
+                                                SizedBox(
+                                                  height: 40,
+                                                  child: TextField(
+                                                    cursorColor: Color.fromARGB(
+                                                        255, 3, 66, 8),
+                                                    style: TextStyle(
+                                                      color:
+                                                          const Color.fromARGB(
+                                                              255, 58, 57, 57),
+                                                      fontSize: 14,
+                                                    ),
+                                                    onChanged: (text) {
+                                                      newStoreName = text;
+                                                    },
+                                                    decoration:
+                                                        const InputDecoration(
+                                                      labelText: "Store Name",
+                                                      labelStyle: TextStyle(
+                                                        color: Color.fromARGB(
+                                                            255, 112, 113, 112),
+                                                        fontSize: 12,
+                                                      ),
+                                                      floatingLabelStyle:
+                                                          TextStyle(
+                                                        color: Color.fromARGB(
+                                                            255,
+                                                            2,
+                                                            65,
+                                                            7), // Label text color when focused
+                                                        fontSize: 14,
+                                                      ),
+                                                      border:
+                                                          OutlineInputBorder(
+                                                        borderRadius:
+                                                            BorderRadius.all(
+                                                                Radius.circular(
+                                                                    10.0)),
+                                                        borderSide: BorderSide(
+                                                          color: Colors.black,
+                                                        ),
+                                                      ),
+                                                      focusedBorder:
+                                                          OutlineInputBorder(
+                                                        borderRadius:
+                                                            BorderRadius.all(
+                                                          Radius.circular(10.0),
+                                                        ),
+                                                        borderSide: BorderSide(
+                                                          color: Color.fromARGB(
+                                                              255,
+                                                              2,
+                                                              65,
+                                                              7), // Border color when focused
+                                                          width:
+                                                              2, // Border width when focused
+                                                        ),
+                                                      ),
+                                                    ),
                                                   ),
                                                 ),
                                                 const SizedBox(height: 16),
-                                                TextField(
-                                                  onChanged: (text) {
-                                                    newStoreLocation = text;
-                                                  },
-                                                  decoration:
-                                                      const InputDecoration(
-                                                    labelText: "Location",
-                                                    border:
-                                                        OutlineInputBorder(),
+                                                SizedBox(
+                                                  height: 40,
+                                                  child: TextField(
+                                                    cursorColor: Color.fromARGB(
+                                                        255, 3, 66, 8),
+                                                    style: TextStyle(
+                                                      color:
+                                                          const Color.fromARGB(
+                                                              255, 58, 57, 57),
+                                                      fontSize: 14,
+                                                    ),
+                                                    onChanged: (text) {
+                                                      newStoreLocation = text;
+                                                    },
+                                                    decoration:
+                                                        const InputDecoration(
+                                                      labelText: "Location",
+                                                      labelStyle: TextStyle(
+                                                        color: Color.fromARGB(
+                                                            255, 112, 113, 112),
+                                                        fontSize: 12,
+                                                        // Label text color
+                                                      ),
+                                                      floatingLabelStyle:
+                                                          TextStyle(
+                                                        color: Color.fromARGB(
+                                                            255,
+                                                            2,
+                                                            65,
+                                                            7), // Label text color when focused
+                                                        fontSize: 14,
+                                                      ),
+                                                      border:
+                                                          OutlineInputBorder(
+                                                        borderRadius:
+                                                            BorderRadius.all(
+                                                                Radius.circular(
+                                                                    10.0)),
+                                                        borderSide: BorderSide(
+                                                          color: Colors.black,
+                                                        ),
+                                                      ),
+                                                      focusedBorder:
+                                                          OutlineInputBorder(
+                                                        borderRadius:
+                                                            BorderRadius.all(
+                                                          Radius.circular(10.0),
+                                                        ),
+                                                        borderSide: BorderSide(
+                                                          color: Color.fromARGB(
+                                                              255,
+                                                              2,
+                                                              65,
+                                                              7), // Border color when focused
+                                                          width:
+                                                              2, // Border width when focused
+                                                        ),
+                                                      ),
+                                                    ),
                                                   ),
                                                 ),
                                               ],
                                             ),
                                             actions: [
                                               TextButton(
+                                                style: TextButton.styleFrom(
+                                                  backgroundColor:
+                                                      const Color(0xFFE8F6E9),
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10), // Add border radius
+                                                  ),
+                                                ),
                                                 onPressed: () {
                                                   Navigator.of(context)
                                                       .pop(); // Close the dialog
                                                 },
-                                                child: const Text("Cancel"),
+                                                child: const Text(
+                                                  "Cancel",
+                                                  style: TextStyle(
+                                                    color: Color(0xFF106A16),
+                                                  ),
+                                                ),
                                               ),
                                               TextButton(
+                                                style: TextButton.styleFrom(
+                                                  backgroundColor:
+                                                      const Color(0xFFE8F6E9),
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10), // Add border radius
+                                                  ),
+                                                ),
                                                 onPressed: () {
                                                   if (newStoreName.isNotEmpty &&
                                                       newStoreLocation
@@ -284,7 +418,12 @@ class _CreateItemsState extends State<CreateItems> {
                                                   Navigator.of(context)
                                                       .pop(); // Close the dropdown
                                                 },
-                                                child: const Text("Add"),
+                                                child: const Text(
+                                                  "Add",
+                                                  style: TextStyle(
+                                                    color: Color(0xFF106A16),
+                                                  ),
+                                                ),
                                               ),
                                             ],
                                           );
