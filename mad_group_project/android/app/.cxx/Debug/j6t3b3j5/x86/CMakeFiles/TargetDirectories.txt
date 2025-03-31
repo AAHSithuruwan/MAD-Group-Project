@@ -1,0 +1,2 @@
+C:/Users/dewmi/Documents/GitHub/MAD-Group-Project/mad_group_project/android/app/.cxx/Debug/j6t3b3j5/x86/CMakeFiles/edit_cache.dir
+C:/Users/dewmi/Documents/GitHub/MAD-Group-Project/mad_group_project/android/app/.cxx/Debug/j6t3b3j5/x86/CMakeFiles/rebuild_cache.dir
