@@ -431,13 +431,11 @@ class _CreateItemsState extends State<CreateItems> {
                                       );
                                     },
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color(0xFFE8F6E9),
+                                      backgroundColor: const Color.fromARGB(
+                                          255, 250, 250, 250),
                                       foregroundColor: const Color(0xFF106A16),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(7),
-                                      ),
                                     ),
-                                    child: const Text("Add New"),
+                                    child: const Text("+  Add New"),
                                   ),
                                 ),
                                 // Existing dropdown items
