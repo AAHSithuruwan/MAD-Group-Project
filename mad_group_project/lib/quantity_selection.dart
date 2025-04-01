@@ -246,16 +246,16 @@ class _QuantitySelectionState extends State<QuantitySelection> {
 
           // Back button
           Positioned(
-            top: 25, // Adjust the position as needed
-            left: 12, // Adjust the position as needed
+            top: 25,
+            left: 12,
             child: GestureDetector(
               onTap: () {
                 Navigator.pop(context); // Navigate back to the previous screen
               },
               child: Image.asset(
-                'assets/images/back.png', // Replace with your back button image path
-                width: 25, // Adjust the size as needed
-                height: 25, // Adjust the size as needed
+                'assets/images/back.png',
+                width: 25,
+                height: 25,
               ),
             ),
           ),

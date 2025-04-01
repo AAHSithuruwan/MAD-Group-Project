@@ -14,7 +14,7 @@ class _CreateItemsState extends State<CreateItems> {
   final TextEditingController unitController = TextEditingController();
   final TextEditingController storeNameController = TextEditingController();
 
-  List<String> suggestedUnits = ["1kg", "2kg", "200g", "500g"];
+  List<String> suggestedUnits = ["kg/g/packet", "l/ml/bottle", "piece"];
   List<String> storeNames = ["Store A", "Store B", "Store C"];
   List<String> addedUnits = [];
   List<String> addedStores = [];
@@ -376,7 +376,7 @@ class _CreateItemsState extends State<CreateItems> {
                                                   shape: RoundedRectangleBorder(
                                                     borderRadius:
                                                         BorderRadius.circular(
-                                                            10), // Add border radius
+                                                            10),
                                                   ),
                                                 ),
                                                 onPressed: () {
@@ -397,7 +397,7 @@ class _CreateItemsState extends State<CreateItems> {
                                                   shape: RoundedRectangleBorder(
                                                     borderRadius:
                                                         BorderRadius.circular(
-                                                            10), // Add border radius
+                                                            10),
                                                   ),
                                                 ),
                                                 onPressed: () {
