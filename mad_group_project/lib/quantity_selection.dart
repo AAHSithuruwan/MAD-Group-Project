@@ -82,18 +82,18 @@ class _QuantitySelectionState extends State<QuantitySelection> {
                         const Text(
                           "Quantity",
                           style: TextStyle(
-                            fontSize: 15,
+                            fontSize: 13,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 10),
                         Row(
                           children: [
                             // Quantity TextField
                             Expanded(
                               flex: 2,
                               child: SizedBox(
-                                height: 40,
+                                height: 35,
                                 child: TextField(
                                   controller: quantityController,
                                   decoration: const InputDecoration(
@@ -127,7 +127,7 @@ class _QuantitySelectionState extends State<QuantitySelection> {
                             Expanded(
                               flex: 1,
                               child: SizedBox(
-                                height: 40,
+                                height: 35,
                                 child: Container(
                                   color: const Color(0xFFE8F6E9),
                                   child: DropdownButtonFormField<String>(
@@ -206,7 +206,7 @@ class _QuantitySelectionState extends State<QuantitySelection> {
                                     vertical: 8.0, horizontal: 12.0),
                                 child: Text(
                                   unit,
-                                  style: const TextStyle(fontSize: 14),
+                                  style: const TextStyle(fontSize: 12),
                                 ),
                               ),
                             );
@@ -216,7 +216,7 @@ class _QuantitySelectionState extends State<QuantitySelection> {
                         Align(
                           alignment: Alignment.centerRight,
                           child: SizedBox(
-                            height: 40,
+                            height: 35,
                             child: ElevatedButton(
                               onPressed: () {
                                 print(
@@ -225,10 +225,10 @@ class _QuantitySelectionState extends State<QuantitySelection> {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFF106A16),
                                 foregroundColor: Colors.white,
-                                textStyle: const TextStyle(fontSize: 16),
+                                textStyle: const TextStyle(fontSize: 14),
                                 shape: const RoundedRectangleBorder(
                                   borderRadius: BorderRadius.all(
-                                    Radius.circular(10),
+                                    Radius.circular(8),
                                   ),
                                 ),
                               ),
