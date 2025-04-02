@@ -91,7 +91,7 @@ class _QuantitySelectionState extends State<QuantitySelection> {
                           children: [
                             // Quantity TextField
                             Expanded(
-                              flex: 3,
+                              flex: 2,
                               child: SizedBox(
                                 height: 40,
                                 child: TextField(
