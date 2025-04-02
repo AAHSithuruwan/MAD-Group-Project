@@ -94,30 +94,40 @@ class _QuantitySelectionState extends State<QuantitySelection> {
                               flex: 2,
                               child: SizedBox(
                                 height: 35,
-                                child: TextField(
-                                  controller: quantityController,
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(7.0),
-                                        bottomLeft: Radius.circular(7.0),
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(7.0),
-                                        bottomLeft: Radius.circular(7.0),
-                                      ),
-                                      borderSide: BorderSide(
-                                        color: Color(0xFF106A16),
-                                        width: 1,
-                                      ),
-                                    ),
-                                    contentPadding: EdgeInsets.only(
-                                        bottom: 10.0, left: 10.0),
+                                child: TextSelectionTheme(
+                                  data: TextSelectionThemeData(
+                                    cursorColor:
+                                        const Color(0xFF106A16), // Cursor color
+                                    selectionColor: const Color(
+                                        0xFFB2D8B2), // Highlight color for selected text
+                                    selectionHandleColor: const Color(
+                                        0xFF106A16), // Handle color for text selection
                                   ),
-                                  style: const TextStyle(
-                                    fontSize: 14,
+                                  child: TextField(
+                                    controller: quantityController,
+                                    decoration: const InputDecoration(
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(7.0),
+                                          bottomLeft: Radius.circular(7.0),
+                                        ),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(7.0),
+                                          bottomLeft: Radius.circular(7.0),
+                                        ),
+                                        borderSide: BorderSide(
+                                          color: Color(0xFF106A16),
+                                          width: 1,
+                                        ),
+                                      ),
+                                      contentPadding: EdgeInsets.only(
+                                          bottom: 10.0, left: 10.0),
+                                    ),
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                    ),
                                   ),
                                 ),
                               ),
