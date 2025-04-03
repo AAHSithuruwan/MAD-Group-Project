@@ -6,7 +6,8 @@ import 'package:mad_group_project/sign_in_selection.dart';
 import 'package:mad_group_project/sign_up_selection.dart';
 import 'package:mad_group_project/welcome.dart';
 import 'package:mad_group_project/create_items.dart';
+import 'package:mad_group_project/quantity_selection.dart';
 
 void main() {
-  runApp(MaterialApp(home: CreateItems()));
+  runApp(MaterialApp(home: Home()));
 }
