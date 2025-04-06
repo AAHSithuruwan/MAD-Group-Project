@@ -9,5 +9,5 @@ import 'package:mad_group_project/create_items.dart';
 import 'package:mad_group_project/quantity_selection.dart';
 
 void main() {
-  runApp(MaterialApp(home: Home()));
+  runApp(MaterialApp(home: Welcome()));
 }
