@@ -14,5 +14,5 @@ import 'package:mad_group_project/quantity_selection.dart';
 import 'forgotPassword.dart';
 
 void main() {
-  runApp(MaterialApp(home: ForgotPasswordScreen()));
+  runApp(MaterialApp(home: Welcome()));
 }
