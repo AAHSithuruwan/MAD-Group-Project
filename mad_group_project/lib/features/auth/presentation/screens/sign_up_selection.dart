@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mad_group_project/custom_app_bar.dart';
+import 'package:mad_group_project/common/widgets/custom_app_bar.dart';
 
 class SignUpSelection extends StatefulWidget{
   const SignUpSelection({super.key});
