@@ -99,7 +99,7 @@ class _HomeState extends State<Home> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Listify", style: TextStyle(fontFamily: "Labrada", fontSize: 40),),
+                      Text("Listify 1", style: TextStyle(fontFamily: "Labrada", fontSize: 40),),
                       Text("Simplify your shopping list", style: TextStyle(fontFamily: "Khmer", fontSize: 12),)
                     ],
                   ),

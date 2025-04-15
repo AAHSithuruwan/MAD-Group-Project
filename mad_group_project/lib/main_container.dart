@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mad_group_project/custom_app_bar.dart';
-import 'package:mad_group_project/home.dart';
+import 'package:mad_group_project/features/home/presentation/screens/home.dart';
 import 'package:mad_group_project/notifications.dart';
 import 'custom_floating_action_button.dart';
 
