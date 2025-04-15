@@ -1,18 +1,39 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:mad_group_project/add_items.dart';
-import 'package:mad_group_project/home.dart';
-import 'package:mad_group_project/main_container.dart';
-import 'package:mad_group_project/register.dart';
-import 'package:mad_group_project/signIn.dart';
-import 'package:mad_group_project/sign_in_selection.dart';
-import 'package:mad_group_project/sign_up_selection.dart';
-import 'package:mad_group_project/verifyEmail.dart';
-import 'package:mad_group_project/welcome.dart';
-import 'package:mad_group_project/create_items.dart';
-import 'package:mad_group_project/quantity_selection.dart';
+import 'package:mad_group_project/firebase_options.dart';
+import 'package:go_router/go_router.dart';
+import 'router/app_router.dart';
 
-import 'forgotPassword.dart';
 
-void main() {
-  runApp(MaterialApp(home: Welcome()));
+Future<void> main() async {
+
+  // Ensures Flutter is initialized before async code
+  WidgetsFlutterBinding.ensureInitialized(); 
+
+  // Initialize Firebase
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  
+  // Initialize the router
+  final router = await AppRouter.createRouter(); // Create the router asynchronously
+
+  // Run the app with the initialized router
+  runApp(MyApp(router: router));
+}
+
+
+
+class MyApp extends StatelessWidget {
+  final GoRouter router;
+
+  const MyApp({super.key, required this.router});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp.router(
+      routerConfig: router, // Use the initialized router
+      title: 'Go Router Example',
+    );
+  }
 }

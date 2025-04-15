@@ -1,17 +1,18 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mad_group_project/sign_in_selection.dart';
-import 'package:mad_group_project/sign_up_selection.dart';
+import './sign_in_selection.dart';
+import './sign_up_selection.dart';
 
-class Welcome extends StatefulWidget{
-  const Welcome({super.key});
+
+class AuthSelection extends StatefulWidget{
+  const AuthSelection({super.key});
 
   @override
-  State<Welcome> createState() => _WelcomeState();
+  State<AuthSelection> createState() => _AuthSelectionState();
 }
 
-class _WelcomeState extends State<Welcome> {
+class _AuthSelectionState extends State<AuthSelection> {
 
   @override
   void initState() {
