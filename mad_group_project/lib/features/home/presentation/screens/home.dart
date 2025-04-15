@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mad_group_project/custom_app_bar.dart';
-import 'package:mad_group_project/main_container.dart';
-import 'package:mad_group_project/custom_floating_action_button.dart';
+import 'package:mad_group_project/common/widgets/custom_app_bar.dart';
+import 'package:mad_group_project/features/main_container/presentation/screens/main_container.dart';
+import 'package:mad_group_project/common/widgets/custom_floating_action_button.dart';
 import 'package:overflow_view/overflow_view.dart';
 
 class Home extends StatefulWidget{
