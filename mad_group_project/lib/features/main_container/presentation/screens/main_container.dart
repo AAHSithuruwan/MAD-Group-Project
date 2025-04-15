@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mad_group_project/custom_app_bar.dart';
-import 'package:mad_group_project/features/home/presentation/screens/home.dart';
-import 'package:mad_group_project/notifications.dart';
-import 'custom_floating_action_button.dart';
+import 'package:mad_group_project/features/notifications/presentation/screens/notifications.dart';
+import '../../../../common/widgets/custom_app_bar.dart';
+import '../../../../common/widgets/custom_floating_action_button.dart';
+import '../../../home/presentation/screens/home.dart';
 
 class MainContainer extends StatefulWidget {
   const MainContainer({super.key});
