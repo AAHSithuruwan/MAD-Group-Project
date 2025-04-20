@@ -1,4 +1,6 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import './firebase_options.dart';
 import 'package:go_router/go_router.dart';
 import 'router/app_router.dart';
 
@@ -9,9 +11,9 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized(); 
 
   // Initialize Firebase
-  // await Firebase.initializeApp(
-  //   options: DefaultFirebaseOptions.currentPlatform,
-  // );
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   
   // Initialize the router
   final router = await AppRouter.createRouter(); // Create the router asynchronously
