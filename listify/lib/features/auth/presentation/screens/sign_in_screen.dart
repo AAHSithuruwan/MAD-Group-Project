@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:listify/core/services/auth_service.dart';
 
 class SignInScreen extends StatefulWidget {
   @override
@@ -7,7 +9,29 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
+  final AuthService _authService = AuthService();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
+
+  void _signIn() async {
+    String email = _emailController.text.trim();
+    String password = _passwordController.text.trim();
+
+    if (email.isNotEmpty && password.isNotEmpty) {
+      User? user = await _authService.signInWithEmailAndPassword(email, password);
+      if (user != null) {
+        // Navigate to the next screen or show success message
+        print("Signed in as: ${user.email}");
+      } else {
+        // Show error message
+        print("Failed to sign in");
+      }
+    } else {
+      // Show validation error
+      print("Please enter both email and password");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,8 +65,8 @@ class _SignInScreenState extends State<SignInScreen> {
 
               // Email TextField
               Text('Email'),
-
               TextField(
+                controller: _emailController,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -55,6 +79,7 @@ class _SignInScreenState extends State<SignInScreen> {
               // Password TextField
               Text('Password'),
               TextField(
+                controller: _passwordController,
                 obscureText: !_isPasswordVisible,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
@@ -73,9 +98,6 @@ class _SignInScreenState extends State<SignInScreen> {
                     },
                   ),
                 ),
-                onChanged: (value) {
-                  // Handle password input
-                },
               ),
 
               SizedBox(height: 10),
@@ -101,7 +123,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 width: double.infinity,
                 height: 50,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: _signIn,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF1BA424),
                     shape: RoundedRectangleBorder(

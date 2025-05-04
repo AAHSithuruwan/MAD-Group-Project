@@ -74,7 +74,7 @@ class AppRouter {
           path: signUpRoute,
           name: "sign_up",
           builder: (BuildContext context, GoRouterState state) =>
-              const SignUpScreen(),
+              SignUpScreen(),
         ),
 
         GoRoute(
