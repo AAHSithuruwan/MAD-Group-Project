@@ -135,7 +135,7 @@ class _SignUpSelectionScreenState extends State<SignUpSelectionScreen> {
       child: MaterialButton(
         color: Colors.black,
         onPressed: () {
-          context.go('/sign-up'); 
+          context.push('/sign-up'); 
         },
         shape: RoundedRectangleBorder(
           side: BorderSide(color: Color(0x33000000)),
