@@ -4,29 +4,39 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:listify/core/providers/auth_provider.dart';
 
+// StateProvider to manage error messages
+final signInErrorProvider = StateProvider<String?>((ref) => null);
+
 class SignInScreen extends ConsumerWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
 
+  SignInScreen({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authService = ref.watch(authServiceProvider);
+    final errorMessage = ref.watch(signInErrorProvider); // Watch the error message state
 
     void _signIn() async {
       String email = _emailController.text.trim();
       String password = _passwordController.text.trim();
 
       if (email.isNotEmpty && password.isNotEmpty) {
-        User? user = await authService.signInWithEmailAndPassword(email, password);
-        if (user != null) {
-          print("Signed in as: ${user.email}");
-          context.go('/'); // Redirect to home
-        } else {
-          print("Failed to sign in");
+        try {
+          User? user = await authService.signInWithEmailAndPassword(email, password);
+          if (user != null) {
+            print("Signed in as: ${user.email}");
+            context.go('/'); // Redirect to home
+          } else {
+            ref.read(signInErrorProvider.notifier).state = "Failed to sign in. Please try again.";
+          }
+        } catch (e) {
+          ref.read(signInErrorProvider.notifier).state = "Error: ${e.toString()}";
         }
       } else {
-        print("Please enter both email and password");
+        ref.read(signInErrorProvider.notifier).state = "Please enter both email and password.";
       }
     }
 
@@ -57,6 +67,19 @@ class SignInScreen extends ConsumerWidget {
                 ),
               ),
               SizedBox(height: 40),
+
+              // Display error message
+              if (errorMessage != null)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10.0),
+                  child: Text(
+                    errorMessage,
+                    style: TextStyle(
+                      color: Colors.red, // Error message color
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
 
               // Email TextField
               Text('Email'),

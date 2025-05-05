@@ -4,6 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:listify/core/providers/auth_provider.dart';
 
+// StateProvider to manage error messages
+final signUpErrorProvider = StateProvider<String?>((ref) => null);
+
 class SignUpScreen extends ConsumerWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -13,26 +16,34 @@ class SignUpScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authService = ref.watch(authServiceProvider);
+    final errorMessage = ref.watch(signUpErrorProvider); // Watch the error message state
 
     void _signUp() async {
+      // Clear the error message before validation
+      ref.read(signUpErrorProvider.notifier).state = null;
+
       String email = _emailController.text.trim();
       String password = _passwordController.text.trim();
       String confirmPassword = _confirmPasswordController.text.trim();
 
       if (email.isNotEmpty && password.isNotEmpty && confirmPassword.isNotEmpty) {
         if (password == confirmPassword) {
-          User? user = await authService.signUpWithEmailAndPassword(email, password);
-          if (user != null) {
-            print("Signed up as: ${user.email}");
-            context.go('/'); // Redirect to home
-          } else {
-            print("Failed to sign up");
+          try {
+            User? user = await authService.signUpWithEmailAndPassword(email, password);
+            if (user != null) {
+              print("Signed up as: ${user.email}");
+              context.go('/'); // Redirect to home
+            } else {
+              ref.read(signUpErrorProvider.notifier).state = "Failed to sign up. Please try again.";
+            }
+          } catch (e) {
+            ref.read(signUpErrorProvider.notifier).state = "Error: ${e.toString()}";
           }
         } else {
-          print("Passwords do not match");
+          ref.read(signUpErrorProvider.notifier).state = "Passwords do not match.";
         }
       } else {
-        print("Please fill in all fields");
+        ref.read(signUpErrorProvider.notifier).state = "Please fill in all fields.";
       }
     }
 
@@ -63,6 +74,19 @@ class SignUpScreen extends ConsumerWidget {
                 ),
               ),
               SizedBox(height: 40),
+
+              // Display error message
+              if (errorMessage != null)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10.0),
+                  child: Text(
+                    errorMessage,
+                    style: TextStyle(
+                      color: Colors.red, // Error message color
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
 
               // Email TextField
               Text('Email'),
