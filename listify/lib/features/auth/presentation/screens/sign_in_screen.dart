@@ -17,7 +17,9 @@ class SignInScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authService = ref.watch(authServiceProvider);
-    final errorMessage = ref.watch(signInErrorProvider); // Watch the error message state
+    final errorMessage = ref.watch(
+      signInErrorProvider,
+    ); // Watch the error message state
 
     void _signIn() async {
       String email = _emailController.text.trim();
@@ -25,18 +27,24 @@ class SignInScreen extends ConsumerWidget {
 
       if (email.isNotEmpty && password.isNotEmpty) {
         try {
-          User? user = await authService.signInWithEmailAndPassword(email, password);
+          User? user = await authService.signInWithEmailAndPassword(
+            email,
+            password,
+          );
           if (user != null) {
             print("Signed in as: ${user.email}");
             context.go('/'); // Redirect to home
           } else {
-            ref.read(signInErrorProvider.notifier).state = "Failed to sign in. Please try again.";
+            ref.read(signInErrorProvider.notifier).state =
+                "Failed to sign in. Please try again.";
           }
         } catch (e) {
-          ref.read(signInErrorProvider.notifier).state = "Error: ${e.toString()}";
+          ref.read(signInErrorProvider.notifier).state =
+              "Error: ${e.toString()}";
         }
       } else {
-        ref.read(signInErrorProvider.notifier).state = "Please enter both email and password.";
+        ref.read(signInErrorProvider.notifier).state =
+            "Please enter both email and password.";
       }
     }
 
@@ -120,7 +128,11 @@ class SignInScreen extends ConsumerWidget {
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    context.push(
+                      '/forgot-password',
+                    ); // Navigate to Forgot Password screen
+                  },
                   child: Text(
                     'Forgot password ?',
                     style: TextStyle(
