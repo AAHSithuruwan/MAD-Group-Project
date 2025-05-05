@@ -1,47 +1,42 @@
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:listify/core/services/auth_service.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:listify/core/providers/auth_provider.dart';
 
-class SignInScreen extends StatefulWidget {
-  @override
-  _SignInScreenState createState() => _SignInScreenState();
-}
-
-class _SignInScreenState extends State<SignInScreen> {
-  final AuthService _authService = AuthService();
+class SignInScreen extends ConsumerWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
 
-  void _signIn() async {
-    String email = _emailController.text.trim();
-    String password = _passwordController.text.trim();
-
-    if (email.isNotEmpty && password.isNotEmpty) {
-      User? user = await _authService.signInWithEmailAndPassword(email, password);
-      if (user != null) {
-        // Navigate to the next screen or show success message
-        print("Signed in as: ${user.email}");
-      } else {
-        // Show error message
-        print("Failed to sign in");
-      }
-    } else {
-      // Show validation error
-      print("Please enter both email and password");
-    }
-  }
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authService = ref.watch(authServiceProvider);
+
+    void _signIn() async {
+      String email = _emailController.text.trim();
+      String password = _passwordController.text.trim();
+
+      if (email.isNotEmpty && password.isNotEmpty) {
+        User? user = await authService.signInWithEmailAndPassword(email, password);
+        if (user != null) {
+          print("Signed in as: ${user.email}");
+          context.go('/'); // Redirect to home
+        } else {
+          print("Failed to sign in");
+        }
+      } else {
+        print("Please enter both email and password");
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios, color: Colors.black),
-          onPressed: () => context.pop(), // Use go_router's pop method
+          onPressed: () => context.pop(),
         ),
       ),
       body: SingleChildScrollView(
@@ -92,9 +87,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           : Icons.visibility_off,
                     ),
                     onPressed: () {
-                      setState(() {
-                        _isPasswordVisible = !_isPasswordVisible;
-                      });
+                      _isPasswordVisible = !_isPasswordVisible;
                     },
                   ),
                 ),
@@ -141,8 +134,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
               // Register Link
               Row(
-                mainAxisAlignment:
-                    MainAxisAlignment.spaceBetween, // Distribute space evenly
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     "Don't have an account?",
@@ -150,7 +142,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   ),
                   TextButton(
                     onPressed: () {
-                      // Add your registration logic here
+                      context.push('/sign-up'); // Navigate to sign-up screen
                     },
                     child: Text(
                       "Register",

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:listify/core/services/auth_service.dart';
+import 'package:listify/core/providers/auth_provider.dart';
 import '../features/auth/presentation/screens/auth_selection.dart';
 import '../features/auth/presentation/screens/sign_in_screen.dart';
 import '../features/auth/presentation/screens/sign_up_screen.dart';
@@ -15,9 +16,6 @@ class AppRouter {
   static const String signInRoute = '/sign-in';
   static const String signUpRoute = '/sign-up';
 
-  // This variable is used to check if the user is signed in or not.
-  static bool isSignedIn = AuthService().isSignedIn(); 
-
   static final List<GoRoute> protectedRoutes = [
     GoRoute(
       path: homeRoute,
@@ -26,37 +24,27 @@ class AppRouter {
     ),
 
     // Add more protected routes here (To access these routes, User needs to sign in)
-
-
-
-
-
-
-
-
-
-
-
-
   ];
 
-  static Future<GoRouter> createRouter() async {
+  static Future<GoRouter> createRouter(WidgetRef ref) async {
     final initialRoute =
         await InitialRouteHelper.getInitialRoute(homeRoute, welcomeRoute);
 
     return GoRouter(
       initialLocation: initialRoute,
       redirect: (context, state) {
-        // Redirect logic for authentication
+        // Use the authStateProvider to check if the user is signed in
+        final authState = ref.read(authStateProvider).asData?.value;
+
         final isAccessingProtectedRoute =
             protectedRoutes.any((route) => state.uri.toString() == route.path);
-        if (isAccessingProtectedRoute && !isSignedIn) {
+
+        if (isAccessingProtectedRoute && authState == null) {
           return authSelectionRoute; // Redirect to auth-selection page if not signed in
         }
         return null; // No redirection
       },
       routes: <RouteBase>[
-        
         GoRoute(
           path: welcomeRoute,
           name: 'welcome',
@@ -84,19 +72,6 @@ class AppRouter {
           builder: (BuildContext context, GoRouterState state) =>
               SignInScreen(),
         ),
-
-
-        // add more public routes (No need to sign in to access these routes.)
-
-
-
-
-
-
-
-
-
-
 
         // Include protected routes
         ...protectedRoutes,

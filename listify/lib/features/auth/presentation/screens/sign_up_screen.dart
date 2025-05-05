@@ -1,54 +1,48 @@
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:listify/core/services/auth_service.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:listify/core/providers/auth_provider.dart';
 
-class SignUpScreen extends StatefulWidget {
-  @override
-  _SignUpScreenState createState() => _SignUpScreenState();
-}
-
-class _SignUpScreenState extends State<SignUpScreen> {
-  final AuthService _authService = AuthService();
+class SignUpScreen extends ConsumerWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
   bool _isPasswordVisible = false;
 
-  void _signUp() async {
-    String email = _emailController.text.trim();
-    String password = _passwordController.text.trim();
-    String confirmPassword = _confirmPasswordController.text.trim();
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authService = ref.watch(authServiceProvider);
 
-    if (email.isNotEmpty && password.isNotEmpty && confirmPassword.isNotEmpty) {
-      if (password == confirmPassword) {
-        User? user = await _authService.signUpWithEmailAndPassword(email, password);
-        if (user != null) {
-          // Navigate to the next screen or show success message
-          print("Signed up as: ${user.email}");
+    void _signUp() async {
+      String email = _emailController.text.trim();
+      String password = _passwordController.text.trim();
+      String confirmPassword = _confirmPasswordController.text.trim();
+
+      if (email.isNotEmpty && password.isNotEmpty && confirmPassword.isNotEmpty) {
+        if (password == confirmPassword) {
+          User? user = await authService.signUpWithEmailAndPassword(email, password);
+          if (user != null) {
+            print("Signed up as: ${user.email}");
+            context.go('/'); // Redirect to home
+          } else {
+            print("Failed to sign up");
+          }
         } else {
-          // Show error message
-          print("Failed to sign up");
+          print("Passwords do not match");
         }
       } else {
-        // Show password mismatch error
-        print("Passwords do not match");
+        print("Please fill in all fields");
       }
-    } else {
-      // Show validation error
-      print("Please fill in all fields");
     }
-  }
 
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios, color: Colors.black),
-          onPressed: () => context.pop(), // Use go_router's pop method
+          onPressed: () => context.pop(),
         ),
       ),
       body: SingleChildScrollView(
@@ -99,9 +93,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           : Icons.visibility_off,
                     ),
                     onPressed: () {
-                      setState(() {
-                        _isPasswordVisible = !_isPasswordVisible;
-                      });
+                      _isPasswordVisible = !_isPasswordVisible;
                     },
                   ),
                 ),
@@ -125,9 +117,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           : Icons.visibility_off,
                     ),
                     onPressed: () {
-                      setState(() {
-                        _isPasswordVisible = !_isPasswordVisible;
-                      });
+                      _isPasswordVisible = !_isPasswordVisible;
                     },
                   ),
                 ),

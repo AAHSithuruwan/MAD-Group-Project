@@ -3,9 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  // function to check if the user is signed in
-  bool isSignedIn() {
-    return _auth.currentUser != null;
+  // Stream to listen to authentication state changes
+  Stream<User?> authStateChanges() {
+    return _auth.authStateChanges();
   }
 
   // Sign up with email and password
@@ -16,7 +16,7 @@ class AuthService {
       return result.user;
     } catch (e) {
       print("Error signing up: $e");
-      return null; // Or handle the error appropriately
+      return null;
     }
   }
 
@@ -28,13 +28,8 @@ class AuthService {
       return result.user;
     } catch (e) {
       print("Error signing in: $e");
-      return null; // Or handle the error appropriately
+      return null;
     }
-  }
-
-  // Get the current user
-  User? getCurrentUser() {
-    return _auth.currentUser;
   }
 
   // Sign out
