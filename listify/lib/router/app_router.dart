@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:listify/core/services/auth_service.dart';
 import '../features/auth/presentation/screens/auth_selection.dart';
 import '../features/auth/presentation/screens/sign_in_screen.dart';
 import '../features/auth/presentation/screens/sign_up_screen.dart';
@@ -14,8 +15,8 @@ class AppRouter {
   static const String signInRoute = '/sign-in';
   static const String signUpRoute = '/sign-up';
 
-  // Simulated authentication state
-  static bool isSignedIn = false;
+  // This variable is used to check if the user is signed in or not.
+  static bool isSignedIn = AuthService().isSignedIn(); 
 
   static final List<GoRoute> protectedRoutes = [
     GoRoute(
