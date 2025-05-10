@@ -13,11 +13,14 @@ class _CreateItemsState extends State<CreateItems> {
   final TextEditingController itemNameController = TextEditingController();
   final TextEditingController unitController = TextEditingController();
   final TextEditingController storeNameController = TextEditingController();
+  final TextEditingController categoryNameController = TextEditingController();
 
   List<String> suggestedUnits = ["kg/g/packet", "l/ml/bottle", "piece"];
   List<String> storeNames = ["Store A", "Store B", "Store C"];
+  List<String> categoryNames = ["Category A", "Category B", "Category C"];
   List<String> addedUnits = [];
   List<String> addedStores = [];
+  List<String> addedCategories = [];
 
   @override
   Widget build(BuildContext context) {
@@ -127,6 +130,293 @@ class _CreateItemsState extends State<CreateItems> {
                       ),
                     ),
 
+                    const SizedBox(height: 20),
+
+                    // Category Name Field with Dropdown
+                    const Text(
+                      "Category Name",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: SizedBox(
+                            height: 37,
+                            child: DropdownButtonFormField<String>(
+                              value: storeNames
+                                      .contains(categoryNameController.text)
+                                  ? categoryNameController.text
+                                  : null,
+                              dropdownColor: Colors
+                                  .white, // Set the background color of the dropdown menu
+                              items: [
+                                // Add New button at the top of the dropdown menu
+                                DropdownMenuItem(
+                                  enabled:
+                                      false, // Disable selection for this item
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      // Show a dialog to add a new store
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          String newCategoryName = "";
+                                          return AlertDialog(
+                                            backgroundColor: Colors.white,
+                                            title: Center(
+                                              child: const Text(
+                                                "Add New Category",
+                                                style: TextStyle(
+                                                  color: Color.fromARGB(
+                                                      255, 2, 65, 7),
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.normal,
+                                                ),
+                                              ),
+                                            ),
+                                            content: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                SizedBox(
+                                                  height: 37,
+                                                  child: TextSelectionTheme(
+                                                    data:
+                                                        TextSelectionThemeData(
+                                                      cursorColor: const Color(
+                                                          0xFF106A16), // Cursor color
+                                                      selectionColor: const Color(
+                                                          0xFFB2D8B2), // Highlight color
+                                                      selectionHandleColor:
+                                                          const Color(
+                                                              0xFF106A16), // Handle color
+                                                    ),
+                                                    child: TextField(
+                                                      cursorColor: const Color(
+                                                          0xFF106A16),
+                                                      style: const TextStyle(
+                                                        color: Color.fromARGB(
+                                                            255, 58, 57, 57),
+                                                        fontSize: 17,
+                                                      ),
+                                                      onChanged: (text) {
+                                                        newCategoryName = text;
+                                                      },
+                                                      decoration:
+                                                          const InputDecoration(
+                                                        labelText:
+                                                            "Category Name",
+                                                        labelStyle: TextStyle(
+                                                          color: Color.fromARGB(
+                                                              255,
+                                                              112,
+                                                              113,
+                                                              112),
+                                                          fontSize: 16,
+                                                        ),
+                                                        floatingLabelStyle:
+                                                            TextStyle(
+                                                          color: Color.fromARGB(
+                                                              255, 2, 65, 7),
+                                                          fontSize: 17,
+                                                        ),
+                                                        border:
+                                                            OutlineInputBorder(
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                            Radius.circular(
+                                                                10.0),
+                                                          ),
+                                                          borderSide:
+                                                              BorderSide(
+                                                            color: Colors.black,
+                                                          ),
+                                                        ),
+                                                        focusedBorder:
+                                                            OutlineInputBorder(
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                            Radius.circular(
+                                                                10.0),
+                                                          ),
+                                                          borderSide:
+                                                              BorderSide(
+                                                            color: Color(
+                                                                0xFF106A16),
+                                                            width: 2,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 16),
+                                              ],
+                                            ),
+                                            actions: [
+                                              SizedBox(
+                                                height: 33,
+                                                child: TextButton(
+                                                  style: TextButton.styleFrom(
+                                                    backgroundColor:
+                                                        const Color(0xFFE8F6E9),
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10),
+                                                    ),
+                                                  ),
+                                                  onPressed: () {
+                                                    Navigator.of(context)
+                                                        .pop(); // Close the dialog
+                                                  },
+                                                  child: const Text(
+                                                    "Cancel",
+                                                    style: TextStyle(
+                                                      fontSize: 16,
+                                                      color: Color(0xFF106A16),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                height: 33,
+                                                child: TextButton(
+                                                  style: TextButton.styleFrom(
+                                                    backgroundColor:
+                                                        const Color(0xFFE8F6E9),
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10),
+                                                    ),
+                                                  ),
+                                                  onPressed: () {
+                                                    if (newCategoryName
+                                                        .isNotEmpty) {
+                                                      setState(() {
+                                                        categoryNames.add(
+                                                            newCategoryName); // Add new category
+                                                        categoryNameController
+                                                                .text =
+                                                            newCategoryName; // Update the TextField
+                                                        addedCategories.add(
+                                                            "$newCategoryName");
+                                                      });
+                                                    }
+                                                    Navigator.of(context)
+                                                        .pop(); // Close the dialog
+                                                    Navigator.of(context)
+                                                        .pop(); // Close the dropdown
+                                                  },
+                                                  child: const Text(
+                                                    "Add",
+                                                    style: TextStyle(
+                                                      fontSize: 16,
+                                                      color: Color(0xFF106A16),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color.fromARGB(
+                                          255, 250, 250, 250),
+                                      foregroundColor: const Color(0xFF106A16),
+                                    ),
+                                    child: const Text("+  Add New",
+                                        style: TextStyle(
+                                          fontSize: 17,
+                                        )),
+                                  ),
+                                ),
+                                // Existing dropdown items
+                                ...categoryNames
+                                    .map((category) => DropdownMenuItem(
+                                          value: category,
+                                          child: Text(category,
+                                              style: const TextStyle(
+                                                fontSize: 16,
+                                              )),
+                                        )),
+                              ],
+                              onChanged: (value) {
+                                if (value != null && value != "Add New") {
+                                  setState(() {
+                                    categoryNameController.text =
+                                        value; // Update the TextField
+                                  });
+                                }
+                              },
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(7),
+                                    bottomLeft: Radius.circular(7),
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(7),
+                                    bottomLeft: Radius.circular(7),
+                                  ),
+                                  borderSide: BorderSide(
+                                    color: Color(0xFF106A16),
+                                    width: 1,
+                                  ),
+                                ),
+                                contentPadding:
+                                    EdgeInsets.only(bottom: 10.0, left: 10.0),
+                              ),
+                              style: const TextStyle(
+                                fontSize: 17,
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 37,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              if (categoryNameController.text.isNotEmpty) {
+                                setState(() {
+                                  categoryNames
+                                      .add(categoryNameController.text);
+                                  categoryNameController.clear();
+                                });
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFE8F6E9),
+                              foregroundColor: const Color(0xFF106A16),
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(7),
+                                  bottomRight: Radius.circular(7),
+                                ),
+                              ),
+                              side: const BorderSide(
+                                color: Color(0xFF106A16),
+                                width: 1,
+                              ),
+                            ),
+                            child: const Text("Add",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                )),
+                          ),
+                        ),
+                      ],
+                    ),
                     const SizedBox(height: 20),
 
                     // Unit Field with Suggestions
@@ -297,53 +587,71 @@ class _CreateItemsState extends State<CreateItems> {
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
                                                 SizedBox(
-                                                  height: 35,
-                                                  child: TextField(
-                                                    cursorColor: Color.fromARGB(
-                                                        255, 3, 66, 8),
-                                                    style: TextStyle(
-                                                      color:
-                                                          const Color.fromARGB(
-                                                              255, 58, 57, 57),
-                                                      fontSize: 17,
+                                                  height: 37,
+                                                  child: TextSelectionTheme(
+                                                    data:
+                                                        TextSelectionThemeData(
+                                                      cursorColor: const Color(
+                                                          0xFF106A16), // Cursor color
+                                                      selectionColor: const Color(
+                                                          0xFFB2D8B2), // Highlight color
+                                                      selectionHandleColor:
+                                                          const Color(
+                                                              0xFF106A16), // Handle color
                                                     ),
-                                                    onChanged: (text) {
-                                                      newStoreName = text;
-                                                    },
-                                                    decoration:
-                                                        const InputDecoration(
-                                                      labelText: "Store Name",
-                                                      labelStyle: TextStyle(
+                                                    child: TextField(
+                                                      cursorColor: const Color(
+                                                          0xFF106A16),
+                                                      style: const TextStyle(
                                                         color: Color.fromARGB(
-                                                            255, 112, 113, 112),
-                                                        fontSize: 16,
-                                                      ),
-                                                      floatingLabelStyle:
-                                                          TextStyle(
-                                                        color: Color.fromARGB(
-                                                            255, 2, 65, 7),
+                                                            255, 58, 57, 57),
                                                         fontSize: 17,
                                                       ),
-                                                      border:
-                                                          OutlineInputBorder(
-                                                        borderRadius:
-                                                            BorderRadius.all(
-                                                          Radius.circular(10.0),
+                                                      onChanged: (text) {
+                                                        newStoreName = text;
+                                                      },
+                                                      decoration:
+                                                          const InputDecoration(
+                                                        labelText: "Store Name",
+                                                        labelStyle: TextStyle(
+                                                          color: Color.fromARGB(
+                                                              255,
+                                                              112,
+                                                              113,
+                                                              112),
+                                                          fontSize: 16,
                                                         ),
-                                                        borderSide: BorderSide(
-                                                          color: Colors.black,
-                                                        ),
-                                                      ),
-                                                      focusedBorder:
-                                                          OutlineInputBorder(
-                                                        borderRadius:
-                                                            BorderRadius.all(
-                                                          Radius.circular(10.0),
-                                                        ),
-                                                        borderSide: BorderSide(
+                                                        floatingLabelStyle:
+                                                            TextStyle(
                                                           color: Color.fromARGB(
                                                               255, 2, 65, 7),
-                                                          width: 2,
+                                                          fontSize: 17,
+                                                        ),
+                                                        border:
+                                                            OutlineInputBorder(
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                            Radius.circular(
+                                                                10.0),
+                                                          ),
+                                                          borderSide:
+                                                              BorderSide(
+                                                            color: Colors.black,
+                                                          ),
+                                                        ),
+                                                        focusedBorder:
+                                                            OutlineInputBorder(
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                            Radius.circular(
+                                                                10.0),
+                                                          ),
+                                                          borderSide:
+                                                              BorderSide(
+                                                            color: Color(
+                                                                0xFF106A16),
+                                                            width: 2,
+                                                          ),
                                                         ),
                                                       ),
                                                     ),
@@ -351,53 +659,71 @@ class _CreateItemsState extends State<CreateItems> {
                                                 ),
                                                 const SizedBox(height: 16),
                                                 SizedBox(
-                                                  height: 35,
-                                                  child: TextField(
-                                                    cursorColor: Color.fromARGB(
-                                                        255, 3, 66, 8),
-                                                    style: TextStyle(
-                                                      color:
-                                                          const Color.fromARGB(
-                                                              255, 58, 57, 57),
-                                                      fontSize: 17,
+                                                  height: 37,
+                                                  child: TextSelectionTheme(
+                                                    data:
+                                                        TextSelectionThemeData(
+                                                      cursorColor: const Color(
+                                                          0xFF106A16), // Cursor color
+                                                      selectionColor: const Color(
+                                                          0xFFB2D8B2), // Highlight color
+                                                      selectionHandleColor:
+                                                          const Color(
+                                                              0xFF106A16), // Handle color
                                                     ),
-                                                    onChanged: (text) {
-                                                      newStoreLocation = text;
-                                                    },
-                                                    decoration:
-                                                        const InputDecoration(
-                                                      labelText: "Location",
-                                                      labelStyle: TextStyle(
+                                                    child: TextField(
+                                                      cursorColor: const Color(
+                                                          0xFF106A16),
+                                                      style: const TextStyle(
                                                         color: Color.fromARGB(
-                                                            255, 112, 113, 112),
-                                                        fontSize: 16,
-                                                      ),
-                                                      floatingLabelStyle:
-                                                          TextStyle(
-                                                        color: Color.fromARGB(
-                                                            255, 2, 65, 7),
+                                                            255, 58, 57, 57),
                                                         fontSize: 17,
                                                       ),
-                                                      border:
-                                                          OutlineInputBorder(
-                                                        borderRadius:
-                                                            BorderRadius.all(
-                                                          Radius.circular(10.0),
+                                                      onChanged: (text) {
+                                                        newStoreLocation = text;
+                                                      },
+                                                      decoration:
+                                                          const InputDecoration(
+                                                        labelText: "Location",
+                                                        labelStyle: TextStyle(
+                                                          color: Color.fromARGB(
+                                                              255,
+                                                              112,
+                                                              113,
+                                                              112),
+                                                          fontSize: 16,
                                                         ),
-                                                        borderSide: BorderSide(
-                                                          color: Colors.black,
-                                                        ),
-                                                      ),
-                                                      focusedBorder:
-                                                          OutlineInputBorder(
-                                                        borderRadius:
-                                                            BorderRadius.all(
-                                                          Radius.circular(10.0),
-                                                        ),
-                                                        borderSide: BorderSide(
+                                                        floatingLabelStyle:
+                                                            TextStyle(
                                                           color: Color.fromARGB(
                                                               255, 2, 65, 7),
-                                                          width: 2,
+                                                          fontSize: 17,
+                                                        ),
+                                                        border:
+                                                            OutlineInputBorder(
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                            Radius.circular(
+                                                                10.0),
+                                                          ),
+                                                          borderSide:
+                                                              BorderSide(
+                                                            color: Colors.black,
+                                                          ),
+                                                        ),
+                                                        focusedBorder:
+                                                            OutlineInputBorder(
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                            Radius.circular(
+                                                                10.0),
+                                                          ),
+                                                          borderSide:
+                                                              BorderSide(
+                                                            color: Color(
+                                                                0xFF106A16),
+                                                            width: 2,
+                                                          ),
                                                         ),
                                                       ),
                                                     ),
@@ -534,7 +860,7 @@ class _CreateItemsState extends State<CreateItems> {
                           ),
                         ),
                         SizedBox(
-                          height: 35,
+                          height: 37,
                           child: ElevatedButton(
                             onPressed: () {
                               if (storeNameController.text.isNotEmpty) {
