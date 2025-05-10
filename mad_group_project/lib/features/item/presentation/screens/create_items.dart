@@ -346,6 +346,7 @@ class _CreateItemsState extends State<CreateItems> {
                                           child: Text(category,
                                               style: const TextStyle(
                                                 fontSize: 16,
+                                                color: Colors.black,
                                               )),
                                         )),
                               ],
@@ -822,6 +823,7 @@ class _CreateItemsState extends State<CreateItems> {
                                       child: Text(store,
                                           style: const TextStyle(
                                             fontSize: 16,
+                                            color: Colors.black,
                                           )),
                                     )),
                               ],
@@ -903,6 +905,8 @@ class _CreateItemsState extends State<CreateItems> {
                           onPressed: () {
                             // Handle create item logic here
                             print("Item Created: ${itemNameController.text}");
+                            print(
+                                "Categories: ${categoryNameController.text}s");
                             print("Units: $addedUnits");
                             print("Store: ${storeNameController.text}");
                           },
