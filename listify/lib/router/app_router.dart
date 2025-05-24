@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:listify/core/providers/auth_provider.dart';
 import 'package:listify/features/auth/presentation/screens/forgot_password.dart';
+import 'package:listify/features/list_item_management/presentation/screens/add_list_items.dart';
 import 'package:listify/features/main_container/presentation/screens/main_container.dart';
 import '../features/auth/presentation/screens/auth_selection.dart';
 import '../features/auth/presentation/screens/sign_in_screen.dart';
@@ -19,6 +20,7 @@ class AppRouter {
   static const String signInRoute = '/sign-in';
   static const String signUpRoute = '/sign-up';
   static const String forgotPasswordRoute = '/forgot-password';
+  static const String addListItemsRoute = '/add-list-items';
 
   // List of protected routes (requires user to be signed in)
   static final List<GoRoute> protectedRoutes = [
@@ -98,6 +100,15 @@ class AppRouter {
           builder:
               (BuildContext context, GoRouterState state) =>
                   ForgotPasswordScreen(),
+        ),
+
+        // Add list items screen route
+        GoRoute(
+          path: addListItemsRoute,
+          name: 'add_list_items',
+          builder:
+              (BuildContext context, GoRouterState state) =>
+              AddListItems(),
         ),
 
         // Include all protected routes
