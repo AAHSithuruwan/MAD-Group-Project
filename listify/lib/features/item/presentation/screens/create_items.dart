@@ -1041,7 +1041,12 @@ class _CreateItemsState extends State<CreateItems> {
                                   content: Text('Item added successfully!'),
                                 ),
                               );
-                              Navigator.pop(context);
+                              itemNameController.clear();
+                              unitController.clear();
+                              categoryNameController.clear();
+                              storeNameController.clear();
+                              addedUnits.clear();
+                              setState(() {});
                             } catch (e) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
