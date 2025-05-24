@@ -19,8 +19,8 @@ class _CreateItemsState extends State<CreateItems> {
   final TextEditingController categoryNameController = TextEditingController();
   final ItemService itemService = ItemService();
 
-  List<String> suggestedUnits = ["kg/g/packet", "l/ml/bottle", "piece"];
-  List<String> storeNames = ["Store A", "Store B", "Store C"];
+  List<String> suggestedUnits = [];
+  List<String> storeNames = [];
   List<String> categoryNames = [];
   List<String> addedUnits = [];
   List<String> addedStores = [];
@@ -31,6 +31,7 @@ class _CreateItemsState extends State<CreateItems> {
     super.initState();
     fetchCategories();
     fetchStores();
+    fetchUnits();
   }
 
   Future<void> fetchCategories() async {
@@ -47,6 +48,14 @@ class _CreateItemsState extends State<CreateItems> {
         await FirebaseFirestore.instance.collection('ListifyStores').get();
     setState(() {
       storeNames = snapshot.docs.map((doc) => doc['name'] as String).toList();
+    });
+  }
+
+  Future<void> fetchUnits() async {
+    final snapshot = await FirebaseFirestore.instance.collection('Units').get();
+    setState(() {
+      suggestedUnits =
+          snapshot.docs.map((doc) => doc['name'] as String).toList();
     });
   }
 
@@ -354,18 +363,31 @@ class _CreateItemsState extends State<CreateItems> {
                                                           ),
                                                     ),
                                                   ),
-                                                  onPressed: () {
+                                                  onPressed: () async {
                                                     if (newCategoryName
                                                         .isNotEmpty) {
+                                                      // Add to Firestore
+                                                      final docRef =
+                                                          FirebaseFirestore
+                                                              .instance
+                                                              .collection(
+                                                                'ListifyCategories',
+                                                              )
+                                                              .doc();
+                                                      await docRef.set({
+                                                        'name': newCategoryName,
+                                                        'docId': docRef.id,
+                                                      });
+
                                                       setState(() {
                                                         categoryNames.add(
                                                           newCategoryName,
-                                                        ); // Add new category
+                                                        ); // Add to local list for immediate UI update
                                                         categoryNameController
                                                                 .text =
                                                             newCategoryName; // Update the TextField
                                                         addedCategories.add(
-                                                          "$newCategoryName",
+                                                          newCategoryName,
                                                         );
                                                       });
                                                     }
