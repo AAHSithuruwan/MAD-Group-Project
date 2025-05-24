@@ -30,6 +30,7 @@ class NotificationService {
     print('FCM Token: $token');
   }
 
+
   // Request notification permissions from the user
   Future<void> _requestPermission() async {
     final settings = await _messaging.requestPermission(
@@ -44,6 +45,70 @@ class NotificationService {
 
     print('Permission status: ${settings.authorizationStatus}');
   }
+
+
+  // Set up handlers for foreground, background, and terminated states
+  Future<void> _setupMessageHandlers() async {
+    // Handle messages when app is in the foreground
+    FirebaseMessaging.onMessage.listen((message) async {
+      print('Foreground message: ${message.data}');
+      await setupFlutterNotification(); // <-- Ensure local notifications are set up
+      showNotification(message);
+    });
+
+    // Handle messages when app is opened from a notification (background)
+    FirebaseMessaging.onMessageOpenedApp.listen(_handleBackgroundMessage);
+
+    // Handle messages when app is launched from a terminated state
+    final initialMessage = await _messaging.getInitialMessage();
+    if (initialMessage != null) {
+      _handleBackgroundMessage(initialMessage);
+    }
+  }
+
+
+  // Show a local notification based on a received FCM message
+  Future<void> showNotification(RemoteMessage message) async {
+    RemoteNotification? notification = message.notification;
+    AndroidNotification? android = message.notification?.android;
+    if (notification != null && android != null) {
+      await _localNotification.show(
+        notification.hashCode,
+        notification.title,
+        notification.body,
+        NotificationDetails(
+          android: AndroidNotificationDetails(
+            'high_importance_channel',
+            'High Importance Notifications',
+            channelDescription:
+                'This channel is used for important notifications.',
+            importance: Importance.high,
+            priority: Priority.high,
+            playSound: true,
+            icon: '@mipmap/ic_launcher',
+          ),
+          iOS: DarwinNotificationDetails(
+            presentAlert: true,
+            presentBadge: true,
+            presentSound: true,
+          ),
+        ),
+        payload: message.data.toString(), // Pass data as payload
+      );
+    }
+  }
+
+
+  // Handle navigation when a notification is tapped (background/terminated)
+  void _handleBackgroundMessage(RemoteMessage message) {
+    // Handle the background message when the app is opened from a notification
+    print('Background message: ${message.data}');
+    final context = rootNavigatorKey.currentContext;
+    if (context != null) {
+      GoRouter.of(context).push('/notifications'); // Change route as needed
+    }
+  }
+
 
   // Set up local notification channels and initialization
   Future<void> setupFlutterNotification() async {
@@ -89,69 +154,11 @@ class NotificationService {
         // Navigate to notifications page when a notification is tapped
         final context = rootNavigatorKey.currentContext;
         if (context != null) {
-          GoRouter.of(context).go('/notifications'); // Change route as needed
+          GoRouter.of(context).push('/notifications'); // Change route as needed
         }
       },
     );
 
     _isFlutterLocalNotificationInitialized = true;
-  }
-
-  // Show a local notification based on a received FCM message
-  Future<void> showNotification(RemoteMessage message) async {
-    RemoteNotification? notification = message.notification;
-    AndroidNotification? android = message.notification?.android;
-    if (notification != null && android != null) {
-      await _localNotification.show(
-        notification.hashCode,
-        notification.title,
-        notification.body,
-        NotificationDetails(
-          android: AndroidNotificationDetails(
-            'high_importance_channel',
-            'High Importance Notifications',
-            channelDescription:
-                'This channel is used for important notifications.',
-            importance: Importance.high,
-            priority: Priority.high,
-            playSound: true,
-            icon: '@mipmap/ic_launcher',
-          ),
-          iOS: DarwinNotificationDetails(
-            presentAlert: true,
-            presentBadge: true,
-            presentSound: true,
-          ),
-        ),
-        payload: message.data.toString(), // Pass data as payload
-      );
-    }
-  }
-
-  // Set up handlers for foreground, background, and terminated states
-  Future<void> _setupMessageHandlers() async {
-    // Handle messages when app is in the foreground
-    FirebaseMessaging.onMessage.listen((message) {
-      showNotification(message);
-    });
-
-    // Handle messages when app is opened from a notification (background)
-    FirebaseMessaging.onMessageOpenedApp.listen(_handleBackgroundMessage);
-
-    // Handle messages when app is launched from a terminated state
-    final initialMessage = await _messaging.getInitialMessage();
-    if (initialMessage != null) {
-      _handleBackgroundMessage(initialMessage);
-    }
-  }
-
-  // Handle navigation when a notification is tapped (background/terminated)
-  void _handleBackgroundMessage(RemoteMessage message) {
-    // Handle the background message when the app is opened from a notification
-    print('Background message: ${message.data}');
-    final context = rootNavigatorKey.currentContext;
-    if (context != null) {
-      GoRouter.of(context).push('/notifications'); // Change route as needed
-    }
   }
 }
