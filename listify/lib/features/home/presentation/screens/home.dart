@@ -12,9 +12,22 @@ class Home extends StatefulWidget{
 
 class _HomeState extends State<Home> {
 
-  ListifyListService listifyListService = new ListifyListService();
-
   List<ListifyList> lists = [];
+  ListifyListService listifyListService = ListifyListService();
+
+  Future<void> getLists(DateTime? startDate, DateTime? endDate) async{
+    List<ListifyList> listifyLists = await listifyListService.getListsByDateRange(startDate: startDate, endDate: endDate);
+    setState(() {
+      lists = listifyLists;
+    });
+  }
+
+  Future<void> initializeLists() async {
+    DateTime today = DateTime.now();
+    DateTime todayOnly = DateTime(today.year, today.month, today.day);
+
+    await getLists(todayOnly, todayOnly);
+  }
 
   List<ListType> listTypes = [
     ListType(Icons.today, "Today", true),
@@ -23,38 +36,10 @@ class _HomeState extends State<Home> {
     ListType(Icons.library_books, "All", false),
   ];
 
-  Future<void> getAllLists() async{
-    List<ListifyList> listifyLists = await listifyListService.getAllLists();
-    setState(() {
-      lists = listifyLists;
-    });
-  }
-
-  Future<void> getTodayLists() async{
-    List<ListifyList> listifyLists = await listifyListService.getTodayLists();
-    setState(() {
-      lists = listifyLists;
-    });
-  }
-
-  Future<void> getTomorrowLists() async{
-    List<ListifyList> listifyLists = await listifyListService.getTomorrowLists();
-    setState(() {
-      lists = listifyLists;
-    });
-  }
-
-  Future<void> getLaterLists() async{
-    List<ListifyList> listifyLists = await listifyListService.getLaterLists();
-    setState(() {
-      lists = listifyLists;
-    });
-  }
-
   @override
   void initState(){
     super.initState();
-    getTodayLists();
+    initializeLists();
   }
 
   bool listCheckBox(List<ListItem> items){
@@ -129,17 +114,21 @@ class _HomeState extends State<Home> {
                                         i.isSelected = false;
                                       }
                                       item.isSelected = true;
+
+                                      DateTime today = DateTime.now();
+                                      DateTime todayOnly = DateTime(today.year, today.month, today.day);
+
                                       if(index == 0){
-                                        getTodayLists();
+                                        getLists(todayOnly,todayOnly);
                                       }
                                       else if(index == 1){
-                                        getTomorrowLists();
+                                        getLists(todayOnly.add(Duration(days: 1)), todayOnly.add(Duration(days: 1)));
                                       }
                                       else if(index == 2){
-                                        getLaterLists();
+                                        getLists(todayOnly.add(Duration(days: 2)),null);
                                       }
                                       else{
-                                        getAllLists();
+                                        getLists(null,null);
                                       }
                                     });
                                   },

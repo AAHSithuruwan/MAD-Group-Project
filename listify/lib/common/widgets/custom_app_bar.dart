@@ -4,7 +4,11 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget{
 
   final String title;
 
-  const CustomAppBar({super.key, required this.title});
+  final Function? selectHomePage;
+
+  final bool displayTitle;
+
+  const CustomAppBar({super.key, required this.title, this.selectHomePage, required this.displayTitle});
 
 
   @override
@@ -26,11 +30,16 @@ class _CustomAppBarState extends State<CustomAppBar> {
         children: [
           IconButton(
               onPressed: (){
+                if(widget.selectHomePage != null){
+                  widget.selectHomePage!();
+                }
+                else{
                 Navigator.pop(context);
+                }
               },
               icon: Icon(Icons.arrow_back_ios,size: 35,)),
-          widget.title == "Notifications" ?
-              Text("Notifications")
+          widget.displayTitle == true ?
+              Text(widget.title)
               :
               Text(""),
           Text(""),

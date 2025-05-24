@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class CustomFloatingActionButton extends StatefulWidget{
   const CustomFloatingActionButton({super.key});
@@ -14,7 +15,9 @@ class _CustomFloatingActionButtonState extends State<CustomFloatingActionButton>
       width: 70,
       height: 70,
       child: FloatingActionButton(
-        onPressed: (){},
+        onPressed: (){
+          context.push('/add-list-items');
+        },
         backgroundColor: Colors.white,
         shape: CircleBorder(
           side: BorderSide(
