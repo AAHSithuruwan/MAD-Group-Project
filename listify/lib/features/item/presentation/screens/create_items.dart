@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:listify/core/Models/Item_model.dart';
 import 'package:listify/core/services/Item_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CreateItems extends StatefulWidget {
   const CreateItems({Key? key}) : super(key: key);
@@ -20,10 +21,25 @@ class _CreateItemsState extends State<CreateItems> {
 
   List<String> suggestedUnits = ["kg/g/packet", "l/ml/bottle", "piece"];
   List<String> storeNames = ["Store A", "Store B", "Store C"];
-  List<String> categoryNames = ["Category A", "Category B", "Category C"];
+  List<String> categoryNames = [];
   List<String> addedUnits = [];
   List<String> addedStores = [];
   List<String> addedCategories = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchCategories();
+  }
+
+  Future<void> fetchCategories() async {
+    final snapshot =
+        await FirebaseFirestore.instance.collection('ListifyCategories').get();
+    setState(() {
+      categoryNames =
+          snapshot.docs.map((doc) => doc['name'] as String).toList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
