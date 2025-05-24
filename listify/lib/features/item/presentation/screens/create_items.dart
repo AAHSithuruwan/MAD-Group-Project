@@ -30,6 +30,7 @@ class _CreateItemsState extends State<CreateItems> {
   void initState() {
     super.initState();
     fetchCategories();
+    fetchStores();
   }
 
   Future<void> fetchCategories() async {
@@ -38,6 +39,14 @@ class _CreateItemsState extends State<CreateItems> {
     setState(() {
       categoryNames =
           snapshot.docs.map((doc) => doc['name'] as String).toList();
+    });
+  }
+
+  Future<void> fetchStores() async {
+    final snapshot =
+        await FirebaseFirestore.instance.collection('ListifyStores').get();
+    setState(() {
+      storeNames = snapshot.docs.map((doc) => doc['name'] as String).toList();
     });
   }
 
