@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:listify/core/providers/auth_provider.dart';
 import 'package:listify/features/auth/presentation/screens/forgot_password.dart';
 import 'package:listify/features/notifications/presentation/notification_screen.dart';
+import 'package:listify/features/main_container/presentation/screens/main_container.dart';
 import '../features/auth/presentation/screens/auth_selection.dart';
 import '../features/auth/presentation/screens/sign_in_screen.dart';
 import '../features/auth/presentation/screens/sign_up_screen.dart';
@@ -27,7 +28,7 @@ class AppRouter {
     GoRoute(
       path: homeRoute,
       name: 'home',
-      builder: (BuildContext context, GoRouterState state) => const Home(),
+      builder: (BuildContext context, GoRouterState state) => const MainContainer(),
     ),
 
     GoRoute(
