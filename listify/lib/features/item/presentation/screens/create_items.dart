@@ -19,10 +19,15 @@ class _CreateItemsState extends State<CreateItems> {
   final TextEditingController categoryNameController = TextEditingController();
   final ItemService itemService = ItemService();
 
-  List<String> suggestedUnits = [];
+  List<String> suggestedUnits = [
+    "Weight (kg/g/mg)",
+    "Volume (L/mL/bottles)",
+    "Count (pieces/items/boxes/tablets/pairs/packets)",
+    "Length (m/cm/mm)",
+  ];
+  List<String> selectedUnits = [];
   List<String> storeNames = [];
   List<String> categoryNames = [];
-  List<String> addedUnits = [];
   List<String> addedStores = [];
   List<String> addedCategories = [];
 
@@ -31,7 +36,6 @@ class _CreateItemsState extends State<CreateItems> {
     super.initState();
     fetchCategories();
     fetchStores();
-    fetchUnits();
   }
 
   Future<void> fetchCategories() async {
@@ -48,14 +52,6 @@ class _CreateItemsState extends State<CreateItems> {
         await FirebaseFirestore.instance.collection('ListifyStores').get();
     setState(() {
       storeNames = snapshot.docs.map((doc) => doc['name'] as String).toList();
-    });
-  }
-
-  Future<void> fetchUnits() async {
-    final snapshot = await FirebaseFirestore.instance.collection('Units').get();
-    setState(() {
-      suggestedUnits =
-          snapshot.docs.map((doc) => doc['name'] as String).toList();
     });
   }
 
@@ -521,117 +517,69 @@ class _CreateItemsState extends State<CreateItems> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: SizedBox(
-                            height: 37,
-                            child: TextSelectionTheme(
-                              data: TextSelectionThemeData(
-                                cursorColor: const Color(
-                                  0xFF106A16,
-                                ), // Cursor color
-                                selectionColor: const Color(
-                                  0xFFB2D8B2,
-                                ), // Highlight color for selected text
-                                selectionHandleColor: const Color(
-                                  0xFF106A16,
-                                ), // Handle color for text selection
-                              ),
-                              child: TextField(
-                                controller: unitController,
-                                decoration: const InputDecoration(
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(7),
-                                      bottomLeft: Radius.circular(7),
-                                    ),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(7),
-                                      bottomLeft: Radius.circular(7),
-                                    ),
-                                    borderSide: BorderSide(
-                                      color: Color(0xFF106A16),
-                                      width: 1,
-                                    ),
-                                  ),
-                                  contentPadding: EdgeInsets.only(
-                                    bottom: 10.0,
-                                    left: 10.0,
-                                  ),
-                                ),
-                                style: const TextStyle(fontSize: 17),
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 37,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              if (unitController.text.isNotEmpty) {
-                                setState(() {
-                                  addedUnits.add(unitController.text);
-                                  unitController.clear();
-                                });
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFE8F6E9),
-                              foregroundColor: const Color(0xFF106A16),
-                              shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.only(
-                                  topRight: Radius.circular(7),
-                                  bottomRight: Radius.circular(7),
-                                ),
-                              ),
-                              side: const BorderSide(
-                                color: Color(0xFF106A16),
-                                width: 1,
-                              ),
-                            ),
-                            child: const Text(
-                              "Add",
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Color(0xFF106A16),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+
                     const SizedBox(height: 10),
-                    Wrap(
-                      spacing: 8.0,
-                      runSpacing: 8.0, // Space between rows
-                      children:
-                          suggestedUnits.map((unit) {
-                            return GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  unitController.text =
-                                      unit; // Set the unit in the text field
-                                });
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFD9D9D9),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 8.0,
-                                  horizontal: 12.0,
-                                ),
-                                child: Text(
+                    Theme(
+                      data: Theme.of(context).copyWith(
+                        checkboxTheme: CheckboxThemeData(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4),
+                            side: const BorderSide(
+                              color: Color(0xFF106A16),
+                              width: 1,
+                            ),
+                          ),
+                          side: const BorderSide(
+                            color: Color(0xFF106A16),
+                            width: 1,
+                          ),
+                          fillColor: WidgetStateProperty.resolveWith<Color>((
+                            Set<WidgetState> states,
+                          ) {
+                            if (states.contains(WidgetState.selected)) {
+                              return const Color(0xFF106A16); // Checked color
+                            }
+                            return Colors.white; // Unchecked color
+                          }),
+                          checkColor: WidgetStateProperty.all<Color>(
+                            Colors.white,
+                          ), // Tick color
+                          visualDensity:
+                              VisualDensity
+                                  .compact, // Makes checkbox a bit smaller
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children:
+                            suggestedUnits.map((unit) {
+                              return CheckboxListTile(
+                                title: Text(
                                   unit,
-                                  style: const TextStyle(fontSize: 17),
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.black87,
+                                  ),
                                 ),
-                              ),
-                            );
-                          }).toList(),
+                                value: selectedUnits.contains(unit),
+                                onChanged: (bool? value) {
+                                  setState(() {
+                                    if (value == true) {
+                                      selectedUnits.add(unit);
+                                    } else {
+                                      selectedUnits.remove(unit);
+                                    }
+                                  });
+                                },
+                                controlAffinity:
+                                    ListTileControlAffinity.leading,
+                                contentPadding: EdgeInsets.zero,
+                                dense: true,
+                              );
+                            }).toList(),
+                      ),
                     ),
                     const SizedBox(height: 20),
 
@@ -1055,7 +1003,7 @@ class _CreateItemsState extends State<CreateItems> {
                           onPressed: () async {
                             if (itemNameController.text.isEmpty ||
                                 categoryNameController.text.isEmpty ||
-                                (addedUnits.isEmpty &&
+                                (selectedUnits.isEmpty &&
                                     unitController.text.isEmpty) ||
                                 storeNameController.text.isEmpty) {
                               ScaffoldMessenger.of(context).showSnackBar(
@@ -1070,13 +1018,13 @@ class _CreateItemsState extends State<CreateItems> {
 
                             // Add last unit if not already added
                             if (unitController.text.isNotEmpty) {
-                              addedUnits.add(unitController.text);
+                              selectedUnits.add(unitController.text);
                             }
 
                             final item = Item(
                               docId: null,
                               name: itemNameController.text,
-                              units: addedUnits,
+                              units: selectedUnits,
                               categoryName: categoryNameController.text,
                               storeName: storeNameController.text,
                             );
@@ -1092,7 +1040,7 @@ class _CreateItemsState extends State<CreateItems> {
                               unitController.clear();
                               categoryNameController.clear();
                               storeNameController.clear();
-                              addedUnits.clear();
+                              selectedUnits.clear();
                               setState(() {});
                             } catch (e) {
                               ScaffoldMessenger.of(context).showSnackBar(
