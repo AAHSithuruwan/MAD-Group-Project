@@ -1,34 +1,36 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:go_router/go_router.dart';
+import 'package:listify/main.dart'; // Import your navigatorKey
 
+// Background handler for Firebase messages
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await NotificationService.instance.setupFlutterNotification();
-  await NotificationService.instance.showNotification(message);
+  await NotificationService.instance.setupFlutterNotification(); // Ensure local notifications are set up
+  await NotificationService.instance.showNotification(message); // Show the notification when a background message is received
 }
 
+// Singleton service for handling notifications
 class NotificationService {
   NotificationService._();
   static final NotificationService instance = NotificationService._();
 
-  final _messaging = FirebaseMessaging.instance;
-  final _localNotification = FlutterLocalNotificationsPlugin();
-  bool _isFlutterLocalNotificationInitialized = false;
+  final _messaging = FirebaseMessaging.instance; // Firebase Messaging instance for FCM (Firebase Cloud Messaging)
+  final _localNotification = FlutterLocalNotificationsPlugin(); // Local notifications plugin instance
+  bool _isFlutterLocalNotificationInitialized = false; // Track if local notifications are initialized
 
+  // Initialize notification service
   Future<void> initialize() async {
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler); // Register background message handler
 
-    // request permission
-    await _requestPermission();
+    await _requestPermission(); // Request notification permissions from the user
+    await _setupMessageHandlers(); // Set up handlers for different message scenarios
 
-    // setup message handlers
-    await _setupMessageHandlers();
-
-    // Get FCM token
-    final token = await _messaging.getToken();
+    final token = await _messaging.getToken(); // Get and print the FCM token for this device
     print('FCM Token: $token');
   }
 
+  // Request notification permissions from the user
   Future<void> _requestPermission() async {
     final settings = await _messaging.requestPermission(
       alert: true,
@@ -43,12 +45,13 @@ class NotificationService {
     print('Permission status: ${settings.authorizationStatus}');
   }
 
+  // Set up local notification channels and initialization
   Future<void> setupFlutterNotification() async {
     if (_isFlutterLocalNotificationInitialized) {
-      return;
+      return; // Already initialized, skip setup
     }
 
-    // android setup
+    // Define Android notification channel
     const channel = AndroidNotificationChannel(
       'high_importance_channel',
       'High Importance Notifications',
@@ -56,37 +59,45 @@ class NotificationService {
       importance: Importance.high,
     );
 
+    // Create the notification channel on Android
     await _localNotification
         .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin
         >()
         ?.createNotificationChannel(channel);
 
+    // Android initialization settings
     const initializationSettingsAndroid = AndroidInitializationSettings(
       '@mipmap/ic_launcher',
     );
 
-    // iOS setup
-    const initializationSettingsDarwin = DarwinInitializationSettings(
-      // onDidReceiveLocalNotification: (id, title, body, payload) async {
-      //   // Handle the notification when the app is in the foreground
-      // },
-    );
+    // iOS initialization settings
+    const initializationSettingsDarwin = DarwinInitializationSettings();
 
+    // Combine settings for both platforms
     final initializationSettings = InitializationSettings(
       android: initializationSettingsAndroid,
       iOS: initializationSettingsDarwin,
     );
 
-    // flutter notification setup
+    // Initialize the local notifications plugin
     await _localNotification.initialize(
       initializationSettings,
-      onDidReceiveNotificationResponse: (details) {},
+      onDidReceiveNotificationResponse: (details) {
+        print('Notification tapped: ${details.payload}');
+
+        // Navigate to notifications page when a notification is tapped
+        final context = rootNavigatorKey.currentContext;
+        if (context != null) {
+          GoRouter.of(context).go('/notifications'); // Change route as needed
+        }
+      },
     );
 
     _isFlutterLocalNotificationInitialized = true;
   }
 
+  // Show a local notification based on a received FCM message
   Future<void> showNotification(RemoteMessage message) async {
     RemoteNotification? notification = message.notification;
     AndroidNotification? android = message.notification?.android;
@@ -112,30 +123,35 @@ class NotificationService {
             presentSound: true,
           ),
         ),
-        payload: message.data.toString(),
+        payload: message.data.toString(), // Pass data as payload
       );
     }
   }
 
+  // Set up handlers for foreground, background, and terminated states
   Future<void> _setupMessageHandlers() async {
-    // foreground message
+    // Handle messages when app is in the foreground
     FirebaseMessaging.onMessage.listen((message) {
       showNotification(message);
     });
 
-    // background message
+    // Handle messages when app is opened from a notification (background)
     FirebaseMessaging.onMessageOpenedApp.listen(_handleBackgroundMessage);
 
-    // opened app
+    // Handle messages when app is launched from a terminated state
     final initialMessage = await _messaging.getInitialMessage();
     if (initialMessage != null) {
       _handleBackgroundMessage(initialMessage);
     }
   }
 
+  // Handle navigation when a notification is tapped (background/terminated)
   void _handleBackgroundMessage(RemoteMessage message) {
-    if (message.data['type'] == 'chat') {
-      // Handle chat message
+    // Handle the background message when the app is opened from a notification
+    print('Background message: ${message.data}');
+    final context = rootNavigatorKey.currentContext;
+    if (context != null) {
+      GoRouter.of(context).push('/notifications'); // Change route as needed
     }
   }
 }

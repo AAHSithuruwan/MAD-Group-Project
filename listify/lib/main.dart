@@ -6,6 +6,8 @@ import 'package:listify/core/services/notification_service.dart';
 import './firebase_options.dart';
 import 'router/app_router.dart';
 
+final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
+
 // Main function to initialize the app
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Ensures Flutter is initialized before running async code
