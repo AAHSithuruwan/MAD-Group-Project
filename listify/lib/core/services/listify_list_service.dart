@@ -7,62 +7,14 @@ import '../Models/ListifyList.dart';
 
 class ListifyListService{
 
-  Future<List<ListifyList>> getAllLists() async {
-
-    // Get current user
+  Future<List<ListifyList>> getListsByDateRange({DateTime? startDate, DateTime? endDate}) async {
     AuthService authService = AuthService();
     User? user = await authService.getCurrentUserinstance();
-
-    if (user == null) {
-      throw Exception("No logged-in user found");
-    }
+    if (user == null) throw Exception("No logged-in user found");
 
     String uid = user.uid;
-
-    // Query all ListifyLists where members array contains this uid
-    QuerySnapshot listQuerySnapshot = await FirebaseFirestore.instance
-        .collection('ListifyLists')
-        .where('members', arrayContains: uid)
-        .get();
-
-    // For each list document, fetch its items subcollection and create ListifyList instances
-    List<ListifyList> lists = [];
-
-    for (var listDoc in listQuerySnapshot.docs) {
-      ListifyList listifyList = ListifyList.fromDoc(listDoc);
-
-      QuerySnapshot itemsSnapshot = await FirebaseFirestore.instance
-          .collection('ListifyLists')
-          .doc(listDoc.id)
-          .collection('ListItems')
-          .get();
-
-      listifyList.items = itemsSnapshot.docs
-          .map((doc) => ListItem.fromDoc(doc))
-          .toList();
-
-      lists.add(listifyList);
-    }
-    print(lists);
-    return lists;
-
-  }
-
-  Future<List<ListifyList>> getTodayLists() async {
-    // Get current user
-    AuthService authService = AuthService();
-    User? user = await authService.getCurrentUserinstance();
-
-    if (user == null) {
-      throw Exception("No logged-in user found");
-    }
-
-    String uid = user.uid;
-    DateTime today = DateTime.now();
-    DateTime todayOnly = DateTime(today.year, today.month, today.day); // Remove time part
     List<ListifyList> filteredLists = [];
 
-    // Fetch all lists the user is a member of
     QuerySnapshot listQuerySnapshot = await FirebaseFirestore.instance
         .collection('ListifyLists')
         .where('members', arrayContains: uid)
@@ -71,129 +23,43 @@ class ListifyListService{
     for (var listDoc in listQuerySnapshot.docs) {
       ListifyList listifyList = ListifyList.fromDoc(listDoc);
 
-      // Fetch all items in this list
       QuerySnapshot itemsSnapshot = await FirebaseFirestore.instance
           .collection('ListifyLists')
           .doc(listDoc.id)
           .collection('ListItems')
           .get();
 
-      // Filter items where requiredDate is today or before today
       List<ListItem> filteredItems = itemsSnapshot.docs.map((doc) {
         return ListItem.fromDoc(doc);
       }).where((item) {
+        try {
+          DateTime itemDate = DateFormat('yyyy/MM/dd').parse(item.requiredDate!);
+          DateTime itemOnly = DateTime(itemDate.year, itemDate.month, itemDate.day);
 
-        // Parse string to DateTime
-        DateTime itemDate = DateFormat('yyyy/MM/dd').parse(item.requiredDate!);
-        DateTime itemOnly = DateTime(itemDate.year, itemDate.month, itemDate.day);
-
-        return itemOnly.isAtSameMomentAs(todayOnly);
+          if (startDate != null && itemOnly.isBefore(startDate)) return false;
+          if (endDate != null && itemOnly.isAfter(endDate)) return false;
+          return true;
+        } catch (_) {
+          return false;
+        }
       }).toList();
 
-      // Add only lists that have filtered items
       if (filteredItems.isNotEmpty) {
         listifyList.items = filteredItems;
         filteredLists.add(listifyList);
       }
     }
 
+    // Sort: Lists with all items checked go to the bottom
+    filteredLists.sort((a, b) {
+      bool aAllChecked = a.items.every((item) => item.checked == true);
+      bool bAllChecked = b.items.every((item) => item.checked == true);
+
+      if (aAllChecked == bAllChecked) return 0;
+      return aAllChecked ? 1 : -1; // Fully-checked lists come after partially checked ones
+    });
+
     return filteredLists;
-  }
-
-  Future<List<ListifyList>> getTomorrowLists() async {
-    AuthService authService = AuthService();
-    User? user = await authService.getCurrentUserinstance();
-    if (user == null) throw Exception("No logged-in user found");
-
-    String uid = user.uid;
-    DateTime now = DateTime.now();
-    DateTime tomorrow = DateTime(now.year, now.month, now.day).add(Duration(days: 1));
-
-    List<ListifyList> tomorrowLists = [];
-
-    QuerySnapshot listQuerySnapshot = await FirebaseFirestore.instance
-        .collection('ListifyLists')
-        .where('members', arrayContains: uid)
-        .get();
-
-    for (var listDoc in listQuerySnapshot.docs) {
-      ListifyList listifyList = ListifyList.fromDoc(listDoc);
-
-      QuerySnapshot itemsSnapshot = await FirebaseFirestore.instance
-          .collection('ListifyLists')
-          .doc(listDoc.id)
-          .collection('ListItems')
-          .get();
-
-      List<ListItem> filteredItems = itemsSnapshot.docs.map((doc) {
-        return ListItem.fromDoc(doc);
-      }).where((item) {
-        try {
-
-          DateTime itemDate = DateFormat('yyyy/MM/dd').parse(item.requiredDate!);
-          DateTime itemOnly = DateTime(itemDate.year, itemDate.month, itemDate.day);
-
-          return itemOnly.isAtSameMomentAs(tomorrow);
-        } catch (_) {
-          return false;
-        }
-      }).toList();
-
-      if (filteredItems.isNotEmpty) {
-        listifyList.items = filteredItems;
-        tomorrowLists.add(listifyList);
-      }
-    }
-
-    return tomorrowLists;
-  }
-
-  Future<List<ListifyList>> getLaterLists() async {
-    AuthService authService = AuthService();
-    User? user = await authService.getCurrentUserinstance();
-    if (user == null) throw Exception("No logged-in user found");
-
-    String uid = user.uid;
-    DateTime now = DateTime.now();
-    DateTime tomorrow = DateTime(now.year, now.month, now.day).add(Duration(days: 1));
-
-    List<ListifyList> laterLists = [];
-
-    QuerySnapshot listQuerySnapshot = await FirebaseFirestore.instance
-        .collection('ListifyLists')
-        .where('members', arrayContains: uid)
-        .get();
-
-    for (var listDoc in listQuerySnapshot.docs) {
-      ListifyList listifyList = ListifyList.fromDoc(listDoc);
-
-      QuerySnapshot itemsSnapshot = await FirebaseFirestore.instance
-          .collection('ListifyLists')
-          .doc(listDoc.id)
-          .collection('ListItems')
-          .get();
-
-      List<ListItem> filteredItems = itemsSnapshot.docs.map((doc) {
-        return ListItem.fromDoc(doc);
-      }).where((item) {
-        try {
-
-          DateTime itemDate = DateFormat('yyyy/MM/dd').parse(item.requiredDate!);
-          DateTime itemOnly = DateTime(itemDate.year, itemDate.month, itemDate.day);
-
-          return itemOnly.isAfter(tomorrow);
-        } catch (_) {
-          return false;
-        }
-      }).toList();
-
-      if (filteredItems.isNotEmpty) {
-        listifyList.items = filteredItems;
-        laterLists.add(listifyList);
-      }
-    }
-
-    return laterLists;
   }
 
   Future<void> checkItem(bool value, String listItemId, String listId) async{

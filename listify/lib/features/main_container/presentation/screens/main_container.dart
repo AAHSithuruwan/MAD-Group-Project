@@ -20,13 +20,19 @@ class _MainContainerState extends State<MainContainer> {
     });
   }
 
+  void selectHomePage(){
+    setState(() {
+      _selectedIndex = 0;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _selectedIndex == 0 ?
         null
           : ( _selectedIndex == 1 ?
-              CustomAppBar(title: "Notifications")
+              CustomAppBar(title: "Notifications", selectHomePage:selectHomePage, displayTitle: true,)
               : (_selectedIndex == 2 ?
                 null
                 : null
