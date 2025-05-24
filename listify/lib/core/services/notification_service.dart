@@ -103,10 +103,10 @@ class NotificationService {
   void _handleBackgroundMessage(RemoteMessage message) {
     // Handle the background message when the app is opened from a notification
     print('Background message: ${message.data}');
-    final context = rootNavigatorKey.currentContext;
-    if (context != null) {
-      GoRouter.of(context).push('/notifications'); // Change route as needed
-    }
+    // final context = rootNavigatorKey.currentContext;
+    // if (context != null) {
+    //   GoRouter.of(context).push('/notifications'); // Change route as needed
+    // }
   }
 
 
@@ -152,10 +152,10 @@ class NotificationService {
         print('Notification tapped: ${details.payload}');
 
         // Navigate to notifications page when a notification is tapped
-        final context = rootNavigatorKey.currentContext;
-        if (context != null) {
-          GoRouter.of(context).push('/notifications'); // Change route as needed
-        }
+        // final context = rootNavigatorKey.currentContext;
+        // if (context != null) {
+        //   GoRouter.of(context).push('/notifications'); // Change route as needed
+        // }
       },
     );
 

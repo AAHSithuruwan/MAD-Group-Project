@@ -7,7 +7,7 @@ import 'package:listify/core/services/local_notification_service.dart';
 import './firebase_options.dart';
 import 'router/app_router.dart';
 
-final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
+// final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
 // Main function to initialize the app
 Future<void> main() async {
