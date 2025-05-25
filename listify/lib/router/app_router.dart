@@ -36,7 +36,14 @@ class AppRouter {
     GoRoute(
       path: notificationRoute,
       name: 'notification',
-      builder: (BuildContext context, GoRouterState state) => const NotificationScreen(),
+      builder: (context, state) {
+        final args = state.extra as Map<String, dynamic>?;
+        return NotificationScreen(
+          title: args?['title'],
+          body: args?['body'],
+          data: args?['data'],
+        );
+      },
     ),
 
     // Add more protected routes here

@@ -186,8 +186,9 @@ class _HomeState extends State<Home> {
                           ElevatedButton(
                             onPressed: () {
                               LocalNotificationService.showNotification(
-                                'Hello5',
-                                'This is a local notkpkification.',
+                                'Hello',
+                                'This is a notification',
+                                data: {'foo': 'bar', 'id': 123},
                               );
                             },
                             child: Text("Create a new list"),

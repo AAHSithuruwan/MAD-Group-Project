@@ -1,6 +1,7 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
+import 'dart:convert';
 import 'package:path_provider/path_provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:listify/main.dart'; 
@@ -20,16 +21,32 @@ class LocalNotificationService {
     await _notificationsPlugin.initialize(
       initSettings,
       onDidReceiveNotificationResponse: (details) {
-        // Navigate to notifications page when a notification is tapped
         final context = rootNavigatorKey.currentContext;
         if (context != null) {
-          GoRouter.of(context).push('/notification');
+          final payload = details.payload;
+          if (payload != null) {
+            final data = jsonDecode(payload);
+            GoRouter.of(context).push(
+              '/notification',
+              extra: {
+                'title': data['title'],
+                'body': data['body'],
+                'data': data['data'],
+              },
+            );
+          } else {
+            GoRouter.of(context).push('/notification');
+          }
         }
       },
     );
   }
 
-  static Future<void> showNotification(String title, String body) async {
+  static Future<void> showNotification(
+    String title,
+    String body, {
+    Map<String, dynamic>? data,
+  }) async {
     final String largeIconPath = await _copyAssetImageToFile('assets/appIcons/transparent_lg.png');
 
     final AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
@@ -45,11 +62,18 @@ class LocalNotificationService {
       android: androidDetails,
     );
 
+    final payload = jsonEncode({
+      'title': title,
+      'body': body,
+      'data': data ?? {},
+    });
+
     await _notificationsPlugin.show(
       DateTime.now().millisecondsSinceEpoch ~/ 1000,
       title,
       body,
       platformDetails,
+      payload: payload,
     );
   }
 
