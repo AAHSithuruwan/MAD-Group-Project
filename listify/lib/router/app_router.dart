@@ -7,6 +7,7 @@ import '../features/auth/presentation/screens/auth_selection.dart';
 import '../features/auth/presentation/screens/sign_in_screen.dart';
 import '../features/auth/presentation/screens/sign_up_screen.dart';
 import '../features/home/presentation/screens/home.dart';
+import '../features/pick_location/presentation/screens/pick_location_screen.dart';
 import './initial_route_helper.dart';
 import '../features/welcome/presentation/screens/welcome_screen.dart';
 
@@ -18,6 +19,7 @@ class AppRouter {
   static const String signInRoute = '/sign-in';
   static const String signUpRoute = '/sign-up';
   static const String forgotPasswordRoute = '/forgot-password';
+  static const String pickLocationRoute = '/pick_location';
 
   // List of protected routes (requires user to be signed in)
   static final List<GoRoute> protectedRoutes = [
@@ -97,6 +99,14 @@ class AppRouter {
           builder:
               (BuildContext context, GoRouterState state) =>
                   ForgotPasswordScreen(),
+        ),
+        // Forgot Password screen route
+        GoRoute(
+          path: pickLocationRoute,
+          name: 'pick_location',
+          builder:
+              (BuildContext context, GoRouterState state) =>
+              PickLocationScreen(),
         ),
 
         // Include all protected routes
