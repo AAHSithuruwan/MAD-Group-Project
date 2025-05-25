@@ -3,9 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:listify/core/providers/auth_provider.dart';
 import 'package:listify/features/auth/presentation/screens/forgot_password.dart';
+import 'package:listify/features/list_item_management/presentation/screens/list_selection.dart';
+import 'package:listify/features/list_item_management/presentation/screens/quantity_selection.dart';
 import 'package:listify/features/notifications/presentation/notification_screen.dart';
 import 'package:listify/features/list_item_management/presentation/screens/add_list_items.dart';
 import 'package:listify/features/main_container/presentation/screens/main_container.dart';
+import '../core/Models/Item.dart';
 import '../features/auth/presentation/screens/auth_selection.dart';
 import '../features/auth/presentation/screens/sign_in_screen.dart';
 import '../features/auth/presentation/screens/sign_up_screen.dart';
@@ -24,6 +27,8 @@ class AppRouter {
   static const String forgotPasswordRoute = '/forgot-password';
   static const String notificationRoute = '/notification';
   static const String addListItemsRoute = '/add-list-items';
+  static const String quantitySelectionRoute = '/quantity-selection';
+  static const String listSelectionRoute = '/list-selection';
 
   // List of protected routes (requires user to be signed in)
   static final List<GoRoute> protectedRoutes = [
@@ -127,6 +132,27 @@ class AppRouter {
           builder:
               (BuildContext context, GoRouterState state) =>
               AddListItems(),
+        ),
+
+        // Quantity selection screen route
+        GoRoute(
+          path: quantitySelectionRoute,
+          name: 'quantity_selection',
+          builder: (BuildContext context, GoRouterState state) {
+            final item = state.extra as Item;
+            return QuantitySelection(item: item);
+          },
+        ),
+
+        GoRoute(
+          path: listSelectionRoute,
+          name: 'list_selection',
+          builder: (BuildContext context, GoRouterState state) {
+            final extra = state.extra as Map<String, dynamic>;
+            final item = extra['item'] as Item;
+            final quantity = extra['quantity'] as String;
+            return ListSelection(item: item, quantity: quantity);
+          },
         ),
 
         // Include all protected routes
