@@ -2,6 +2,8 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
+import 'package:go_router/go_router.dart';
+import 'package:listify/main.dart'; 
 
 class LocalNotificationService {
   static final FlutterLocalNotificationsPlugin _notificationsPlugin =
@@ -15,7 +17,16 @@ class LocalNotificationService {
       android: androidSettings,
     );
 
-    await _notificationsPlugin.initialize(initSettings);
+    await _notificationsPlugin.initialize(
+      initSettings,
+      onDidReceiveNotificationResponse: (details) {
+        // Navigate to notifications page when a notification is tapped
+        final context = rootNavigatorKey.currentContext;
+        if (context != null) {
+          GoRouter.of(context).push('/notification');
+        }
+      },
+    );
   }
 
   static Future<void> showNotification(String title, String body) async {

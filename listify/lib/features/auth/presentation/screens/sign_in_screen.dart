@@ -130,10 +130,10 @@ class SignInScreen extends ConsumerWidget {
                 alignment: Alignment.centerRight,
                 child: TextButton(
                   onPressed: () {
-                    // context.push(
-                    //   '/forgot-password',
-                    // ); // Navigate to Forgot Password screen
-                    LocalNotificationService.showNotification('Hello5', 'This is a local notkpkification.');
+                    context.push(
+                      '/forgot-password',
+                    ); // Navigate to Forgot Password screen
+                    // LocalNotificationService.showNotification('Hello5', 'This is a local notkpkification.');
                   },
                   child: Text(
                     'Forgot password ?',

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:listify/core/Models/ListifyList.dart';
 import 'package:listify/core/services/listify_list_service.dart';
+import 'package:listify/core/services/local_notification_service.dart';
 import '../../../../core/Models/ListItem.dart';
 
 class Home extends StatefulWidget{
@@ -182,6 +183,15 @@ class _HomeState extends State<Home> {
                         height: 300,
                           width: 200,
                           child: Image(image: AssetImage("assets/images/list.png"),)),
+                          ElevatedButton(
+                            onPressed: () {
+                              LocalNotificationService.showNotification(
+                                'Hello5',
+                                'This is a local notkpkification.',
+                              );
+                            },
+                            child: Text("Create a new list"),
+                          ),
                     ],
                   ))
                   :
