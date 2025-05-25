@@ -4,7 +4,7 @@ import 'package:listify/core/Models/ListifyCategory.dart';
 import 'package:listify/core/services/item_service.dart';
 import 'package:overflow_view/overflow_view.dart';
 import '../../../../common/widgets/custom_app_bar.dart';
-import '../../../../core/Models/Item.dart';
+import '../../../../core/Models/Item_model.dart';
 
 class AddListItems extends StatefulWidget{
   const AddListItems({super.key});
@@ -19,13 +19,18 @@ class _AddListItemsState extends State<AddListItems> {
 
   List<ListifyCategory> filteredCategoryWithItems = [];
 
+  List<Item> recentItems = [];
+
+  List<Item> filteredRecentItems = [];
+
   void navigateToQuantitySelectionPage(Item item){
     context.push('/quantity_selection');
   }
 
-  Future<void> getCategoriesWithItems() async{
+  Future<void> getItems() async{
     ItemService itemService = new ItemService();
     List<ListifyCategory> categoriesAndItems = await itemService.getCategoriesWithItems();
+    List<Item> userRecentItems = await itemService.getLatest10RecentItems();
     setState(() {
       categoriesWithItems = categoriesAndItems;
       filteredCategoryWithItems = List.from(categoriesWithItems.map((category) =>
@@ -35,13 +40,23 @@ class _AddListItemsState extends State<AddListItems> {
             items: List.from(category.items ?? []),
           )
       ));
+      recentItems = userRecentItems;
+      filteredRecentItems = List.from(recentItems.map((item) =>
+          Item(
+            docId: item.docId,
+            name: item.name,
+            units: List.from(item.units ?? []),
+            storeName: item.storeName,
+            categoryName: item.categoryName,
+          )
+      ));
     });
   }
 
   @override
   void initState() {
     super.initState();
-    getCategoriesWithItems();
+    getItems();
   }
 
   @override
@@ -149,6 +164,16 @@ class _AddListItemsState extends State<AddListItems> {
                                   items: List.from(category.items ?? []),
                                 )
                             ));
+                            filteredRecentItems.clear();
+                            filteredRecentItems = List.from(recentItems.map((item) =>
+                                Item(
+                                  docId: item.docId,
+                                  name: item.name,
+                                  units: List.from(item.units ?? []),
+                                  storeName: item.storeName,
+                                  categoryName: item.categoryName,
+                                )
+                            ));
                           });
                         },
 
@@ -180,6 +205,7 @@ class _AddListItemsState extends State<AddListItems> {
                         onPressed: () {
                           setState(() {
                             filteredCategoryWithItems.clear();
+                            filteredRecentItems.clear();
                             filteredCategoryWithItems.add(category);
                           });
                         },
@@ -224,6 +250,7 @@ class _AddListItemsState extends State<AddListItems> {
 
                         setState(() {
                           filteredCategoryWithItems.clear();
+                          filteredRecentItems.clear();
                           filteredCategoryWithItems.add(category);
                         });
                       },
@@ -242,55 +269,112 @@ class _AddListItemsState extends State<AddListItems> {
                 constraints: BoxConstraints(minWidth: 400),
 
                 child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: filteredCategoryWithItems.map((category) =>
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              category.name,
-                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                            ),
-                            SizedBox(height: 10),
-                            Wrap(
-                                alignment: WrapAlignment.start,
-                                spacing: 10.0,
-                                runSpacing: 10.0,
-                              children: (category.items ?? []).map((item) =>
-                                  GestureDetector(
-                                    onTap: () {
-                                      navigateToQuantitySelectionPage(item);
-                                    },
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(10),
-                                        boxShadow:[
-                                          BoxShadow(
-                                            color: Color(0x1A1BA424), // Shadow color with opacity
-                                            blurRadius: 20, // The spread of the shadow
-                                            offset: Offset(-5, -5), // Shadow position (x, y)
-                                          ),
-                                          BoxShadow(
-                                            color: Color(0x1A1BA424), // Shadow color with opacity
-                                            blurRadius: 20, // The spread of the shadow
-                                            offset: Offset(5, 5), // Shadow position (x, y)
-                                          ),
-                                        ],
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    filteredRecentItems.isEmpty == false ?
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Recent Items",
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(height: 10),
+                        Wrap(
+                          alignment: WrapAlignment.start,
+                          spacing: 10.0,
+                          runSpacing: 10.0,
+                          children: (filteredRecentItems ?? []).map((item) =>
+                              GestureDetector(
+                                onTap: () {
+                                  navigateToQuantitySelectionPage(item);
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(10),
+                                    boxShadow:[
+                                      BoxShadow(
+                                        color: Color(0x1A1BA424), // Shadow color with opacity
+                                        blurRadius: 20, // The spread of the shadow
+                                        offset: Offset(-5, -5), // Shadow position (x, y)
                                       ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
-                                        child: Text(item.name, style: TextStyle(fontSize: 15,)),
+                                      BoxShadow(
+                                        color: Color(0x1A1BA424), // Shadow color with opacity
+                                        blurRadius: 20, // The spread of the shadow
+                                        offset: Offset(5, 5), // Shadow position (x, y)
                                       ),
-                                    ),
+                                    ],
                                   ),
-                              ).toList(),
+                                  child: Padding(
+                                    padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                                    child: Text(item.name, style: TextStyle(fontSize: 15,)),
+                                  ),
+                                ),
+                              ),
+                          ).toList(),
 
-                            ),
-                            SizedBox(height: 30,)
-                          ],
-                        )
-                    ).toList()
+                        ),
+                        SizedBox(height: 30,)
+                      ],
+                    )
+                    :
+                    Container(),
+                    Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: filteredCategoryWithItems.map((category) =>
+                            category.items?.isEmpty == false ?
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  category.name,
+                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                ),
+                                SizedBox(height: 10),
+                                Wrap(
+                                    alignment: WrapAlignment.start,
+                                    spacing: 10.0,
+                                    runSpacing: 10.0,
+                                  children: (category.items ?? []).map((item) =>
+                                      GestureDetector(
+                                        onTap: () {
+                                          navigateToQuantitySelectionPage(item);
+                                        },
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius: BorderRadius.circular(10),
+                                            boxShadow:[
+                                              BoxShadow(
+                                                color: Color(0x1A1BA424), // Shadow color with opacity
+                                                blurRadius: 20, // The spread of the shadow
+                                                offset: Offset(-5, -5), // Shadow position (x, y)
+                                              ),
+                                              BoxShadow(
+                                                color: Color(0x1A1BA424), // Shadow color with opacity
+                                                blurRadius: 20, // The spread of the shadow
+                                                offset: Offset(5, 5), // Shadow position (x, y)
+                                              ),
+                                            ],
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                                            child: Text(item.name, style: TextStyle(fontSize: 15,)),
+                                          ),
+                                        ),
+                                      ),
+                                  ).toList(),
+
+                                ),
+                                SizedBox(height: 30,)
+                              ],
+                            )
+                                :
+                                Container()
+                        ).toList()
+                    ),
+                  ],
                 ),
               ),
             ),
