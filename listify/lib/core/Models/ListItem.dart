@@ -14,7 +14,9 @@ class ListItem{
 
   bool checked;
 
-  ListItem({required this.docId, required this.name, required this.category, required this.quantity, required this.requiredDate, required this.checked});
+  String addedUserId;
+
+  ListItem({this.docId, required this.name, required this.category, required this.quantity, required this.requiredDate, required this.checked, required this.addedUserId});
 
   factory ListItem.fromDoc(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>?;
@@ -30,6 +32,7 @@ class ListItem{
       quantity: data['quantity'] ?? 0,
       requiredDate: data['requiredDate'] ?? '',
       checked: data['checked'] ?? false,
+      addedUserId: data['addedUserId'] ?? ''
     );
   }
 }
