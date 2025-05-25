@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:listify/core/Models/Item_model.dart';
+import 'package:listify/core/Models/Item.dart';
 import 'package:listify/core/services/item_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 

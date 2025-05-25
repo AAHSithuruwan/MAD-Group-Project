@@ -1,7 +1,6 @@
-import 'Item_model.dart';
+import 'Item.dart';
 
-class ListifyCategory{
-
+class ListifyCategory {
   String? docId;
 
   String name;

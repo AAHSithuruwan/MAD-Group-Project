@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:listify/core/Models/Item_model.dart';
+import 'package:listify/core/Models/Item.dart';
 import 'package:listify/core/services/auth_service.dart';
 
 import '../Models/ListifyCategory.dart';
@@ -25,8 +25,8 @@ class ItemService {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
 
     // Step 1: Fetch all categories
-    QuerySnapshot categorySnapshot = await firestore.collection(
-        'ListifyCategories').get();
+    QuerySnapshot categorySnapshot =
+        await firestore.collection('ListifyCategories').get();
 
     List<ListifyCategory> categoryList = [];
 
@@ -35,20 +35,22 @@ class ItemService {
       String categoryName = categoryDoc['name'];
 
       // Step 2: Fetch items under this category
-      QuerySnapshot itemSnapshot = await firestore
-          .collection('Items')
-          .where('categoryName', isEqualTo: categoryName)
-          .get();
+      QuerySnapshot itemSnapshot =
+          await firestore
+              .collection('Items')
+              .where('categoryName', isEqualTo: categoryName)
+              .get();
 
-      List<Item> items = itemSnapshot.docs.map((doc) {
-        return Item(
-          docId: doc.id,
-          name: doc['name'],
-          units: List<String>.from(doc['units']),
-          categoryName: doc['categoryName'],
-          storeName: doc['storeName'],
-        );
-      }).toList();
+      List<Item> items =
+          itemSnapshot.docs.map((doc) {
+            return Item(
+              docId: doc.id,
+              name: doc['name'],
+              units: List<String>.from(doc['units']),
+              categoryName: doc['categoryName'],
+              storeName: doc['storeName'],
+            );
+          }).toList();
 
       // Step 3: Create the category with its items
       ListifyCategory category = ListifyCategory(
@@ -63,18 +65,18 @@ class ItemService {
   }
 
   Future<List<Item>> getLatest10RecentItems() async {
-
     AuthService authService = AuthService();
 
     User? user = await authService.getCurrentUserinstance();
     if (user == null) throw Exception("No logged-in user found");
 
-    final snapshot = await FirebaseFirestore.instance
-        .collection('UserRecentItems')
-        .doc(user.uid)
-        .collection('RecentItems')
-        .orderBy('createdAt', descending: true)
-        .get();
+    final snapshot =
+        await FirebaseFirestore.instance
+            .collection('UserRecentItems')
+            .doc(user.uid)
+            .collection('RecentItems')
+            .orderBy('createdAt', descending: true)
+            .get();
 
     final seen = <String>{}; // to track unique itemIds
     final recentItems = <RecentItem>[];
@@ -85,18 +87,20 @@ class ItemService {
 
       if (!seen.contains(itemId)) {
         seen.add(itemId);
-        recentItems.add(RecentItem(
-          itemId: itemId,
-          name: data['name'],
-          categoryName: data['categoryName'],
-        ));
+        recentItems.add(
+          RecentItem(
+            itemId: itemId,
+            name: data['name'],
+            categoryName: data['categoryName'],
+          ),
+        );
       }
 
       if (recentItems.length == 10) break;
     }
     print("here");
     List<Item> items = [];
-    for(var i in recentItems){
+    for (var i in recentItems) {
       Item item = await getItemById(i.itemId);
       items.add(item);
     }
@@ -106,10 +110,11 @@ class ItemService {
 
   Future<Item> getItemById(String itemId) async {
     try {
-      DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
-          .collection("Items")
-          .doc(itemId)
-          .get();
+      DocumentSnapshot documentSnapshot =
+          await FirebaseFirestore.instance
+              .collection("Items")
+              .doc(itemId)
+              .get();
 
       if (!documentSnapshot.exists) {
         throw Exception("Item with ID $itemId does not exist");
@@ -126,5 +131,4 @@ class ItemService {
       throw Exception("No item found: $e");
     }
   }
-
 }
