@@ -35,7 +35,7 @@ class LocalNotificationService {
     );
 
     await _notificationsPlugin.show(
-      0,
+      DateTime.now().millisecondsSinceEpoch ~/ 1000,
       title,
       body,
       platformDetails,
