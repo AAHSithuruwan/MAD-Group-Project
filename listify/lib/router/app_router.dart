@@ -8,7 +8,7 @@ import 'package:listify/features/list_item_management/presentation/screens/quant
 import 'package:listify/features/notifications/presentation/notification_screen.dart';
 import 'package:listify/features/list_item_management/presentation/screens/add_list_items.dart';
 import 'package:listify/features/main_container/presentation/screens/main_container.dart';
-import '../core/Models/Item_model.dart';
+import '../core/Models/Item.dart';
 import '../features/auth/presentation/screens/auth_selection.dart';
 import '../features/auth/presentation/screens/sign_in_screen.dart';
 import '../features/auth/presentation/screens/sign_up_screen.dart';

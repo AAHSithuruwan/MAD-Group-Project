@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import 'package:listify/core/services/auth_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../Models/Item_model.dart';
+import '../Models/Item.dart';
 import '../Models/ListItem.dart';
 import '../Models/ListifyList.dart';
 

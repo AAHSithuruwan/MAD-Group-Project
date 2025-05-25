@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/Models/Item_model.dart';
+import '../../../../core/Models/Item.dart';
 
 class QuantitySelection extends StatefulWidget {
 

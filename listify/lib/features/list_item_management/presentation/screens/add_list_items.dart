@@ -4,7 +4,7 @@ import 'package:listify/core/Models/ListifyCategory.dart';
 import 'package:listify/core/services/item_service.dart';
 import 'package:overflow_view/overflow_view.dart';
 import '../../../../common/widgets/custom_app_bar.dart';
-import '../../../../core/Models/Item_model.dart';
+import '../../../../core/Models/Item.dart';
 
 class AddListItems extends StatefulWidget{
   const AddListItems({super.key});

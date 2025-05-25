@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:listify/core/services/listify_list_service.dart';
-import '../../../../core/Models/Item_model.dart';
+import '../../../../core/Models/Item.dart';
 import '../../../../core/Models/ListifyList.dart';
 
 class ListSelection extends StatefulWidget {
