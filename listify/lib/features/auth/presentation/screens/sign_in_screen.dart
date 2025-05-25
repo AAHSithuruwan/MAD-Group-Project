@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:listify/core/providers/auth_provider.dart';
+import 'package:listify/core/services/local_notification_service.dart';
 
 // StateProvider to manage error messages
 final signInErrorProvider = StateProvider<String?>((ref) => null);
@@ -132,6 +133,7 @@ class SignInScreen extends ConsumerWidget {
                     context.push(
                       '/forgot-password',
                     ); // Navigate to Forgot Password screen
+                    // LocalNotificationService.showNotification('Hello', 'This is a local notification.');
                   },
                   child: Text(
                     'Forgot password ?',

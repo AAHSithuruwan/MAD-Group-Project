@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:listify/core/providers/auth_provider.dart';
 import 'package:listify/features/auth/presentation/screens/forgot_password.dart';
+import 'package:listify/features/notifications/presentation/notification_screen.dart';
 import 'package:listify/features/list_item_management/presentation/screens/add_list_items.dart';
 import 'package:listify/features/main_container/presentation/screens/main_container.dart';
 import '../features/auth/presentation/screens/auth_selection.dart';
@@ -11,6 +12,7 @@ import '../features/auth/presentation/screens/sign_up_screen.dart';
 import '../features/home/presentation/screens/home.dart';
 import './initial_route_helper.dart';
 import '../features/welcome/presentation/screens/welcome_screen.dart';
+// import 'package:listify/main.dart';
 
 class AppRouter {
   // Define route paths
@@ -20,6 +22,7 @@ class AppRouter {
   static const String signInRoute = '/sign-in';
   static const String signUpRoute = '/sign-up';
   static const String forgotPasswordRoute = '/forgot-password';
+  static const String notificationRoute = '/notification';
   static const String addListItemsRoute = '/add-list-items';
 
   // List of protected routes (requires user to be signed in)
@@ -29,6 +32,13 @@ class AppRouter {
       name: 'home',
       builder: (BuildContext context, GoRouterState state) => const MainContainer(),
     ),
+
+    GoRoute(
+      path: notificationRoute,
+      name: 'notification',
+      builder: (BuildContext context, GoRouterState state) => const NotificationScreen(),
+    ),
+
     // Add more protected routes here
   ];
 
@@ -41,6 +51,7 @@ class AppRouter {
     );
 
     return GoRouter(
+      // navigatorKey: rootNavigatorKey,
       initialLocation: initialRoute, // Set the initial route
       redirect: (context, state) {
         // Check the user's authentication state
