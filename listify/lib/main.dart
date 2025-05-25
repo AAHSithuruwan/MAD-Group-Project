@@ -1,18 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart'; 
-import 'package:firebase_core/firebase_core.dart'; 
-import 'package:go_router/go_router.dart'; 
-import './firebase_options.dart'; 
-import 'router/app_router.dart'; 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:go_router/go_router.dart';
+import 'package:listify/core/services/local_notification_service.dart';
+// import 'package:listify/core/services/notification_service.dart';
+import './firebase_options.dart';
+import 'router/app_router.dart';
+
+// final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
 // Main function to initialize the app
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Ensures Flutter is initialized before running async code
-  await Firebase.initializeApp( // Initialize Firebase with platform-specific options
+  await Firebase.initializeApp(
+    // Initialize Firebase with platform-specific options
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
-  runApp(ProviderScope(child: MyApp())); // Wrap the app with Riverpod's ProviderScope for state management
+  // await NotificationService.instance.initialize(); // Initialize the notification service
+  await LocalNotificationService.initialize();
+  runApp(
+    ProviderScope(child: MyApp()),
+  ); // Wrap the app with Riverpod's ProviderScope for state management
 }
 
 // Main app widget
