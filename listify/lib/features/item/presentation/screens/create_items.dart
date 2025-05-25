@@ -1030,7 +1030,7 @@ class _CreateItemsState extends State<CreateItems> {
                             );
 
                             try {
-                              await itemService.addItem(item);
+                              // await itemService.addItem(item);
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text('Item added successfully!'),
