@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../core/Models/Item_model.dart';
 
 class QuantitySelection extends StatefulWidget {
-  const QuantitySelection({Key? key}) : super(key: key);
+
+  final Item item;
+
+  const QuantitySelection({super.key, required this.item});
 
   @override
   _QuantitySelectionState createState() => _QuantitySelectionState();
@@ -11,25 +16,17 @@ class _QuantitySelectionState extends State<QuantitySelection> {
   final TextEditingController quantityController = TextEditingController();
 
   String? selectedMetric; // State variable for the selected metric
-  final List<String> metrics = ["kg", "g", "mg"]; // Available metrics
+  final List<String> metrics = ["kg", "g", "mg", "l", "ml", "packet", "unit"]; // Available metrics
+
+  List<String> suggestedQuantities = [];
 
   @override
   void initState() {
     super.initState();
     selectedMetric =
-        metrics.first; // Set the default value to the first item in the list
+        metrics.first;
+    suggestedQuantities = widget.item.units;
   }
-
-  List<String> suggestedQuantities = [
-    "1kg",
-    "2kg",
-    "5kg",
-    "10kg",
-    "200g",
-    "500g",
-    "100g",
-    "50g",
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -53,13 +50,13 @@ class _QuantitySelectionState extends State<QuantitySelection> {
 
                 // Back button
                 Positioned(
-                  top: 25,
+                  top: 50,
                   left: 12,
                   child: GestureDetector(
                     onTap: () {
                       Navigator.pop(
                         context,
-                      ); // Navigate back to the previous screen
+                      );// Navigate back to the previous screen
                     },
                     child: Image.asset(
                       'assets/images/back.png',
@@ -230,10 +227,19 @@ class _QuantitySelectionState extends State<QuantitySelection> {
                                     '',
                                   );
                                   quantityController.text = numericValue;
-                                  selectedMetric = metricValue;
+
+                                  // If metricValue is empty or not in metrics list, default to 'unit'
+                                  if (metricValue.isEmpty || !metrics.contains(metricValue)) {
+                                    selectedMetric = 'unit';
+                                  } else {
+                                    selectedMetric = metricValue;
+                                  }
                                 });
                               },
                               child: Container(
+                                constraints: BoxConstraints(
+                                  minWidth: 75
+                                ),
                                 decoration: BoxDecoration(
                                   color: const Color(0xFFD9D9D9),
                                   borderRadius: BorderRadius.circular(10),
@@ -244,6 +250,7 @@ class _QuantitySelectionState extends State<QuantitySelection> {
                                 ),
                                 child: Text(
                                   unit,
+                                  textAlign: TextAlign.center,
                                   style: const TextStyle(fontSize: 12),
                                 ),
                               ),
@@ -257,7 +264,24 @@ class _QuantitySelectionState extends State<QuantitySelection> {
                         height: 35,
                         child: ElevatedButton(
                           onPressed: () {
-                            print("Item Created: ${quantityController.text}");
+                            if(quantityController.text == ''){
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Container(
+                                      width: double.infinity,
+                                      alignment: Alignment.center,
+                                      child: Text('Please Select a Quantity')),
+                                  duration: Duration(seconds: 2), // Optional
+                                  backgroundColor: Colors.green,
+                                  behavior: SnackBarBehavior.floating,// Optional
+                                ),
+                              );
+                            }
+                            else{
+                              print("${quantityController.text}$selectedMetric");
+                              context.push('/list-selection', extra: {'item': widget.item, 'quantity': "${quantityController.text}$selectedMetric"});
+                            }
+
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF106A16),
@@ -269,7 +293,7 @@ class _QuantitySelectionState extends State<QuantitySelection> {
                               ),
                             ),
                           ),
-                          child: const Text("Add"),
+                          child: const Text("Next"),
                         ),
                       ),
                     ),

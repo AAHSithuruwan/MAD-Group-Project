@@ -24,7 +24,7 @@ class _AddListItemsState extends State<AddListItems> {
   List<Item> filteredRecentItems = [];
 
   void navigateToQuantitySelectionPage(Item item){
-    context.push('/quantity_selection');
+    context.push('/quantity-selection',extra: item);
   }
 
   Future<void> getItems() async{
@@ -291,20 +291,8 @@ class _AddListItemsState extends State<AddListItems> {
                                 },
                                 child: Container(
                                   decoration: BoxDecoration(
-                                    color: Colors.white,
+                                    color: const Color(0xFFD9D9D9),
                                     borderRadius: BorderRadius.circular(10),
-                                    boxShadow:[
-                                      BoxShadow(
-                                        color: Color(0x1A1BA424), // Shadow color with opacity
-                                        blurRadius: 20, // The spread of the shadow
-                                        offset: Offset(-5, -5), // Shadow position (x, y)
-                                      ),
-                                      BoxShadow(
-                                        color: Color(0x1A1BA424), // Shadow color with opacity
-                                        blurRadius: 20, // The spread of the shadow
-                                        offset: Offset(5, 5), // Shadow position (x, y)
-                                      ),
-                                    ],
                                   ),
                                   child: Padding(
                                     padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
@@ -343,20 +331,8 @@ class _AddListItemsState extends State<AddListItems> {
                                         },
                                         child: Container(
                                           decoration: BoxDecoration(
-                                            color: Colors.white,
+                                            color: const Color(0xFFD9D9D9),
                                             borderRadius: BorderRadius.circular(10),
-                                            boxShadow:[
-                                              BoxShadow(
-                                                color: Color(0x1A1BA424), // Shadow color with opacity
-                                                blurRadius: 20, // The spread of the shadow
-                                                offset: Offset(-5, -5), // Shadow position (x, y)
-                                              ),
-                                              BoxShadow(
-                                                color: Color(0x1A1BA424), // Shadow color with opacity
-                                                blurRadius: 20, // The spread of the shadow
-                                                offset: Offset(5, 5), // Shadow position (x, y)
-                                              ),
-                                            ],
                                           ),
                                           child: Padding(
                                             padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),

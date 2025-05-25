@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:listify/core/Models/ListifyList.dart';
 import 'package:listify/core/services/listify_list_service.dart';
 import '../../../../core/Models/ListItem.dart';
@@ -39,17 +40,12 @@ class _HomeState extends State<Home> {
   @override
   void initState(){
     super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
     initializeLists();
-  }
+    listifyListService.checkAndAddRecurringItems();
 
-  bool listCheckBox(List<ListItem> items){
-    bool checked = true;
-    for (var item in items) {
-      if(item.checked == false){
-        checked = false;
-      }
-    }
-    return checked;
   }
 
   String getSelectedListName(){
@@ -225,22 +221,10 @@ class _HomeState extends State<Home> {
                                           Text(list.name, style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
                                           Transform.scale(
                                             scale: 1.3,
-                                            child: Checkbox(
-                                              activeColor: Color(0xFF0A3B0D),
-                                              checkColor: Colors.white,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(5),
-                                              ),
-                                              value: listCheckBox(list.items),
-                                              onChanged: (bool? newValue) {
-                                                setState(() {
-                                                  for(var item in list.items){
-                                                    item.checked = newValue!;
-                                                    listifyListService.checkItem(newValue, item.docId!, list.docId!);
-                                                  }
-                                                });
-                                              },
-                                            ),
+                                            child: IconButton(onPressed: () {
+                                              
+                                              
+                                            }, icon: Icon(Icons.manage_search)),
                                           ),
                                         ],
                                       ),
@@ -324,6 +308,17 @@ class _HomeState extends State<Home> {
             ],
           ),
       );
+  }
+
+  @override
+  void dispose() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+    super.dispose();
   }
 }
 
