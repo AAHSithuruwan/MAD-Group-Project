@@ -80,27 +80,26 @@ class _PickLocationScreenState extends State<PickLocationScreen> {
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
-        color: Colors.white, // Background color
+        color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Colors.black.withOpacity(0.3), // Thin black border
+          color: Colors.black.withOpacity(0.3),
           width: 1,
         ),
       ),
       child: TextField(
         controller: controller,
         onSubmitted: onSubmitted,
-        style: TextStyle(color: Colors.black.withOpacity(0.7)), // Input text opacity
+        style: TextStyle(color: Colors.black.withOpacity(0.7)),
         decoration: InputDecoration(
-          icon: Icon(Icons.search, color: Colors.black.withOpacity(0.5)), // Icon opacity
+          icon: Icon(Icons.search, color: Colors.black.withOpacity(0.5)),
           border: InputBorder.none,
           hintText: hintText,
-          hintStyle: TextStyle(color: Colors.black.withOpacity(0.5)), // Hint opacity
+          hintStyle: TextStyle(color: Colors.black.withOpacity(0.5)),
         ),
       ),
     );
   }
-
 
   Widget buildRecentTabs(List<String> items, void Function(String) onTap) {
     return SingleChildScrollView(
@@ -110,7 +109,6 @@ class _PickLocationScreenState extends State<PickLocationScreen> {
         children: items.asMap().entries.map((entry) {
           final index = entry.key;
           final item = entry.value;
-
           final isFirst = index == 0;
 
           return Padding(
@@ -121,9 +119,7 @@ class _PickLocationScreenState extends State<PickLocationScreen> {
                 padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
-                  color: isFirst
-                      ? Color(0x261BA424) // 15% opacity of 1BA424
-                      : Colors.grey[300],
+                  color: isFirst ? Color(0x261BA424) : Colors.grey[300],
                 ),
                 child: Text(
                   item,
@@ -140,8 +136,6 @@ class _PickLocationScreenState extends State<PickLocationScreen> {
     );
   }
 
-
-
   Widget sectionDivider() {
     return Divider(
       thickness: 1,
@@ -155,133 +149,135 @@ class _PickLocationScreenState extends State<PickLocationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          // App Bar
-          Container(
-            width: double.infinity,
-            height: 115,
-            padding: const EdgeInsets.only(top: 24),
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 16.0),
-                      child: Icon(Icons.arrow_back_ios_new, size: 28),
-                    ),
-                  ),
-                ),
-                Center(
-                  child: Text(
-                    'Pick Location',
-                    style: TextStyle(
-                      fontSize: 24,
-                      color: Color(0xFF0A3B0D),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          sectionDivider(),
-
-          // Search Store
-          buildSearchBar(
-            hintText: "Search Store",
-            controller: searchStoreController,
-            onSubmitted: _searchLocation,
-          ),
-          buildRecentTabs([
-            "Cargills Colombo",
-            "Keells Colombo",
-            "Cargills Kalutara",
-            "Keells Nugegoda",
-            "Cargills Horana",
-            "Keells Panadura",
-          ], _searchLocation),
-
-          sectionDivider(),
-
-          // Search City
-          buildSearchBar(
-            hintText: "Search City",
-            controller: searchCityController,
-            onSubmitted: _searchCity,
-          ),
-          buildRecentTabs(recentCities, _searchCity),
-
-          sectionDivider(),
-
-          // Map
-          Padding(
-            padding: const EdgeInsets.only(top: 40.0),
-            child: SizedBox(
-              height: 400,
-              child: Stack(
-                children: [
-                  FlutterMap(
-                    mapController: mapController,
-                    options: MapOptions(
-                      center: currentLatLng,
-                      zoom: 13.0,
-                    ),
-                    children: [
-                      TileLayer(
-                        urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                        subdomains: ['a', 'b', 'c'],
-                        userAgentPackageName: 'com.example.yourapp',
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              // App Bar
+              Container(
+                width: double.infinity,
+                height: 115,
+                padding: const EdgeInsets.only(top: 24),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 16.0),
+                          child: Icon(Icons.arrow_back_ios_new, size: 28),
+                        ),
                       ),
-                      MarkerLayer(
-                        markers: [
-                          Marker(
-                            point: currentLatLng,
-                            width: 40,
-                            height: 40,
-                            child: Icon(Icons.location_pin, color: Colors.red, size: 40),
+                    ),
+                    Center(
+                      child: Text(
+                        'Pick Location',
+                        style: TextStyle(
+                          fontSize: 24,
+                          color: Color(0xFF0A3B0D),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              sectionDivider(),
+
+              buildSearchBar(
+                hintText: "Search Store",
+                controller: searchStoreController,
+                onSubmitted: _searchLocation,
+              ),
+              buildRecentTabs([
+                "Cargills Colombo",
+                "Keells Colombo",
+                "Cargills Kalutara",
+                "Keells Nugegoda",
+                "Cargills Horana",
+                "Keells Panadura",
+              ], _searchLocation),
+
+              sectionDivider(),
+
+              buildSearchBar(
+                hintText: "Search City",
+                controller: searchCityController,
+                onSubmitted: _searchCity,
+              ),
+              buildRecentTabs(recentCities, _searchCity),
+
+              sectionDivider(),
+
+              Padding(
+                padding: const EdgeInsets.only(top: 40.0),
+                child: SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.4,
+                  child: Stack(
+                    children: [
+                      FlutterMap(
+                        mapController: mapController,
+                        options: MapOptions(
+                          center: currentLatLng,
+                          zoom: 13.0,
+                        ),
+                        children: [
+                          TileLayer(
+                            urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                            subdomains: ['a', 'b', 'c'],
+                            userAgentPackageName: 'com.example.yourapp',
+                          ),
+                          MarkerLayer(
+                            markers: [
+                              Marker(
+                                point: currentLatLng,
+                                width: 40,
+                                height: 40,
+                                child: Icon(Icons.location_pin, color: Colors.red, size: 40),
+                              ),
+                            ],
                           ),
                         ],
                       ),
+                      Positioned(
+                        bottom: 16,
+                        right: 16,
+                        child: FloatingActionButton(
+                          backgroundColor: Colors.white,
+                          onPressed: () {
+                            _searchLocation(searchStoreController.text.trim());
+                          },
+                          child: Icon(Icons.search, color: Colors.black),
+                        ),
+                      ),
                     ],
                   ),
-                  Positioned(
-                    bottom: 16,
-                    right: 16,
-                    child: FloatingActionButton(
-                      backgroundColor: Colors.white,
-                      onPressed: () {
-                        _searchLocation(searchStoreController.text.trim());
-                      },
-                      child: Icon(Icons.search, color: Colors.black),
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
-          ),
-          SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: () {
-              final selectedStore = storeLocations.entries.firstWhere(
-                    (entry) => entry.value == currentLatLng,
-                orElse: () => MapEntry("Unknown", currentLatLng),
-              ).key;
+              SizedBox(height: 13),
+              ElevatedButton(
+                onPressed: () {
+                  final selectedStore = storeLocations.entries.firstWhere(
+                        (entry) => entry.value == currentLatLng,
+                    orElse: () => MapEntry("Unknown", currentLatLng),
+                  ).key;
 
-              Navigator.pop(context, selectedStore);
-            },
-            child: Text("OK"),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFF1BA424),
-              foregroundColor: Colors.white,
-              padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            ),
+                  Navigator.pop(context, selectedStore);
+                },
+                child: Text("OK"),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF1BA424),
+                  foregroundColor: Colors.white,
+                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+              ),
+              SizedBox(height: 20),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
