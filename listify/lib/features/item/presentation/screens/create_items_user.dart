@@ -31,6 +31,7 @@ class _CreateItemsState extends State<CreateItemsUser> {
     '1 box',
     '1 piece',
     '1 pair',
+    '2 items',
   ];
   List<String> categoryNames = [];
   List<String> addedUnits = [];
@@ -715,6 +716,8 @@ class _CreateItemsState extends State<CreateItemsUser> {
                               itemNameController.clear();
                               unitController.clear();
                               categoryNameController.clear();
+                              pickedStoreName = null;
+                              pickedLocation = null;
                               //  storeNameController.clear();
                               addedUnits.clear();
                               setState(() {});

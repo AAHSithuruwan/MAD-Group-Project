@@ -29,6 +29,7 @@ class _CreateItemsState extends State<CreateItems> {
     '1 box',
     '1 piece',
     '1 pair',
+    '2 items',
   ];
   List<String> categoryNames = [];
   List<String> addedUnits = [];
@@ -98,7 +99,7 @@ class _CreateItemsState extends State<CreateItems> {
               offset: const Offset(0, -30),
               child: Container(
                 padding: const EdgeInsets.fromLTRB(30, 40, 30, 0),
-                height: screenHeight + 48, // Full height minus image height
+                //height: screenHeight + 48, // Full height minus image height
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: const BorderRadius.only(
@@ -713,7 +714,8 @@ class _CreateItemsState extends State<CreateItems> {
                               itemNameController.clear();
                               unitController.clear();
                               categoryNameController.clear();
-                              //storeNameController.clear();
+                              pickedStoreName = null;
+                              pickedLocation = null;
                               addedUnits.clear();
                               setState(() {});
                             } catch (e) {
