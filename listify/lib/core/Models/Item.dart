@@ -6,8 +6,8 @@ class Item {
   List<String> units;
   String categoryName;
   String storeName;
+  GeoPoint? location;
   bool isUserSpecificItem;
-
 
   Item({
     required this.docId,
@@ -15,7 +15,8 @@ class Item {
     required this.units,
     required this.categoryName,
     required this.storeName,
-    this.isUserSpecificItem = false
+    this.location,
+    this.isUserSpecificItem = false,
   });
 
   factory Item.fromDoc(DocumentSnapshot doc) {
@@ -24,8 +25,10 @@ class Item {
       docId: doc.id,
       name: data['name'] ?? '',
       units: List<String>.from(data['units'] ?? []),
+      storeName: data['storeName'],
       categoryName: data['categoryName'] ?? '',
       location: data['location'] != null ? data['location'] as GeoPoint : null,
+      isUserSpecificItem: data['isUserSpecificItem'] ?? false,
     );
   }
 
@@ -34,7 +37,9 @@ class Item {
       'name': name,
       'units': units,
       'categoryName': categoryName,
+      'storeName': storeName,
       if (location != null) 'location': location,
+      'isUserSpecificItem': isUserSpecificItem,
     };
   }
 }

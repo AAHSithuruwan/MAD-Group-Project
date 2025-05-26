@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:listify/core/Models/Item.dart';
 import 'package:listify/core/services/item_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:listify/features/pick_location/presentation/screens/pick_location_screen.dart';
 
 class CreateItems extends StatefulWidget {
   const CreateItems({Key? key}) : super(key: key);
@@ -32,6 +33,9 @@ class _CreateItemsState extends State<CreateItems> {
   List<String> categoryNames = [];
   List<String> addedUnits = [];
   List<String> addedCategories = [];
+
+  GeoPoint? pickedLocation;
+  String? pickedStoreName;
 
   @override
   void initState() {
@@ -611,13 +615,24 @@ class _CreateItemsState extends State<CreateItems> {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () async {
-                          //Navigator.pushNamed(context, '/map');
-                          final selectedLocation = await Navigator.push(
+                          final result = await Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const PickLocationScreen(),
+                              builder: (context) => PickLocationScreen(),
                             ),
                           );
+                          if (result != null && result is Map) {
+                            setState(() {
+                              pickedStoreName = result['storeName'] as String?;
+                              final latLng = result['latLng'];
+                              if (latLng != null) {
+                                pickedLocation = GeoPoint(
+                                  latLng.latitude,
+                                  latLng.longitude,
+                                );
+                              }
+                            });
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFFE8F6E9),
@@ -636,6 +651,18 @@ class _CreateItemsState extends State<CreateItems> {
                         ),
                       ),
                     ),
+
+                    if (pickedStoreName != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Text(
+                          'Picked Store: $pickedStoreName',
+                          style: const TextStyle(
+                            color: Colors.green,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
 
                     const SizedBox(height: 32),
 
@@ -672,7 +699,8 @@ class _CreateItemsState extends State<CreateItems> {
                               name: itemNameController.text,
                               units: addedUnits,
                               categoryName: categoryNameController.text,
-                              //  storeName: storeNameController.text,
+                              storeName: pickedStoreName ?? '',
+                              location: pickedLocation,
                             );
 
                             try {

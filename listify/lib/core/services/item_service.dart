@@ -78,26 +78,29 @@ class ItemService {
               units: List<String>.from(doc['units']),
               categoryName: doc['categoryName'],
               location: doc['location'],
+              storeName: doc['storeName'] ?? '',
             );
           }).toList();
 
-      QuerySnapshot userItemSnapshot = await firestore
-          .collection('users')
-          .doc(user.uid)
-          .collection('UserSpecificItems')
-          .where('categoryName', isEqualTo: categoryName)
-          .get();
+      QuerySnapshot userItemSnapshot =
+          await firestore
+              .collection('users')
+              .doc(user.uid)
+              .collection('UserSpecificItems')
+              .where('categoryName', isEqualTo: categoryName)
+              .get();
 
-      List<Item> userItems = userItemSnapshot.docs.map((doc) {
-        return Item(
-          docId: doc.id,
-          name: doc['name'],
-          units: List<String>.from(doc['units']),
-          categoryName: doc['categoryName'],
-          storeName: doc['storeName'],
-          isUserSpecificItem: true,
-        );
-      }).toList();
+      List<Item> userItems =
+          userItemSnapshot.docs.map((doc) {
+            return Item(
+              docId: doc.id,
+              name: doc['name'],
+              units: List<String>.from(doc['units']),
+              categoryName: doc['categoryName'],
+              storeName: doc['storeName'],
+              isUserSpecificItem: true,
+            );
+          }).toList();
 
       items.addAll(userItems);
 
@@ -150,11 +153,10 @@ class ItemService {
     }
     List<Item> items = [];
     for (var i in recentItems) {
-      if(i.isUserSpecificItem == false){
+      if (i.isUserSpecificItem == false) {
         Item item = await getItemById(i.itemId);
         items.add(item);
-      }
-      else{
+      } else {
         Item item = await getUserSpecificItemById(i.itemId);
         items.add(item);
         print(item.isUserSpecificItem);
@@ -182,6 +184,7 @@ class ItemService {
         units: List<String>.from(documentSnapshot.get("units")),
         categoryName: documentSnapshot.get("categoryName"),
         location: documentSnapshot.get("location"),
+        storeName: documentSnapshot.get("storeName") ?? '',
       );
     } catch (e) {
       throw Exception("No item found: $e");
@@ -189,25 +192,24 @@ class ItemService {
   }
 
   Future<Item> getUserSpecificItemById(String itemId) async {
-
     AuthService authService = AuthService();
     User? user = await authService.getCurrentUserinstance();
     if (user == null) throw Exception("No logged-in user found");
 
     try {
       DocumentSnapshot documentSnapshot =
-      await FirebaseFirestore.instance
-          .collection("users")
-          .doc(user.uid)
-          .collection("UserSpecificItems")
-          .doc(itemId)
-          .get();
+          await FirebaseFirestore.instance
+              .collection("users")
+              .doc(user.uid)
+              .collection("UserSpecificItems")
+              .doc(itemId)
+              .get();
 
       if (!documentSnapshot.exists) {
         throw Exception("User Specific Item with ID $itemId does not exist");
       }
 
-     return Item(
+      return Item(
         docId: itemId,
         name: documentSnapshot.get("name"),
         units: List<String>.from(documentSnapshot.get("units")),
@@ -250,7 +252,7 @@ class ItemService {
     required String itemId,
     required String name,
     required String categoryName,
-    required bool isUserSpecificItem
+    required bool isUserSpecificItem,
   }) async {
     try {
       AuthService authService = AuthService();
@@ -263,12 +265,12 @@ class ItemService {
           .doc(user.uid)
           .collection("RecentItems")
           .add({
-        'itemId': itemId,
-        'name': name,
-        'categoryName': categoryName,
-        'createdAt': DateTime.now().toIso8601String(),
-        'isUserSpecificItem': isUserSpecificItem
-      });
+            'itemId': itemId,
+            'name': name,
+            'categoryName': categoryName,
+            'createdAt': DateTime.now().toIso8601String(),
+            'isUserSpecificItem': isUserSpecificItem,
+          });
       print("Recent item added successfully.");
     } catch (e) {
       print("Failed to add recent item: $e");
