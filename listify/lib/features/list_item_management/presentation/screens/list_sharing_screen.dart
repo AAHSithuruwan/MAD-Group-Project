@@ -1,283 +1,218 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:listify/core/services/listify_list_service.dart';
 
 class ListSharingScreen extends StatefulWidget {
-  final String? listId;
+  final String listId;
   final String? listName;
-
-  const ListSharingScreen({super.key, this.listId, this.listName});
+  const ListSharingScreen({Key? key, required this.listId, this.listName})
+      : super(key: key);
 
   @override
   State<ListSharingScreen> createState() => _ListSharingScreenState();
 }
 
-class SharedUser {
-  final String userId;
-  final String username;
-  final String email;
-  String role;
-
-  SharedUser({
-    required this.userId,
-    required this.username,
-    required this.email,
-    required this.role,
-  });
-}
-
-class AppUser {
-  final String userId;
-  final String username;
-  final String email;
-
-  AppUser({
-    required this.userId,
-    required this.username,
-    required this.email,
-  });
-}
-
 class _ListSharingScreenState extends State<ListSharingScreen> {
   final ListifyListService _listService = ListifyListService();
-  String searchQuery = '';
-  List<SharedUser> sharedUsers = [];
-  List<AppUser> allUsers = [];
-  bool isLoading = true;
+  final TextEditingController _searchController = TextEditingController();
+  List<Map<String, dynamic>> _allUsers = [];
+  List<Map<String, dynamic>> _filteredUsers = [];
+  List<Map<String, dynamic>> _members = [];
+  String _searchText = '';
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _fetchAllUsersAndMembers();
+    _searchController.addListener(() {
+      _onSearchChanged(_searchController.text);
+    });
+    _fetchAllUsers();
+    _fetchMembers();
   }
 
-  Future<void> _fetchAllUsersAndMembers() async {
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _fetchAllUsers() async {
+    final users = await _listService.getAllUsers();
     setState(() {
-      isLoading = true;
-    });
-
-    // Fetch all users (for search)
-    final usersSnapshot = await FirebaseFirestore.instance.collection('Users').get();
-    allUsers = usersSnapshot.docs
-        .map((doc) => AppUser(
-              userId: doc.id,
-              username: doc['username'] ?? '',
-              email: doc['email'] ?? '',
-            ))
-        .toList();
-
-    // Fetch shared users (members) for this list using the service
-    sharedUsers = [];
-    if (widget.listId != null) {
-      final memberMaps = await _listService.getListMembers(widget.listId!);
-      sharedUsers = memberMaps.map((member) {
-        final userId = member['userId'] ?? '';
-        final role = member['role'] ?? 'viewer';
-        final username = member['username'] ?? 'Unknown';
-        final email = member['email'] ?? 'No email';
-        return SharedUser(
-          userId: userId,
-          username: username,
-          email: email,
-          role: _capitalize(role),
-        );
-      }).toList();
-    }
-
-    setState(() {
-      isLoading = false;
+      _allUsers = users;
+      _filteredUsers = users;
     });
   }
 
-  List<AppUser> get filteredUsers {
-    final sharedIds = sharedUsers.map((u) => u.userId).toSet();
-    return allUsers
-        .where((user) =>
-            !sharedIds.contains(user.userId) &&
-            (user.username.toLowerCase().contains(searchQuery.toLowerCase()) ||
-                user.email.toLowerCase().contains(searchQuery.toLowerCase())))
-        .toList();
+  Future<void> _fetchMembers() async {
+    setState(() => _isLoading = true);
+    final members = await _listService.getListMembers(widget.listId);
+    setState(() {
+      _members = members;
+      _isLoading = false;
+    });
   }
 
-  Future<void> _changeRole(SharedUser user, String newRole) async {
-    if (widget.listId == null) return;
-    await _listService.changeMemberRole(widget.listId!, user.userId, newRole.toLowerCase());
-    await _fetchAllUsersAndMembers();
+  void _onSearchChanged(String value) {
+    setState(() {
+      _searchText = value;
+      _filteredUsers = _allUsers
+          .where((user) => user['email']
+              .toString()
+              .toLowerCase()
+              .contains(value.toLowerCase()))
+          .toList();
+    });
   }
 
-  Future<void> _deleteUser(SharedUser user) async {
-    if (widget.listId == null) return;
-    await _listService.removeMemberFromList(widget.listId!, user.userId);
-    await _fetchAllUsersAndMembers();
-  }
-
-  Future<void> _addSharedUser(AppUser user) async {
-    String? selectedRole = await showDialog<String>(
+  Future<void> _showRoleDialogAndAddMember(Map<String, dynamic> user) async {
+    String selectedRole = 'viewer';
+    final result = await showDialog<String>(
       context: context,
-      builder: (context) => SimpleDialog(
-        title: Text('Select Role for ${user.username}'),
-        children: [
-          SimpleDialogOption(
-            onPressed: () => Navigator.pop(context, 'Editor'),
-            child: Text('Editor'),
-          ),
-          SimpleDialogOption(
-            onPressed: () => Navigator.pop(context, 'Viewer'),
-            child: Text('Viewer'),
+      builder: (context) => AlertDialog(
+        title: Text('Select Role for ${user['email']}'),
+        content: DropdownButton<String>(
+          value: selectedRole,
+          items: const [
+            DropdownMenuItem(
+              value: 'viewer',
+              child: Text('Viewer'),
+            ),
+            DropdownMenuItem(
+              value: 'editor',
+              child: Text('Editor'),
+            ),
+          ],
+          onChanged: (value) {
+            if (value != null) {
+              setState(() {
+                selectedRole = value;
+              });
+              Navigator.of(context).pop(value);
+            }
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(selectedRole),
+            child: const Text('Add'),
           ),
         ],
       ),
     );
-    if (selectedRole != null && widget.listId != null) {
-      await _listService.addMemberToList(widget.listId!, user.userId, selectedRole.toLowerCase());
-      await _fetchAllUsersAndMembers();
-      setState(() {
-        searchQuery = '';
-      });
+    if (result != null) {
+      await _addMember(user['userId'], result);
     }
   }
 
+  Future<void> _addMember(String userId, String role) async {
+    await _listService.addMemberToList(widget.listId, userId, role);
+    await _fetchMembers();
+    setState(() {
+      _searchText = '';
+      _searchController.clear();
+      _filteredUsers = _allUsers;
+    });
+  }
+
+  Future<void> _changeRole(String userId, String newRole) async {
+    await _listService.changeMemberRole(widget.listId, userId, newRole);
+    await _fetchMembers();
+  }
+
+  Future<void> _removeMember(String userId) async {
+    await _listService.removeMemberFromList(widget.listId, userId);
+    await _fetchMembers();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(title: Center(child: Text('List Sharing'))),
-        body: isLoading
-            ? Center(child: CircularProgressIndicator())
-            : Center(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      _SearchBar(),
-                      if (searchQuery.isNotEmpty && filteredUsers.isNotEmpty)
-                        Column(
-                          children: [
-                            ...filteredUsers.map(
-                              (user) => SearchUserCard(
-                                user: user,
-                                onTap: () => _addSharedUser(user),
-                              ),
-                            ),
-                            Divider(),
-                          ],
-                        ),
-                      SizedBox(height: 10),
-                      ...sharedUsers.map((user) => SharedUserCard(
-                            user: user,
-                            onChangeRole: (role) => _changeRole(user, role),
-                            onDelete: () => _deleteUser(user),
-                          )),
-                      SizedBox(height: 20),
-                      if (sharedUsers.isEmpty)
-                        Text('No users shared with this list.'),
-                    ],
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Share List'),
+      ),
+      body: Column(
+        children: [
+          // Search Bar
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Column(
+              children: [
+                TextField(
+                  decoration: const InputDecoration(
+                    labelText: 'Search users by email',
+                    prefixIcon: Icon(Icons.search),
                   ),
+                  controller: _searchController,
                 ),
-              ),
-      ),
-    );
-  }
-
-  Widget _SearchBar() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: TextField(
-        onChanged: (value) {
-          setState(() {
-            searchQuery = value;
-          });
-        },
-        decoration: InputDecoration(
-          border: OutlineInputBorder(),
-          labelText: 'Search members to share with',
-          prefixIcon: Icon(Icons.search),
-        ),
-      ),
-    );
-  }
-}
-
-class SearchUserCard extends StatelessWidget {
-  final AppUser user;
-  final VoidCallback onTap;
-
-  const SearchUserCard({
-    super.key,
-    required this.user,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      color: Colors.grey[100],
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      child: ListTile(
-        leading: Icon(Icons.person_add),
-        title: Text(user.username),
-        subtitle: Text(user.email),
-        onTap: onTap,
-      ),
-    );
-  }
-}
-
-class SharedUserCard extends StatelessWidget {
-  final SharedUser user;
-  final void Function(String) onChangeRole;
-  final VoidCallback onDelete;
-
-  const SharedUserCard({
-    super.key,
-    required this.user,
-    required this.onChangeRole,
-    required this.onDelete,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      child: ListTile(
-        leading: Icon(Icons.person),
-        title: Text(user.username),
-        subtitle: Text(user.email),
-        trailing: PopupMenuButton<String>(
-          onSelected: (value) {
-            if (value == 'Delete') {
-              onDelete();
-            } else {
-              onChangeRole(value);
-            }
-          },
-          itemBuilder: (context) => [
-            PopupMenuItem(
-              value: user.role == 'Editor' ? 'Viewer' : 'Editor',
-              child: Text('Change to ${user.role == 'Editor' ? 'Viewer' : 'Editor'}'),
+                if (_searchText.isNotEmpty && _filteredUsers.isNotEmpty)
+                  Container(
+                    constraints: const BoxConstraints(maxHeight: 200),
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: _filteredUsers.length,
+                      itemBuilder: (context, index) {
+                        final user = _filteredUsers[index];
+                        return ListTile(
+                          title: Text(user['email']),
+                          onTap: () {
+                            _showRoleDialogAndAddMember(user);
+                          },
+                        );
+                      },
+                    ),
+                  ),
+              ],
             ),
-            PopupMenuItem(
-              value: 'Delete',
-              child: Text('Delete', style: TextStyle(color: Colors.red)),
-            ),
-          ],
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                user.role,
-                style: TextStyle(
-                  color: user.role == 'Editor' ? Colors.blue : Colors.grey,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Icon(Icons.more_vert),
-            ],
           ),
-        ),
+          const Divider(),
+          // Members List
+          Expanded(
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : ListView.builder(
+                    itemCount: _members.length,
+                    itemBuilder: (context, index) {
+                      final member = _members[index];
+                      return Card(
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
+                        child: ListTile(
+                          title: Text(member['email'] ?? 'No email'),
+                          subtitle: Text('Role: ${member['role']}'),
+                          trailing: PopupMenuButton<String>(
+                            onSelected: (value) {
+                              if (value == 'change_role') {
+                                final newRole = member['role'] == 'editor'
+                                    ? 'viewer'
+                                    : 'editor';
+                                _changeRole(member['userId'], newRole);
+                              } else if (value == 'remove') {
+                                _removeMember(member['userId']);
+                              }
+                            },
+                            itemBuilder: (context) => [
+                              PopupMenuItem(
+                                value: 'change_role',
+                                child: Text(
+                                  member['role'] == 'editor'
+                                      ? 'Change to Viewer'
+                                      : 'Change to Editor',
+                                ),
+                              ),
+                              const PopupMenuItem(
+                                value: 'remove',
+                                child: Text('Remove Member'),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+          ),
+        ],
       ),
     );
   }
 }
-
-String _capitalize(String s) =>
-    s.isNotEmpty ? s[0].toUpperCase() + s.substring(1).toLowerCase() : s;

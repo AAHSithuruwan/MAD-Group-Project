@@ -228,56 +228,73 @@ class ListifyListService {
 
   // 
 
-  // function to get all members of a list (params: listId) this should return a list of users with (userId, username, email, role)
-  Future<List<Map<String, dynamic>>> getListMembers(String listId) async {
-    print("Fetching members for list: $listId");
+
+  // function to get all users from the Users collection to use search bar
+  Future<List<Map<String, dynamic>>> getAllUsers() async {
     try {
-      DocumentReference listRef = FirebaseFirestore.instance
-          .collection('ListifyLists')
-          .doc(listId);
-
-      // Check if the list exists
-      DocumentSnapshot listSnapshot = await listRef.get();
-      if (!listSnapshot.exists) {
-        throw Exception("List does not exist");
-      }
-
-      // Fetch members from the list
-      final data = listSnapshot.data() as Map<String, dynamic>?;
-      List<dynamic> members = data?['members'] ?? [];
-      List<Map<String, dynamic>> memberDetails = [];
-
-      for (var member in members) {
-        String userId = member['userId'];
-        String role = member['role'];
-
-        // Fetch user details from Firebase Auth 
-        User? user = FirebaseAuth.instance.currentUser;
-        if (user != null && user.uid == userId) {
-          memberDetails.add({
-            'userId': user.uid,
-            'username': user.displayName ?? 'Unknown',
-            'email': user.email ?? 'No email',
-            'role': role,
-          });
-        } else {
-          // If the user is not found in Firebase Auth, you might want to fetch from another source
-          // For now, we will just add a placeholder
-          memberDetails.add({
-            'userId': userId,
-            'username': 'Unknown User',
-            'email': 'No email',
-            'role': role,
-          });
-        }
-      }
-      return memberDetails;
-
+      QuerySnapshot snapshot =
+          await FirebaseFirestore.instance.collection('users').get();
+      return snapshot.docs.map((doc) {
+        return {
+          'userId': doc.id,
+          'email': doc['email'] ?? '',
+        };
+      }).toList();
     } catch (e) {
       print(e);
       return [];
     }
   }
+
+  // function to get all members of a list (params: listId) this should return a list of users with (userId, username, email, role)
+  Future<List<Map<String, dynamic>>> getListMembers(String listId) async {
+  print("Fetching members for list: $listId");
+  try {
+    DocumentReference listRef = FirebaseFirestore.instance
+        .collection('ListifyLists')
+        .doc(listId);
+
+    // Check if the list exists
+    DocumentSnapshot listSnapshot = await listRef.get();
+    if (!listSnapshot.exists) {
+      throw Exception("List does not exist");
+    }
+
+    // Fetch members from the list
+    final data = listSnapshot.data() as Map<String, dynamic>?;
+    List<dynamic> members = data?['members'] ?? [];
+    List<Map<String, dynamic>> memberDetails = [];
+
+    for (var member in members) {
+      String userId = member['userId'];
+      String role = member['role'];
+
+      // Fetch user details from Users collection using userId
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+
+      String email = 'No email';
+      if (userDoc.exists) {
+        final userData = userDoc.data() as Map<String, dynamic>?;
+        email = userData?['email'] ?? 'No email';
+      }
+
+      memberDetails.add({
+        'userId': userId,
+        'email': email,
+        'role': role,
+      });
+    }
+    return memberDetails;
+
+  } catch (e) {
+    print(e);
+    return [];
+  }
+}
+
 
   // function to add a member to a list (params: listId, userId, role)
   Future<void> addMemberToList(String listId, String userId, String role) async {
@@ -307,62 +324,84 @@ class ListifyListService {
  
  
   // function to change the role of a member in a list. Roles must be either "editor" or "viewer"
-  Future<void> changeMemberRole(String listId, String userId, String newRole) async {
-    print("Changing role for user: $userId in list: $listId to role: $newRole");
-    try {
-      DocumentReference listRef = FirebaseFirestore.instance
-          .collection('ListifyLists')
-          .doc(listId);
+ Future<void> changeMemberRole(String listId, String userId, String newRole) async {
+  print("Changing role for user: $userId in list: $listId to role: $newRole");
+  try {
+    DocumentReference listRef = FirebaseFirestore.instance
+        .collection('ListifyLists')
+        .doc(listId);
 
-      // Check if the list exists
-      DocumentSnapshot listSnapshot = await listRef.get();
-      if (!listSnapshot.exists) {
-        throw Exception("List does not exist");
-      }
-
-      // Update the member's role
-      await listRef.update({
-        'members': FieldValue.arrayRemove([
-          {'userId': userId},
-        ]),
-      });
-
-      await listRef.update({
-        'members': FieldValue.arrayUnion([
-          {'userId': userId, 'role': newRole},
-        ]),
-      });
-
-    } catch (e) {
-      print(e);
+    // Check if the list exists
+    DocumentSnapshot listSnapshot = await listRef.get();
+    if (!listSnapshot.exists) {
+      throw Exception("List does not exist");
     }
-  }
 
+    // Fetch current members
+    final data = listSnapshot.data() as Map<String, dynamic>?;
+    List<dynamic> members = data?['members'] ?? [];
+
+    // Find the member object to remove
+    final oldMember = members.firstWhere(
+      (m) => m['userId'] == userId,
+      orElse: () => null,
+    );
+
+    if (oldMember == null) {
+      throw Exception("Member not found");
+    }
+
+    // Remove the old member object, add the new one with updated role
+    await listRef.update({
+      'members': FieldValue.arrayRemove([oldMember]),
+    });
+
+    await listRef.update({
+      'members': FieldValue.arrayUnion([
+        {'userId': userId, 'role': newRole},
+      ]),
+    });
+
+  } catch (e) {
+    print(e);
+  }
+}
 
   // function to remove a member from a list
-  Future<void> removeMemberFromList(String listId, String userId) async {
-    print("Removing member: $userId from list: $listId");
-    try {
-      DocumentReference listRef = FirebaseFirestore.instance
-          .collection('ListifyLists')
-          .doc(listId);
+Future<void> removeMemberFromList(String listId, String userId) async {
+  print("Removing member: $userId from list: $listId");
+  try {
+    DocumentReference listRef = FirebaseFirestore.instance
+        .collection('ListifyLists')
+        .doc(listId);
 
-      // Check if the list exists
-      DocumentSnapshot listSnapshot = await listRef.get();
-      if (!listSnapshot.exists) {
-        throw Exception("List does not exist");
-      }
-
-      // Remove the member from the list
-      await listRef.update({
-        'members': FieldValue.arrayRemove([
-          {'userId': userId},
-        ]),
-      });
-
-    } catch (e) {
-      print(e);
+    // Check if the list exists
+    DocumentSnapshot listSnapshot = await listRef.get();
+    if (!listSnapshot.exists) {
+      throw Exception("List does not exist");
     }
-  }
 
+    // Fetch current members
+    final data = listSnapshot.data() as Map<String, dynamic>?;
+    List<dynamic> members = data?['members'] ?? [];
+
+    // Find the member object to remove
+    final memberToRemove = members.firstWhere(
+      (m) => m['userId'] == userId,
+      orElse: () => null,
+    );
+
+    if (memberToRemove == null) {
+      throw Exception("Member not found");
+    }
+
+    // Remove the exact member object
+    await listRef.update({
+      'members': FieldValue.arrayRemove([memberToRemove]),
+    });
+
+  } catch (e) {
+    print(e);
+  }
+}
 }

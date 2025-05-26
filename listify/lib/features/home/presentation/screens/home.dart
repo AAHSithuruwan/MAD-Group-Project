@@ -349,4 +349,3 @@ class ListType{
 
   ListType(this.icon,this.label,this.isSelected);
 }
-
