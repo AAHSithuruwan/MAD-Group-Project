@@ -6,5 +6,7 @@ class RecentItem{
 
   String categoryName;
 
-  RecentItem({required this.itemId, required this.name, required this.categoryName});
+  bool isUserSpecificItem;
+
+  RecentItem({required this.itemId, required this.name, required this.categoryName, this.isUserSpecificItem = false});
 }
