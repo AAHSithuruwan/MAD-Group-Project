@@ -6,6 +6,7 @@ class Item {
   List<String> units;
   String categoryName;
   String storeName;
+  bool isUserSpecificItem;
 
   Item({
     required this.docId,
@@ -13,6 +14,7 @@ class Item {
     required this.units,
     required this.categoryName,
     required this.storeName,
+    this.isUserSpecificItem = false
   });
 
   factory Item.fromDoc(DocumentSnapshot doc) {
