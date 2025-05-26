@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:listify/core/Models/ListifyList.dart';
 import 'package:listify/core/services/listify_list_service.dart';
 import 'package:listify/core/services/local_notification_service.dart';
@@ -233,7 +234,15 @@ class _HomeState extends State<Home> {
                                           Transform.scale(
                                             scale: 1.3,
                                             child: IconButton(onPressed: () {
-                                              
+                                              context.push(
+                                                          '/list-sharing', 
+                                                          extra: {
+                                                            'listId':
+                                                                list.docId,
+                                                            'listName':
+                                                                list.name,
+                                                          },
+                                                        );
                                               
                                             }, icon: Icon(Icons.manage_search)),
                                           ),
