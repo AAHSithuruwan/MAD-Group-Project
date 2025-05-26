@@ -5,14 +5,14 @@ class Item {
   String name;
   List<String> units;
   String categoryName;
-  String storeName;
+  GeoPoint? location;
 
   Item({
     required this.docId,
     required this.name,
     required this.units,
     required this.categoryName,
-    required this.storeName,
+    this.location,
   });
 
   factory Item.fromDoc(DocumentSnapshot doc) {
@@ -22,7 +22,7 @@ class Item {
       name: data['name'] ?? '',
       units: List<String>.from(data['units'] ?? []),
       categoryName: data['categoryName'] ?? '',
-      storeName: data['storeName'] ?? '',
+      location: data['location'] != null ? data['location'] as GeoPoint : null,
     );
   }
 
@@ -31,7 +31,7 @@ class Item {
       'name': name,
       'units': units,
       'categoryName': categoryName,
-      'storeName': storeName,
+      if (location != null) 'location': location,
     };
   }
 }

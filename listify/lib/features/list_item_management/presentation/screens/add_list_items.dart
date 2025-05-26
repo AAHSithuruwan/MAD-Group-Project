@@ -6,7 +6,7 @@ import 'package:overflow_view/overflow_view.dart';
 import '../../../../common/widgets/custom_app_bar.dart';
 import '../../../../core/Models/Item.dart';
 
-class AddListItems extends StatefulWidget{
+class AddListItems extends StatefulWidget {
   const AddListItems({super.key});
 
   @override
@@ -14,7 +14,6 @@ class AddListItems extends StatefulWidget{
 }
 
 class _AddListItemsState extends State<AddListItems> {
-
   List<ListifyCategory> categoriesWithItems = [];
 
   List<ListifyCategory> filteredCategoryWithItems = [];
@@ -23,33 +22,38 @@ class _AddListItemsState extends State<AddListItems> {
 
   List<Item> filteredRecentItems = [];
 
-  void navigateToQuantitySelectionPage(Item item){
-    context.push('/quantity-selection',extra: item);
+  void navigateToQuantitySelectionPage(Item item) {
+    context.push('/quantity-selection', extra: item);
   }
 
-  Future<void> getItems() async{
+  Future<void> getItems() async {
     ItemService itemService = new ItemService();
-    List<ListifyCategory> categoriesAndItems = await itemService.getCategoriesWithItems();
+    List<ListifyCategory> categoriesAndItems =
+        await itemService.getCategoriesWithItems();
     List<Item> userRecentItems = await itemService.getLatest10RecentItems();
     setState(() {
       categoriesWithItems = categoriesAndItems;
-      filteredCategoryWithItems = List.from(categoriesWithItems.map((category) =>
-          ListifyCategory(
+      filteredCategoryWithItems = List.from(
+        categoriesWithItems.map(
+          (category) => ListifyCategory(
             docId: category.docId,
             name: category.name,
             items: List.from(category.items ?? []),
-          )
-      ));
+          ),
+        ),
+      );
       recentItems = userRecentItems;
-      filteredRecentItems = List.from(recentItems.map((item) =>
-          Item(
+      filteredRecentItems = List.from(
+        recentItems.map(
+          (item) => Item(
             docId: item.docId,
             name: item.name,
             units: List.from(item.units ?? []),
-            storeName: item.storeName,
+            //  storeName: item.storeName,
             categoryName: item.categoryName,
-          )
-      ));
+          ),
+        ),
+      );
     });
   }
 
@@ -62,69 +66,83 @@ class _AddListItemsState extends State<AddListItems> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: "Add Items",displayTitle: true,),
+      appBar: CustomAppBar(title: "Add Items", displayTitle: true),
       backgroundColor: Color(0xFFF0F4F0),
 
       body: SingleChildScrollView(
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(30,35,30,10),
+              padding: const EdgeInsets.fromLTRB(30, 35, 30, 10),
               child: SearchAnchor(
-                  builder: (BuildContext context, SearchController controller) {
-                    return SearchBar(
-                      controller: controller,
-                      elevation: WidgetStatePropertyAll(0),
-                      shape: WidgetStatePropertyAll<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(7), // Rounded corners
-                          side: BorderSide(
-                            color: Colors.green, // Border color
-                            width: 2, // Border width
-                          ),
+                builder: (BuildContext context, SearchController controller) {
+                  return SearchBar(
+                    controller: controller,
+                    elevation: WidgetStatePropertyAll(0),
+                    shape: WidgetStatePropertyAll<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(
+                          7,
+                        ), // Rounded corners
+                        side: BorderSide(
+                          color: Colors.green, // Border color
+                          width: 2, // Border width
                         ),
                       ),
-                      padding: const WidgetStatePropertyAll<EdgeInsets>(
-                          EdgeInsets.symmetric(horizontal: 16.0)),
-                      onTap: () {
-                        controller.openView();
-                      },
-                      onChanged: (query) {
-                        controller.openView();
-                      },
-                      hintText: "Search items",
-                      hintStyle: WidgetStatePropertyAll<TextStyle>(
-                        TextStyle(color: Color(0xFFAAAAAA)), // Change hint text color
-                      ),
-                      trailing: <Widget>[
-                        Tooltip(
-                          message: "search",
-                          child: Icon(Icons.search, color: Color(0xFFB7B7B7),),
-                        )
-                      ],
-                    );
-                  }, suggestionsBuilder:
-                  (BuildContext context, SearchController controller) {
-                List<Item> itemList = [];
-                for(var category in categoriesWithItems){
-                  for(var item in category.items!){
-                    itemList.add(item);
-                  }
-                }
-                List<Item> filteredItems = itemList
-                    .where((item) => item.name.toLowerCase().contains(controller.text.toLowerCase()))
-                    .toList();
-                return filteredItems.map((item) {
-                  return ListTile(
-                    title: Text(item.name),
+                    ),
+                    padding: const WidgetStatePropertyAll<EdgeInsets>(
+                      EdgeInsets.symmetric(horizontal: 16.0),
+                    ),
                     onTap: () {
-                      setState(() {
-                        navigateToQuantitySelectionPage(item);
-                      });
+                      controller.openView();
                     },
+                    onChanged: (query) {
+                      controller.openView();
+                    },
+                    hintText: "Search items",
+                    hintStyle: WidgetStatePropertyAll<TextStyle>(
+                      TextStyle(
+                        color: Color(0xFFAAAAAA),
+                      ), // Change hint text color
+                    ),
+                    trailing: <Widget>[
+                      Tooltip(
+                        message: "search",
+                        child: Icon(Icons.search, color: Color(0xFFB7B7B7)),
+                      ),
+                    ],
                   );
-                }).toList();
-              }),
+                },
+                suggestionsBuilder: (
+                  BuildContext context,
+                  SearchController controller,
+                ) {
+                  List<Item> itemList = [];
+                  for (var category in categoriesWithItems) {
+                    for (var item in category.items!) {
+                      itemList.add(item);
+                    }
+                  }
+                  List<Item> filteredItems =
+                      itemList
+                          .where(
+                            (item) => item.name.toLowerCase().contains(
+                              controller.text.toLowerCase(),
+                            ),
+                          )
+                          .toList();
+                  return filteredItems.map((item) {
+                    return ListTile(
+                      title: Text(item.name),
+                      onTap: () {
+                        setState(() {
+                          navigateToQuantitySelectionPage(item);
+                        });
+                      },
+                    );
+                  }).toList();
+                },
+              ),
             ),
 
             Padding(
@@ -140,14 +158,18 @@ class _AddListItemsState extends State<AddListItems> {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(20),
-                        boxShadow:[
+                        boxShadow: [
                           BoxShadow(
-                            color: Color(0x1A1BA424), // Shadow color with opacity
+                            color: Color(
+                              0x1A1BA424,
+                            ), // Shadow color with opacity
                             blurRadius: 20, // The spread of the shadow
                             offset: Offset(-5, -5), // Shadow position (x, y)
                           ),
                           BoxShadow(
-                            color: Color(0x1A1BA424), // Shadow color with opacity
+                            color: Color(
+                              0x1A1BA424,
+                            ), // Shadow color with opacity
                             blurRadius: 20, // The spread of the shadow
                             offset: Offset(5, 5), // Shadow position (x, y)
                           ),
@@ -157,63 +179,87 @@ class _AddListItemsState extends State<AddListItems> {
                         onPressed: () {
                           setState(() {
                             filteredCategoryWithItems.clear();
-                            filteredCategoryWithItems = List.from(categoriesWithItems.map((category) =>
-                                ListifyCategory(
+                            filteredCategoryWithItems = List.from(
+                              categoriesWithItems.map(
+                                (category) => ListifyCategory(
                                   docId: category.docId,
                                   name: category.name,
                                   items: List.from(category.items ?? []),
-                                )
-                            ));
+                                ),
+                              ),
+                            );
                             filteredRecentItems.clear();
-                            filteredRecentItems = List.from(recentItems.map((item) =>
-                                Item(
+                            filteredRecentItems = List.from(
+                              recentItems.map(
+                                (item) => Item(
                                   docId: item.docId,
                                   name: item.name,
                                   units: List.from(item.units ?? []),
-                                  storeName: item.storeName,
+                                  //       storeName: item.storeName,
                                   categoryName: item.categoryName,
-                                )
-                            ));
+                                ),
+                              ),
+                            );
                           });
                         },
 
-                        child: Text("All",overflow: TextOverflow.ellipsis,style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),),
+                        child: Text(
+                          "All",
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                  ...categoriesWithItems.map((category) => SizedBox(
-                    height: 35,
-                    width: 110,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow:[
-                          BoxShadow(
-                            color: Color(0x1A1BA424), // Shadow color with opacity
-                            blurRadius: 20, // The spread of the shadow
-                            offset: Offset(-5, -5), // Shadow position (x, y)
-                          ),
-                          BoxShadow(
-                            color: Color(0x1A1BA424), // Shadow color with opacity
-                            blurRadius: 20, // The spread of the shadow
-                            offset: Offset(5, 5), // Shadow position (x, y)
-                          ),
-                        ],
-                      ),
-                      child: TextButton(
-                        onPressed: () {
-                          setState(() {
-                            filteredCategoryWithItems.clear();
-                            filteredRecentItems.clear();
-                            filteredCategoryWithItems.add(category);
-                          });
-                        },
+                  ...categoriesWithItems.map(
+                    (category) => SizedBox(
+                      height: 35,
+                      width: 110,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color(
+                                0x1A1BA424,
+                              ), // Shadow color with opacity
+                              blurRadius: 20, // The spread of the shadow
+                              offset: Offset(-5, -5), // Shadow position (x, y)
+                            ),
+                            BoxShadow(
+                              color: Color(
+                                0x1A1BA424,
+                              ), // Shadow color with opacity
+                              blurRadius: 20, // The spread of the shadow
+                              offset: Offset(5, 5), // Shadow position (x, y)
+                            ),
+                          ],
+                        ),
+                        child: TextButton(
+                          onPressed: () {
+                            setState(() {
+                              filteredCategoryWithItems.clear();
+                              filteredRecentItems.clear();
+                              filteredCategoryWithItems.add(category);
+                            });
+                          },
 
-                        child: Text(category.name,overflow: TextOverflow.ellipsis,style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),),
+                          child: Text(
+                            category.name,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
-                  )),
+                  ),
                 ],
 
                 builder: (context, remaining) {
@@ -222,7 +268,7 @@ class _AddListItemsState extends State<AddListItems> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(20),
-                      boxShadow:[
+                      boxShadow: [
                         BoxShadow(
                           color: Color(0x1A1BA424), // Shadow color with opacity
                           blurRadius: 20, // The spread of the shadow
@@ -238,15 +284,30 @@ class _AddListItemsState extends State<AddListItems> {
                     child: PopupMenuButton<String>(
                       icon: Icon(Icons.more_horiz),
                       color: Colors.white,
-                      itemBuilder: (context) => categoriesWithItems
-                          .skip(categoriesWithItems.length - remaining) // Get only hidden buttons
-                          .map((category) => PopupMenuItem(value: category.name, child: Text(category.name)))
-                          .toList(),
+                      itemBuilder:
+                          (context) =>
+                              categoriesWithItems
+                                  .skip(
+                                    categoriesWithItems.length - remaining,
+                                  ) // Get only hidden buttons
+                                  .map(
+                                    (category) => PopupMenuItem(
+                                      value: category.name,
+                                      child: Text(category.name),
+                                    ),
+                                  )
+                                  .toList(),
                       onSelected: (value) {
-                        ListifyCategory category = categoriesWithItems.firstWhere(
+                        ListifyCategory category = categoriesWithItems
+                            .firstWhere(
                               (category) => category.name == value,
-                          orElse: () => ListifyCategory(docId: '', name: 'Not Found', items:[]), // Fallback if not found
-                        );
+                              orElse:
+                                  () => ListifyCategory(
+                                    docId: '',
+                                    name: 'Not Found',
+                                    items: [],
+                                  ), // Fallback if not found
+                            );
 
                         setState(() {
                           filteredCategoryWithItems.clear();
@@ -259,106 +320,149 @@ class _AddListItemsState extends State<AddListItems> {
                 },
               ),
             ),
-            Container(
-              height: 1,
-              color: Color(0xFFB7B7B7),
-            ),
+            Container(height: 1, color: Color(0xFFB7B7B7)),
             Padding(
-              padding: const EdgeInsets.fromLTRB(35,20,35,20),
+              padding: const EdgeInsets.fromLTRB(35, 20, 35, 20),
               child: Container(
                 constraints: BoxConstraints(minWidth: 400),
 
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    filteredRecentItems.isEmpty == false ?
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Recent Items",
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(height: 10),
-                        Wrap(
-                          alignment: WrapAlignment.start,
-                          spacing: 10.0,
-                          runSpacing: 10.0,
-                          children: (filteredRecentItems ?? []).map((item) =>
-                              GestureDetector(
-                                onTap: () {
-                                  navigateToQuantitySelectionPage(item);
-                                },
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFFD9D9D9),
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
-                                    child: Text(item.name, style: TextStyle(fontSize: 15,)),
-                                  ),
-                                ),
+                    filteredRecentItems.isEmpty == false
+                        ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Recent Items",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
                               ),
-                          ).toList(),
-
-                        ),
-                        SizedBox(height: 30,)
-                      ],
-                    )
-                    :
-                    Container(),
-                    Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: filteredCategoryWithItems.map((category) =>
-                            category.items?.isEmpty == false ?
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  category.name,
-                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                                ),
-                                SizedBox(height: 10),
-                                Wrap(
-                                    alignment: WrapAlignment.start,
-                                    spacing: 10.0,
-                                    runSpacing: 10.0,
-                                  children: (category.items ?? []).map((item) =>
-                                      GestureDetector(
-                                        onTap: () {
-                                          navigateToQuantitySelectionPage(item);
-                                        },
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: const Color(0xFFD9D9D9),
-                                            borderRadius: BorderRadius.circular(10),
-                                          ),
-                                          child: Padding(
-                                            padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
-                                            child: Text(item.name, style: TextStyle(fontSize: 15,)),
+                            ),
+                            SizedBox(height: 10),
+                            Wrap(
+                              alignment: WrapAlignment.start,
+                              spacing: 10.0,
+                              runSpacing: 10.0,
+                              children:
+                                  (filteredRecentItems ?? [])
+                                      .map(
+                                        (item) => GestureDetector(
+                                          onTap: () {
+                                            navigateToQuantitySelectionPage(
+                                              item,
+                                            );
+                                          },
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              color: const Color(0xFFD9D9D9),
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                            ),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                    20,
+                                                    10,
+                                                    20,
+                                                    10,
+                                                  ),
+                                              child: Text(
+                                                item.name,
+                                                style: TextStyle(fontSize: 15),
+                                              ),
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                  ).toList(),
-
-                                ),
-                                SizedBox(height: 30,)
-                              ],
-                            )
-                                :
-                                Container()
-                        ).toList()
+                                      )
+                                      .toList(),
+                            ),
+                            SizedBox(height: 30),
+                          ],
+                        )
+                        : Container(),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children:
+                          filteredCategoryWithItems
+                              .map(
+                                (category) =>
+                                    category.items?.isEmpty == false
+                                        ? Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              category.name,
+                                              style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            SizedBox(height: 10),
+                                            Wrap(
+                                              alignment: WrapAlignment.start,
+                                              spacing: 10.0,
+                                              runSpacing: 10.0,
+                                              children:
+                                                  (category.items ?? [])
+                                                      .map(
+                                                        (
+                                                          item,
+                                                        ) => GestureDetector(
+                                                          onTap: () {
+                                                            navigateToQuantitySelectionPage(
+                                                              item,
+                                                            );
+                                                          },
+                                                          child: Container(
+                                                            decoration: BoxDecoration(
+                                                              color:
+                                                                  const Color(
+                                                                    0xFFD9D9D9,
+                                                                  ),
+                                                              borderRadius:
+                                                                  BorderRadius.circular(
+                                                                    10,
+                                                                  ),
+                                                            ),
+                                                            child: Padding(
+                                                              padding:
+                                                                  const EdgeInsets.fromLTRB(
+                                                                    20,
+                                                                    10,
+                                                                    20,
+                                                                    10,
+                                                                  ),
+                                                              child: Text(
+                                                                item.name,
+                                                                style:
+                                                                    TextStyle(
+                                                                      fontSize:
+                                                                          15,
+                                                                    ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      )
+                                                      .toList(),
+                                            ),
+                                            SizedBox(height: 30),
+                                          ],
+                                        )
+                                        : Container(),
+                              )
+                              .toList(),
                     ),
                   ],
                 ),
               ),
             ),
-
           ],
         ),
       ),
     );
   }
 }
-
