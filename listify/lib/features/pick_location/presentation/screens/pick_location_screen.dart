@@ -263,6 +263,24 @@ class _PickLocationScreenState extends State<PickLocationScreen> {
               ),
             ),
           ),
+          SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () {
+              final selectedStore = storeLocations.entries.firstWhere(
+                    (entry) => entry.value == currentLatLng,
+                orElse: () => MapEntry("Unknown", currentLatLng),
+              ).key;
+
+              Navigator.pop(context, selectedStore);
+            },
+            child: Text("OK"),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color(0xFF1BA424),
+              foregroundColor: Colors.white,
+              padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+          ),
         ],
       ),
     );
