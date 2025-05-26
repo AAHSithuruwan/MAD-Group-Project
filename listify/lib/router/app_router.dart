@@ -13,6 +13,7 @@ import '../features/auth/presentation/screens/auth_selection.dart';
 import '../features/auth/presentation/screens/sign_in_screen.dart';
 import '../features/auth/presentation/screens/sign_up_screen.dart';
 import '../features/home/presentation/screens/home.dart';
+import '../features/pick_location/presentation/screens/pick_location_screen.dart';
 import './initial_route_helper.dart';
 import '../features/welcome/presentation/screens/welcome_screen.dart';
 import 'package:listify/main.dart';
