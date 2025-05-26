@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:listify/core/Models/Item.dart';
 import 'package:listify/core/services/item_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:listify/features/auth/presentation/screens/sign_in_screen.dart';
+import 'package:listify/features/pick_location/presentation/screens/pick_location_screen.dart'; // Import the PickLocationScreen
 
 class CreateItemsUser extends StatefulWidget {
   const CreateItemsUser({Key? key}) : super(key: key);
@@ -33,6 +35,9 @@ class _CreateItemsState extends State<CreateItemsUser> {
   List<String> categoryNames = [];
   List<String> addedUnits = [];
   List<String> addedCategories = [];
+
+  GeoPoint? pickedLocation;
+  String? pickedStoreName;
 
   @override
   void initState() {
@@ -95,7 +100,7 @@ class _CreateItemsState extends State<CreateItemsUser> {
               offset: const Offset(0, -30),
               child: Container(
                 padding: const EdgeInsets.fromLTRB(30, 40, 30, 0),
-                height: screenHeight + 48, // Full height minus image height
+                //height: screenHeight + 48, // Full height minus image height
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: const BorderRadius.only(
@@ -611,16 +616,25 @@ class _CreateItemsState extends State<CreateItemsUser> {
                       height: 37,
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () {
-                          onPressed: () async {
-                          //Navigator.pushNamed(context, '/map');
-                          final selectedLocation = await Navigator.push(
+                        onPressed: () async {
+                          final result = await Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const PickLocationScreen(),
+                              builder: (context) => PickLocationScreen(),
                             ),
                           );
-                        },
+                          if (result != null && result is Map) {
+                            setState(() {
+                              pickedStoreName = result['storeName'] as String?;
+                              final latLng = result['latLng'];
+                              if (latLng != null) {
+                                pickedLocation = GeoPoint(
+                                  latLng.latitude,
+                                  latLng.longitude,
+                                );
+                              }
+                            });
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFFE8F6E9),
@@ -639,6 +653,18 @@ class _CreateItemsState extends State<CreateItemsUser> {
                         ),
                       ),
                     ),
+
+                    if (pickedStoreName != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Text(
+                          'Picked Store: $pickedStoreName',
+                          style: const TextStyle(
+                            color: Colors.green,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
 
                     const SizedBox(height: 32),
 
@@ -675,7 +701,8 @@ class _CreateItemsState extends State<CreateItemsUser> {
                               name: itemNameController.text,
                               units: addedUnits,
                               categoryName: categoryNameController.text,
-                              // storeName: storeNameController.text,
+                              storeName: pickedStoreName ?? '',
+                              location: pickedLocation,
                             );
 
                             try {
@@ -713,6 +740,8 @@ class _CreateItemsState extends State<CreateItemsUser> {
                         ),
                       ),
                     ),
+
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),
