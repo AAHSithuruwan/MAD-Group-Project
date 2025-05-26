@@ -21,6 +21,30 @@ class ItemService {
     }
   }
 
+  Future<void> addItembyUser(Item item) async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        throw Exception('No user logged in');
+      }
+      final docRef =
+          FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .collection('items')
+              .doc();
+
+      await docRef.set({
+        ...item.toMap(),
+        'docId': docRef.id,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      print('Firestore error: $e');
+      rethrow;
+    }
+  }
+
   Future<List<ListifyCategory>> getCategoriesWithItems() async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -53,7 +77,7 @@ class ItemService {
               name: doc['name'],
               units: List<String>.from(doc['units']),
               categoryName: doc['categoryName'],
-              storeName: doc['storeName'],
+              location: doc['location'],
             );
           }).toList();
 
@@ -157,7 +181,7 @@ class ItemService {
         name: documentSnapshot.get("name"),
         units: List<String>.from(documentSnapshot.get("units")),
         categoryName: documentSnapshot.get("categoryName"),
-        storeName: documentSnapshot.get("storeName"),
+        location: documentSnapshot.get("location"),
       );
     } catch (e) {
       throw Exception("No item found: $e");

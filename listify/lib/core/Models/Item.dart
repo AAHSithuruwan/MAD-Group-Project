@@ -8,6 +8,7 @@ class Item {
   String storeName;
   bool isUserSpecificItem;
 
+
   Item({
     required this.docId,
     required this.name,
@@ -24,7 +25,7 @@ class Item {
       name: data['name'] ?? '',
       units: List<String>.from(data['units'] ?? []),
       categoryName: data['categoryName'] ?? '',
-      storeName: data['storeName'] ?? '',
+      location: data['location'] != null ? data['location'] as GeoPoint : null,
     );
   }
 
@@ -33,7 +34,7 @@ class Item {
       'name': name,
       'units': units,
       'categoryName': categoryName,
-      'storeName': storeName,
+      if (location != null) 'location': location,
     };
   }
 }
