@@ -94,6 +94,29 @@ class ListifyListService {
     }
   }
 
+
+  Future<List<ListifyList>> getSelectionLists() async {
+    AuthService authService = AuthService();
+    User? user = await authService.getCurrentUserinstance();
+    if (user == null) throw Exception("No logged-in user found");
+
+    String uid = user.uid;
+    List<ListifyList> lists = [];
+
+    QuerySnapshot listQuerySnapshot = await FirebaseFirestore.instance
+        .collection('ListifyLists')
+        .where('members', arrayContains: uid)
+        .get();
+
+    for (var listDoc in listQuerySnapshot.docs) {
+      ListifyList listifyList = ListifyList.fromDoc(listDoc);
+      lists.add(listifyList);
+    }
+    return lists;
+  }
+
+
+
   Future<bool> addListItem(
     Item item,
     String listId,

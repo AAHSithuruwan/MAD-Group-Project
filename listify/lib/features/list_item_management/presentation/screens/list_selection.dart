@@ -30,7 +30,7 @@ class _ListSelectionState extends State<ListSelection> {
   int? selectedRecurringIndex;
 
   Future<void> getLists() async{
-    List<ListifyList> returnedLists = await listifyListService.getListsByDateRange();
+    List<ListifyList> returnedLists = await listifyListService.getSelectionLists();
     setState(() {
       lists = returnedLists;
     });
