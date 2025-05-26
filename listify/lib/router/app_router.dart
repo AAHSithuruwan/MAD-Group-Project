@@ -5,6 +5,9 @@ import 'package:listify/core/providers/auth_provider.dart';
 import 'package:listify/features/auth/presentation/screens/forgot_password.dart';
 import 'package:listify/features/list_item_management/presentation/screens/list_selection.dart';
 import 'package:listify/features/list_item_management/presentation/screens/quantity_selection.dart';
+
+import 'package:listify/features/list_item_management/presentation/screens/list_sharing_screen.dart';
+
 import 'package:listify/features/notifications/presentation/notification_screen.dart';
 import 'package:listify/features/list_item_management/presentation/screens/add_list_items.dart';
 import 'package:listify/features/main_container/presentation/screens/main_container.dart';
@@ -13,6 +16,7 @@ import '../features/auth/presentation/screens/auth_selection.dart';
 import '../features/auth/presentation/screens/sign_in_screen.dart';
 import '../features/auth/presentation/screens/sign_up_screen.dart';
 import '../features/home/presentation/screens/home.dart';
+import '../features/pick_location/presentation/screens/pick_location_screen.dart';
 import './initial_route_helper.dart';
 import '../features/welcome/presentation/screens/welcome_screen.dart';
 import 'package:listify/main.dart';
@@ -29,13 +33,17 @@ class AppRouter {
   static const String addListItemsRoute = '/add-list-items';
   static const String quantitySelectionRoute = '/quantity-selection';
   static const String listSelectionRoute = '/list-selection';
+  static const String listSharingRoute = '/list-sharing';
+  static const String pickLocationRoute = '/pick_location';
 
   // List of protected routes (requires user to be signed in)
   static final List<GoRoute> protectedRoutes = [
     GoRoute(
       path: homeRoute,
       name: 'home',
-      builder: (BuildContext context, GoRouterState state) => const MainContainer(),
+      builder:
+          (BuildContext context, GoRouterState state) => const MainContainer(),
+          // (BuildContext context, GoRouterState state) => const ListSharingScreen(),
     ),
 
     GoRoute(
@@ -130,8 +138,20 @@ class AppRouter {
           path: addListItemsRoute,
           name: 'add_list_items',
           builder:
-              (BuildContext context, GoRouterState state) =>
-              AddListItems(),
+              (BuildContext context, GoRouterState state) => AddListItems(),
+        ),
+
+        // List sharing screen route
+        GoRoute(
+          path: listSharingRoute,
+          name: 'list_sharing',
+          builder: (BuildContext context, GoRouterState state) {
+            final data = state.extra as Map<String, dynamic>?;
+            return ListSharingScreen(
+              listId: data?['listId'],
+              listName: data?['listName'],
+            );
+          },
         ),
 
         // Quantity selection screen route
@@ -154,6 +174,15 @@ class AppRouter {
             return ListSelection(item: item, quantity: quantity);
           },
         ),
+        // pick location screen route
+        GoRoute(
+          path: pickLocationRoute,
+          name: 'pick_location',
+          builder:
+              (BuildContext context, GoRouterState state) =>
+              PickLocationScreen(),
+        ),
+
 
         // Include all protected routes
         ...protectedRoutes,

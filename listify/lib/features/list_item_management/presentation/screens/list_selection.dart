@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:listify/core/services/item_service.dart';
 import 'package:listify/core/services/listify_list_service.dart';
 import '../../../../core/Models/Item.dart';
 import '../../../../core/Models/ListifyList.dart';
@@ -24,13 +25,14 @@ class _ListSelectionState extends State<ListSelection> {
   ListifyList? selectedList;
 
   ListifyListService listifyListService = ListifyListService();
+  ItemService itemService = ItemService();
 
   bool isRecurring = false;
   List<String> recurringOptions = ["Daily", "Weekly", "Monthly"];
   int? selectedRecurringIndex;
 
   Future<void> getLists() async{
-    List<ListifyList> returnedLists = await listifyListService.getListsByDateRange();
+    List<ListifyList> returnedLists = await listifyListService.getSelectionLists();
     setState(() {
       lists = returnedLists;
     });
@@ -39,7 +41,7 @@ class _ListSelectionState extends State<ListSelection> {
   Future<bool> addListItem() async{
     if(await listifyListService.addListItem(widget.item, selectedList!.docId!, widget.quantity, requiredDateController.text)){
       if(isRecurring){
-        if(await listifyListService.addRecurringItem(itemName: widget.item.name, targetListId: selectedList!.docId!, quantity: widget.quantity, categoryName: widget.item.categoryName, requiredDate: requiredDateController.text, recurringType: recurringOptions[selectedRecurringIndex!])){
+        if(await itemService.addRecurringItem(itemName: widget.item.name, targetListId: selectedList!.docId!, quantity: widget.quantity, categoryName: widget.item.categoryName, requiredDate: requiredDateController.text, recurringType: recurringOptions[selectedRecurringIndex!])){
           return true;
         }
         else{

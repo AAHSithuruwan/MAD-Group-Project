@@ -51,9 +51,9 @@ class _AddListItemsState extends State<AddListItems> {
             units: List.from(item.units ?? []),
             //  storeName: item.storeName,
             categoryName: item.categoryName,
-          ),
-        ),
-      );
+            isUserSpecificItem: item.isUserSpecificItem,
+          )
+      ));
     });
   }
 
@@ -197,9 +197,9 @@ class _AddListItemsState extends State<AddListItems> {
                                   units: List.from(item.units ?? []),
                                   //       storeName: item.storeName,
                                   categoryName: item.categoryName,
-                                ),
-                              ),
-                            );
+                                  isUserSpecificItem: item.isUserSpecificItem,
+                                )
+                            ));
                           });
                         },
 

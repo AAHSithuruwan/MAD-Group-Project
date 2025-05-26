@@ -5,14 +5,17 @@ class Item {
   String name;
   List<String> units;
   String categoryName;
-  GeoPoint? location;
+  String storeName;
+  bool isUserSpecificItem;
+
 
   Item({
     required this.docId,
     required this.name,
     required this.units,
     required this.categoryName,
-    this.location,
+    required this.storeName,
+    this.isUserSpecificItem = false
   });
 
   factory Item.fromDoc(DocumentSnapshot doc) {
