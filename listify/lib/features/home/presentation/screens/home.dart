@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:listify/core/Models/ListifyList.dart';
 import 'package:listify/core/services/listify_list_service.dart';
 import 'package:listify/core/services/local_notification_service.dart';
+import 'package:listify/core/services/notification_handler.dart';
 import '../../../../core/Models/ListItem.dart';
 
 class Home extends StatefulWidget{
@@ -42,6 +43,7 @@ class _HomeState extends State<Home> {
   @override
   void initState(){
     super.initState();
+    NotificationHandler().startListeningToNotifications();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);

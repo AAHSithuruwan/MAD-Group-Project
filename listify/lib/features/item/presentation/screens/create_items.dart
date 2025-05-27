@@ -19,6 +19,11 @@ class _CreateItemsState extends State<CreateItems> {
   final TextEditingController categoryNameController = TextEditingController();
   final ItemService itemService = ItemService();
 
+  String capitalizeFirst(String s) {
+    if (s.isEmpty) return s;
+    return s[0].toUpperCase() + s.substring(1);
+  }
+
   List<String> suggestedUnits = [
     '1kg',
     '500g',
@@ -29,6 +34,7 @@ class _CreateItemsState extends State<CreateItems> {
     '1 box',
     '1 piece',
     '1 pair',
+    '2 items',
   ];
   List<String> categoryNames = [];
   List<String> addedUnits = [];
@@ -98,7 +104,7 @@ class _CreateItemsState extends State<CreateItems> {
               offset: const Offset(0, -30),
               child: Container(
                 padding: const EdgeInsets.fromLTRB(30, 40, 30, 0),
-                height: screenHeight + 48, // Full height minus image height
+                //height: screenHeight + 48, // Full height minus image height
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: const BorderRadius.only(
@@ -375,10 +381,10 @@ class _CreateItemsState extends State<CreateItems> {
                                                       setState(() {
                                                         categoryNames.add(
                                                           newCategoryName,
-                                                        ); // Add to local list for immediate UI update
+                                                        );
                                                         categoryNameController
                                                                 .text =
-                                                            newCategoryName; // Update the TextField
+                                                            newCategoryName;
                                                         addedCategories.add(
                                                           newCategoryName,
                                                         );
@@ -696,9 +702,13 @@ class _CreateItemsState extends State<CreateItems> {
 
                             final item = Item(
                               docId: null,
-                              name: itemNameController.text,
+                              name: capitalizeFirst(
+                                itemNameController.text.trim(),
+                              ),
                               units: addedUnits,
-                              categoryName: categoryNameController.text,
+                              categoryName: capitalizeFirst(
+                                categoryNameController.text.trim(),
+                              ),
                               storeName: pickedStoreName ?? '',
                               location: pickedLocation,
                             );
@@ -713,7 +723,8 @@ class _CreateItemsState extends State<CreateItems> {
                               itemNameController.clear();
                               unitController.clear();
                               categoryNameController.clear();
-                              //storeNameController.clear();
+                              pickedStoreName = null;
+                              pickedLocation = null;
                               addedUnits.clear();
                               setState(() {});
                             } catch (e) {
