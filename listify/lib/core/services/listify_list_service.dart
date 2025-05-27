@@ -3,9 +3,11 @@ import 'package:intl/intl.dart';
 import 'package:listify/core/services/auth_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:listify/core/services/item_service.dart';
+import 'package:listify/core/services/notification_service.dart';
 import '../Models/Item.dart';
 import '../Models/ListItem.dart';
 import '../Models/ListifyList.dart';
+import 'store_notification_service.dart';
 
 class ListifyListService {
 
@@ -75,6 +77,15 @@ class ListifyListService {
           .collection("ListItems")
           .doc(listItemId)
           .update({'checked': value});
+
+      if(value){
+        AuthService authService = AuthService();
+        User? user = await authService.getCurrentUserinstance();
+        if (user == null) throw Exception("No logged-in user found");
+
+        StoreNotificationService storeNotificationService = StoreNotificationService();
+        await storeNotificationService.storeCheckItemNotifications(listId: listId, changedUserId: user.uid, listItemId: listItemId);
+      }
     } catch (e) {
       print(e);
     }
@@ -135,6 +146,8 @@ class ListifyListService {
 
       ItemService itemService = ItemService();
       await itemService.addRecentItem(itemId: item.docId!, name: item.name, categoryName: item.categoryName, isUserSpecificItem: item.isUserSpecificItem);
+      StoreNotificationService storeNotificationService = StoreNotificationService();
+      await storeNotificationService.storeAddItemNotifications(listId: listId, changedUserId: user.uid, item: item);
       return true;
     } catch (e) {
       print(e);
