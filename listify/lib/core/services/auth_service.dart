@@ -10,6 +10,9 @@ class AuthService {
     return _auth.authStateChanges();
   }
 
+  // Synchronous getter for current user
+  User? get currentUser => _auth.currentUser;
+
   // Sign up with email and password
   Future<User?> signUpWithEmailAndPassword(String email, String password, String username) async {
     try {
@@ -23,7 +26,10 @@ class AuthService {
           'email': user.email,
           'displayName': username, 
           'createdAt': FieldValue.serverTimestamp(),
+          'provider': 'email'
         });
+        // Optionally update displayName in FirebaseAuth profile
+        await user.updateDisplayName(username);
       }
 
       return user;
@@ -99,4 +105,21 @@ class AuthService {
     return _auth.currentUser;
   }
 
+  Future<Map<String, dynamic>?> getCurrentUserProfile() async {
+    final user = _auth.currentUser;
+    if (user == null) return null;
+    final doc =
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+    if (!doc.exists) return null;
+    final data = doc.data();
+    if (data == null) return null;
+    return {
+      'email': data['email'] ?? '',
+      'displayName': data['displayName'] ?? '',
+      'photoURL': data['photoURL'] ?? '',
+    };
+  }
 }

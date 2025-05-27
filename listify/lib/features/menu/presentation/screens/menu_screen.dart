@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
+import 'package:listify/core/services/auth_service.dart';
 
 class MenuScreen extends StatelessWidget {
   final String? title;
@@ -11,44 +11,53 @@ class MenuScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
+    final authService = AuthService();
 
     return Scaffold(
       backgroundColor: Colors.white,
-
       body: Column(
         children: [
-          // Profile Section
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 50),
-            color: Colors.white,
-            child: Row(
-              children: [
-                CircleAvatar(
-                  radius: 30,
-                  backgroundImage: user?.photoURL != null && user!.photoURL!.isNotEmpty
-                      ? NetworkImage(user.photoURL!)
-                      : const AssetImage("assets/Ellipse 30.png") as ImageProvider,
-                ),
-                const SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          // Profile Section using Firestore profile
+          FutureBuilder<Map<String, dynamic>?>(
+            future: authService.getCurrentUserProfile(),
+            builder: (context, snapshot) {
+              final profile = snapshot.data;
+              final photoURL = profile?['photoURL'] as String? ?? '';
+              final displayName = profile?['displayName'] as String? ?? 'No Name';
+              final email = profile?['email'] as String? ?? 'No Email';
+
+              return Container(
+                padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 50),
+                color: Colors.white,
+                child: Row(
                   children: [
-                    Text(
-                      user?.displayName ?? "No Name",
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
+                    CircleAvatar(
+                      radius: 30,
+                      backgroundImage: photoURL.isNotEmpty
+                          ? NetworkImage(photoURL)
+                          : const AssetImage("assets/images/placeholder.png") as ImageProvider,
                     ),
-                    Text(
-                      user?.email ?? "No Email",
-                      style: const TextStyle(color: Colors.black),
+                    const SizedBox(width: 12),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          displayName,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        Text(
+                          email,
+                          style: const TextStyle(color: Colors.black),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
-            ),
+              );
+            },
           ),
 
           // Menu List
