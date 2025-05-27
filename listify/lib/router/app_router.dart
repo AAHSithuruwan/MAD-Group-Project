@@ -33,6 +33,7 @@ class AppRouter {
   static const String quantitySelectionRoute = '/quantity-selection';
   static const String listSelectionRoute = '/list-selection';
   static const String listSharingRoute = '/list-sharing';
+  static const String pickLocationRoute = '/pick_location';
 
   // List of protected routes (requires user to be signed in)
   static final List<GoRoute> protectedRoutes = [
@@ -172,6 +173,15 @@ class AppRouter {
             return ListSelection(item: item, quantity: quantity);
           },
         ),
+        // pick location screen route
+        GoRoute(
+          path: pickLocationRoute,
+          name: 'pick_location',
+          builder:
+              (BuildContext context, GoRouterState state) =>
+              PickLocationScreen(),
+        ),
+
 
         // Include all protected routes
         ...protectedRoutes,
