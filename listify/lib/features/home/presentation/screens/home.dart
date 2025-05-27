@@ -5,6 +5,7 @@ import 'package:listify/core/Models/ListifyList.dart';
 import 'package:listify/core/services/listify_list_service.dart';
 import 'package:listify/core/services/local_notification_service.dart';
 import 'package:listify/core/services/notification_handler.dart';
+import 'package:listify/core/services/auth_service.dart';
 import '../../../../core/Models/ListItem.dart';
 
 class Home extends StatefulWidget{
@@ -81,9 +82,18 @@ class _HomeState extends State<Home> {
                           Text("Simplify your shopping list", style: TextStyle(fontFamily: "Khmer", fontSize: 12),)
                         ],
                       ),
-                      CircleAvatar(
-                        radius: 25, // Adjust the size
-                        backgroundImage: AssetImage("assets/images/profileImg.png") // Replace with your image URL
+                      FutureBuilder<Map<String, dynamic>?>(
+                        future: AuthService().getCurrentUserProfile(),
+                        builder: (context, snapshot) {
+                          final profile = snapshot.data;
+                          final photoURL = profile?['photoURL'] as String? ?? '';
+                          return CircleAvatar(
+                            radius: 25,
+                            backgroundImage: photoURL.isNotEmpty
+                                ? NetworkImage(photoURL)
+                                : const AssetImage("assets/images/placeholder.png") as ImageProvider,
+                          );
+                        },
                       ),
                     ],
                   ),
