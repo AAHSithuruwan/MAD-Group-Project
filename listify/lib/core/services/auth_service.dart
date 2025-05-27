@@ -11,26 +11,28 @@ class AuthService {
   }
 
   // Sign up with email and password
-  Future<User?> signUpWithEmailAndPassword(String email, String password) async {
-      try {
-        UserCredential result = await _auth.createUserWithEmailAndPassword(
-            email: email.trim(), password: password);
-        User? user = result.user;
+  Future<User?> signUpWithEmailAndPassword(String email, String password, String username) async {
+    try {
+      UserCredential result = await _auth.createUserWithEmailAndPassword(
+          email: email.trim(), password: password);
+      User? user = result.user;
 
-        if (user != null) {
-          await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
-            'uid': user.uid,
-            'email': user.email,
-            'createdAt': FieldValue.serverTimestamp(),
-          });
-        }
-
-        return user;
-      } catch (e) {
-        print("Error signing up: $e");
-        return null;
+      if (user != null) {
+        await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+          'uid': user.uid,
+          'email': user.email,
+          'displayName': username, 
+          'createdAt': FieldValue.serverTimestamp(),
+        });
       }
+
+      return user;
+    } catch (e) {
+      print("Error signing up: $e");
+      return null;
     }
+  }
+
   // Sign in with email and password
   Future<User?> signInWithEmailAndPassword(String email, String password) async {
     try {

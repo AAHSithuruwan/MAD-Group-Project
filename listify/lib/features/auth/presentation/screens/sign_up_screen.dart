@@ -9,6 +9,7 @@ final signUpErrorProvider = StateProvider<String?>((ref) => null);
 
 class SignUpScreen extends ConsumerWidget {
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController(); // <-- Add this
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
   bool _isPasswordVisible = false;
@@ -23,13 +24,14 @@ class SignUpScreen extends ConsumerWidget {
       ref.read(signUpErrorProvider.notifier).state = null;
 
       String email = _emailController.text.trim();
+      String username = _usernameController.text.trim(); // <-- Add this
       String password = _passwordController.text.trim();
       String confirmPassword = _confirmPasswordController.text.trim();
 
-      if (email.isNotEmpty && password.isNotEmpty && confirmPassword.isNotEmpty) {
+      if (email.isNotEmpty && username.isNotEmpty && password.isNotEmpty && confirmPassword.isNotEmpty) {
         if (password == confirmPassword) {
           try {
-            User? user = await authService.signUpWithEmailAndPassword(email, password);
+            User? user = await authService.signUpWithEmailAndPassword(email, password, username); // <-- Pass username
             if (user != null) {
               print("Signed up as: ${user.email}");
               context.go('/'); // Redirect to home
@@ -87,6 +89,19 @@ class SignUpScreen extends ConsumerWidget {
                     ),
                   ),
                 ),
+
+              // Username TextField
+              Text('Username'), // <-- Add this
+              TextField(
+                controller: _usernameController,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 20),
 
               // Email TextField
               Text('Email'),
