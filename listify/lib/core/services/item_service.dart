@@ -31,7 +31,7 @@ class ItemService {
           FirebaseFirestore.instance
               .collection('users')
               .doc(user.uid)
-              .collection('items')
+              .collection('UserSpecificItems')
               .doc();
 
       await docRef.set({
@@ -70,17 +70,25 @@ class ItemService {
               .where('categoryName', isEqualTo: categoryName)
               .get();
 
-      List<Item> items =
-          itemSnapshot.docs.map((doc) {
-            return Item(
-              docId: doc.id,
-              name: doc['name'],
-              units: List<String>.from(doc['units']),
-              categoryName: doc['categoryName'],
-              location: doc['location'],
-              storeName: doc['storeName'] ?? '',
-            );
-          }).toList();
+      List<Item> items = itemSnapshot.docs.map((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+
+        GeoPoint? location;
+        if (data.containsKey('location') && data['location'] is GeoPoint) {
+          location = data['location'] as GeoPoint;
+        }
+
+        return Item(
+          docId: doc.id,
+          name: data['name'] ?? '',
+          units: List<String>.from(data['units'] ?? []),
+          categoryName: data['categoryName'] ?? '',
+          storeName: data['storeName'] ?? '',
+          location: location,
+          isUserSpecificItem: data['isUserSpecificItem'] ?? false,
+        );
+      }).toList();
+
 
       QuerySnapshot userItemSnapshot =
           await firestore
@@ -90,17 +98,24 @@ class ItemService {
               .where('categoryName', isEqualTo: categoryName)
               .get();
 
-      List<Item> userItems =
-          userItemSnapshot.docs.map((doc) {
-            return Item(
-              docId: doc.id,
-              name: doc['name'],
-              units: List<String>.from(doc['units']),
-              categoryName: doc['categoryName'],
-              storeName: doc['storeName'],
-              isUserSpecificItem: true,
-            );
-          }).toList();
+      List<Item> userItems = userItemSnapshot.docs.map((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+
+        GeoPoint? location;
+        if (data.containsKey('location') && data['location'] is GeoPoint) {
+          location = data['location'] as GeoPoint;
+        }
+
+        return Item(
+          docId: doc.id,
+          name: data['name'] ?? '',
+          units: List<String>.from(data['units'] ?? []),
+          categoryName: data['categoryName'] ?? '',
+          storeName: data['storeName'] ?? '',
+          location: location,
+          isUserSpecificItem: true,
+        );
+      }).toList();
 
       items.addAll(userItems);
 
@@ -169,23 +184,28 @@ class ItemService {
   Future<Item> getItemById(String itemId) async {
     try {
       DocumentSnapshot documentSnapshot =
-          await FirebaseFirestore.instance
-              .collection("Items")
-              .doc(itemId)
-              .get();
+      await FirebaseFirestore.instance.collection("Items").doc(itemId).get();
 
       if (!documentSnapshot.exists) {
         throw Exception("Item with ID $itemId does not exist");
       }
 
+      final data = documentSnapshot.data() as Map<String, dynamic>;
+
+      GeoPoint? location;
+      if (data.containsKey('location') && data['location'] is GeoPoint) {
+        location = data['location'] as GeoPoint;
+      }
+
       return Item(
         docId: itemId,
-        name: documentSnapshot.get("name"),
-        units: List<String>.from(documentSnapshot.get("units")),
-        categoryName: documentSnapshot.get("categoryName"),
-        location: documentSnapshot.get("location"),
-        storeName: documentSnapshot.get("storeName") ?? '',
+        name: data['name'] ?? '',
+        units: List<String>.from(data['units'] ?? []),
+        categoryName: data['categoryName'] ?? '',
+        storeName: data['storeName'] ?? '',
+        location: location,
       );
+
     } catch (e) {
       throw Exception("No item found: $e");
     }
@@ -197,26 +217,34 @@ class ItemService {
     if (user == null) throw Exception("No logged-in user found");
 
     try {
-      DocumentSnapshot documentSnapshot =
-          await FirebaseFirestore.instance
-              .collection("users")
-              .doc(user.uid)
-              .collection("UserSpecificItems")
-              .doc(itemId)
-              .get();
+      DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
+          .collection("users")
+          .doc(user.uid)
+          .collection("UserSpecificItems")
+          .doc(itemId)
+          .get();
 
       if (!documentSnapshot.exists) {
         throw Exception("User Specific Item with ID $itemId does not exist");
       }
 
+      final data = documentSnapshot.data() as Map<String, dynamic>;
+
+      GeoPoint? location;
+      if (data.containsKey('location') && data['location'] is GeoPoint) {
+        location = data['location'] as GeoPoint;
+      }
+
       return Item(
         docId: itemId,
-        name: documentSnapshot.get("name"),
-        units: List<String>.from(documentSnapshot.get("units")),
-        categoryName: documentSnapshot.get("categoryName"),
-        storeName: documentSnapshot.get("storeName"),
+        name: data['name'] ?? '',
+        units: List<String>.from(data['units'] ?? []),
+        categoryName: data['categoryName'] ?? '',
+        storeName: data['storeName'] ?? '',
+        location: location,
         isUserSpecificItem: true,
       );
+
     } catch (e) {
       throw Exception("No item found: $e");
     }
