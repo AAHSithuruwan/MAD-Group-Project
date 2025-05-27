@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:listify/core/services/auth_service.dart';
+import 'package:listify/features/auth/presentation/widgets/logout_button.dart';
 
 class MenuScreen extends StatelessWidget {
   final String? title;
@@ -38,22 +39,26 @@ class MenuScreen extends StatelessWidget {
                           : const AssetImage("assets/images/placeholder.png") as ImageProvider,
                     ),
                     const SizedBox(width: 12),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          displayName,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            displayName,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
                           ),
-                        ),
-                        Text(
-                          email,
-                          style: const TextStyle(color: Colors.black),
-                        ),
-                      ],
+                          Text(
+                            email,
+                            style: const TextStyle(color: Colors.black),
+                          ),
+                        ],
+                      ),
                     ),
+                    // Add the logout button here
+                    LogoutButton(),
                   ],
                 ),
               );
