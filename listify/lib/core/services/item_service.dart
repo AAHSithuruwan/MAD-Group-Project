@@ -68,6 +68,17 @@ class ItemService {
         .delete();
   }
 
+  Future<void> updateUserItem(Item item) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) throw Exception('No user logged in');
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .collection('items')
+        .doc(item.docId)
+        .update(item.toMap());
+  }
+
   Future<List<ListifyCategory>> getCategoriesWithItems() async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
 
