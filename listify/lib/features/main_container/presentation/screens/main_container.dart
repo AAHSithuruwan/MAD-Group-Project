@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:listify/features/member_page/presentation/screens/menu.dart';
+import 'package:listify/features/menu/presentation/screens/menu_screen.dart';
 import 'package:listify/features/shopping/presentation/screens/shopping_screen.dart';
 import '../../../../common/widgets/custom_app_bar.dart';
 import '../../../../common/widgets/custom_floating_action_button.dart';
@@ -47,7 +47,7 @@ class _MainContainerState extends State<MainContainer> {
             Notifications()
           : (_selectedIndex == 2 ?
             ShoppingScreen()
-          : SidebarMenu()
+          : MenuScreen()
       )
       ),
 

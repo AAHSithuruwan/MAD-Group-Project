@@ -15,21 +15,6 @@ class MenuScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0, // Optional: Removes shadow
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 18.0), // Adjust left spacing
-          child: IconButton(
-            icon: const Icon(
-              Icons.arrow_back_ios,
-              size: 25,
-              color: Colors.black,
-            ),
-            onPressed: () {},
-          ),
-        ),
-      ),
 
       body: Column(
         children: [
