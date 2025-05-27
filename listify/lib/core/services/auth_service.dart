@@ -30,6 +30,14 @@ class AuthService {
         });
         // Optionally update displayName in FirebaseAuth profile
         await user.updateDisplayName(username);
+
+        // Send email verification
+        if (!user.emailVerified) {
+          await user.sendEmailVerification();
+        }
+
+        // Immediately sign out so user can't access app until verified
+        await _auth.signOut();
       }
 
       return user;
@@ -44,7 +52,19 @@ class AuthService {
     try {
       UserCredential result = await _auth.signInWithEmailAndPassword(
           email: email.trim(), password: password);
-      return result.user;
+      User? user = result.user;
+
+      // Check if email is verified
+      if (user != null && !user.emailVerified) {
+        await user.sendEmailVerification(); // Optionally resend
+        await _auth.signOut();
+        throw FirebaseAuthException(
+          code: 'email-not-verified',
+          message: 'Please verify your email before signing in.',
+        );
+      }
+
+      return user;
     } catch (e) {
       print("Error signing in: $e");
       return null;
@@ -93,6 +113,14 @@ class AuthService {
   // Send password reset email
   Future<void> sendPasswordResetEmail(String email) async {
     await _auth.sendPasswordResetEmail(email: email.trim());
+  }
+
+  // Resend email verification
+  Future<void> sendEmailVerification() async {
+    final user = _auth.currentUser;
+    if (user != null && !user.emailVerified) {
+      await user.sendEmailVerification();
+    }
   }
 
   // Sign out
