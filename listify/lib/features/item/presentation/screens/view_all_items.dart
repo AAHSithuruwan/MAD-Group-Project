@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:listify/core/services/Item_service.dart';
 import 'package:listify/core/Models/Item.dart';
 import 'package:listify/features/item/presentation/screens/item_details_screen.dart';
+import 'package:go_router/go_router.dart';
 
 class ViewAllItemsScreen extends StatefulWidget {
   const ViewAllItemsScreen({Key? key}) : super(key: key);
@@ -63,6 +64,123 @@ class _UserItemsPageState extends State<ViewAllItemsScreen> {
                             color: Colors.black,
                           ),
                         ),
+                      ),
+                    ),
+
+                    Positioned(
+                      top: 25,
+                      right: 12,
+                      child: PopupMenuButton<int>(
+                        icon: IconButton(
+                          icon: const Icon(
+                            Icons.more_vert,
+                            color: Colors.black,
+                            size: 26,
+                          ),
+                          style: ButtonStyle(
+                            shape: WidgetStateProperty.all(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            overlayColor:
+                                WidgetStateProperty.resolveWith<Color?>((
+                                  states,
+                                ) {
+                                  if (states.contains(WidgetState.pressed)) {
+                                    return const Color.fromARGB(
+                                      255,
+                                      120,
+                                      219,
+                                      120,
+                                    ); // pressed color
+                                  }
+                                  if (states.contains(WidgetState.hovered)) {
+                                    return const Color.fromARGB(
+                                      255,
+                                      228,
+                                      241,
+                                      231,
+                                    ); // hover color
+                                  }
+                                  return null;
+                                }),
+                          ),
+                          onPressed: null,
+                        ),
+                        onSelected: (value) {
+                          if (value == 0) {
+                            context.push('/create_items_user');
+                          }
+                        },
+                        itemBuilder:
+                            (context) => [
+                              PopupMenuItem<int>(
+                                value: 0,
+                                padding: EdgeInsets.zero,
+                                child: SizedBox(
+                                  width: double.infinity,
+                                  height: 40,
+                                  child: TextButton(
+                                    style: ButtonStyle(
+                                      alignment: Alignment.centerLeft,
+                                      padding: WidgetStateProperty.all(
+                                        const EdgeInsets.symmetric(
+                                          horizontal: 16,
+                                        ),
+                                      ),
+                                      shape: WidgetStateProperty.all(
+                                        RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            10,
+                                          ),
+                                        ),
+                                      ),
+                                      overlayColor:
+                                          WidgetStateProperty.resolveWith<
+                                            Color?
+                                          >((states) {
+                                            if (states.contains(
+                                              WidgetState.pressed,
+                                            )) {
+                                              return const Color.fromARGB(
+                                                255,
+                                                162,
+                                                216,
+                                                162,
+                                              ); // pressed color
+                                            }
+                                            if (states.contains(
+                                              WidgetState.hovered,
+                                            )) {
+                                              return const Color.fromARGB(
+                                                255,
+                                                228,
+                                                241,
+                                                231,
+                                              ); // hover color
+                                            }
+                                            return null;
+                                          }),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.pop(context); // Close the menu
+                                      context.push('/create_items_user');
+                                    },
+                                    child: const Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Text(
+                                        'Create Item',
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                       ),
                     ),
                   ],

@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:listify/core/services/auth_service.dart';
 import 'package:listify/features/auth/presentation/widgets/logout_button.dart';
+import 'package:listify/core/services/item_service.dart';
+
+final ItemService itemService = ItemService();
 
 class MenuScreen extends StatelessWidget {
   final String? title;
@@ -31,6 +34,7 @@ class MenuScreen extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 50),
                 color: Colors.white,
                 child: Row(
+
                   children: [
                     CircleAvatar(
                       radius: 30,
@@ -78,12 +82,20 @@ class MenuScreen extends StatelessWidget {
                     padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
                     child: Divider(),
                   ),
-                  _buildMenuItem(
-                    context,
-                    "assets/Carrot.png",
-                    "Items",
-                    "",
-                    "/items",
+
+                  FutureBuilder<int>(
+                    future: itemService.getItemCount(),
+                    builder: (context, snapshot) {
+                      final count =
+                          snapshot.hasData ? snapshot.data.toString() : '';
+                      return _buildMenuItem(
+                        context,
+                        "assets/Carrot.png",
+                        "Items",
+                        count,
+                        "/view_all_items",
+                      );
+                    },
                   ),
                   _buildMenuItem(
                     context,
@@ -154,16 +166,20 @@ class MenuScreen extends StatelessWidget {
         ),
       ),
       title: Text(title),
-      trailing: (count != null && count.trim().isNotEmpty)
-          ? CircleAvatar(
-              radius: 12,
-              backgroundColor: Colors.grey[300],
-              child: Text(
-                count,
-                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-              ),
-            )
-          : null,
+      trailing:
+          (count != null && count.trim().isNotEmpty)
+              ? CircleAvatar(
+                radius: 12,
+                backgroundColor: Colors.grey[300],
+                child: Text(
+                  count,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              )
+              : null,
       onTap: () {
         context.push(route);
       },
