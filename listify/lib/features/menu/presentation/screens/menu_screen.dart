@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
+import 'package:listify/core/services/item_service.dart';
+
+final ItemService itemService = ItemService();
 
 class MenuScreen extends StatelessWidget {
   final String? title;
@@ -26,9 +29,11 @@ class MenuScreen extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 30,
-                  backgroundImage: user?.photoURL != null && user!.photoURL!.isNotEmpty
-                      ? NetworkImage(user.photoURL!)
-                      : const AssetImage("assets/Ellipse 30.png") as ImageProvider,
+                  backgroundImage:
+                      user?.photoURL != null && user!.photoURL!.isNotEmpty
+                          ? NetworkImage(user.photoURL!)
+                          : const AssetImage("assets/Ellipse 30.png")
+                              as ImageProvider,
                 ),
                 const SizedBox(width: 12),
                 Column(
@@ -64,12 +69,20 @@ class MenuScreen extends StatelessWidget {
                     padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
                     child: Divider(),
                   ),
-                  _buildMenuItem(
-                    context,
-                    "assets/Carrot.png",
-                    "Items",
-                    "",
-                    "/items",
+
+                  FutureBuilder<int>(
+                    future: itemService.getItemCount(),
+                    builder: (context, snapshot) {
+                      final count =
+                          snapshot.hasData ? snapshot.data.toString() : '';
+                      return _buildMenuItem(
+                        context,
+                        "assets/Carrot.png",
+                        "Items",
+                        count,
+                        "/view_all_items",
+                      );
+                    },
                   ),
                   _buildMenuItem(
                     context,
@@ -140,16 +153,20 @@ class MenuScreen extends StatelessWidget {
         ),
       ),
       title: Text(title),
-      trailing: (count != null && count.trim().isNotEmpty)
-          ? CircleAvatar(
-              radius: 12,
-              backgroundColor: Colors.grey[300],
-              child: Text(
-                count,
-                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-              ),
-            )
-          : null,
+      trailing:
+          (count != null && count.trim().isNotEmpty)
+              ? CircleAvatar(
+                radius: 12,
+                backgroundColor: Colors.grey[300],
+                child: Text(
+                  count,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              )
+              : null,
       onTap: () {
         context.push(route);
       },
