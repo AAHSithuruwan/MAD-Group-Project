@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_sign_in/google_sign_in.dart'; 
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -42,6 +43,45 @@ class AuthService {
     }
   }
 
+  // Google Sign-In
+  Future<User?> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      if (googleUser == null) {
+        // User cancelled the sign-in
+        return null;
+      }
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+      UserCredential userCredential = await _auth.signInWithCredential(credential);
+      User? user = userCredential.user;
+
+      // Create user document if not exists
+      if (user != null) {
+        final userDoc = FirebaseFirestore.instance.collection('users').doc(user.uid);
+        final docSnapshot = await userDoc.get();
+        if (!docSnapshot.exists) {
+          await userDoc.set({
+            'uid': user.uid,
+            'email': user.email,
+            'displayName': user.displayName,
+            'photoURL': user.photoURL,
+            'createdAt': FieldValue.serverTimestamp(),
+            'provider': 'google',
+          });
+        }
+      }
+
+      return user;
+    } catch (e) {
+      print("Error signing in with Google: $e");
+      return null;
+    }
+  }
+
   // Send password reset email
   Future<void> sendPasswordResetEmail(String email) async {
     await _auth.sendPasswordResetEmail(email: email.trim());
@@ -50,6 +90,7 @@ class AuthService {
   // Sign out
   Future<void> signOut() async {
     await _auth.signOut();
+    await GoogleSignIn().signOut(); // Also sign out from Google
   }
 
   Future<User?> getCurrentUserinstance() async{
