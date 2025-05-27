@@ -48,15 +48,15 @@ class _PickLocationScreenState extends State<PickLocationScreen> {
       });
       mapController.move(currentLatLng, 15);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Store not found in the list")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Store not found in the list")));
     }
   }
 
   void _searchCity(String cityName) {
     final match = storeLocations.entries.firstWhere(
-          (entry) => entry.key.toLowerCase().contains(cityName.toLowerCase()),
+      (entry) => entry.key.toLowerCase().contains(cityName.toLowerCase()),
       orElse: () => MapEntry("", LatLng(6.9271, 79.8612)),
     );
     if (match.key != "") {
@@ -65,9 +65,9 @@ class _PickLocationScreenState extends State<PickLocationScreen> {
       });
       mapController.move(currentLatLng, 13);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("City not found")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("City not found")));
     }
   }
 
@@ -82,10 +82,7 @@ class _PickLocationScreenState extends State<PickLocationScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Colors.black.withOpacity(0.3),
-          width: 1,
-        ),
+        border: Border.all(color: Colors.black.withOpacity(0.3), width: 1),
       ),
       child: TextField(
         controller: controller,
@@ -106,32 +103,33 @@ class _PickLocationScreenState extends State<PickLocationScreen> {
       scrollDirection: Axis.horizontal,
       padding: EdgeInsets.symmetric(horizontal: 16),
       child: Row(
-        children: items.asMap().entries.map((entry) {
-          final index = entry.key;
-          final item = entry.value;
-          final isFirst = index == 0;
+        children:
+            items.asMap().entries.map((entry) {
+              final index = entry.key;
+              final item = entry.value;
+              final isFirst = index == 0;
 
-          return Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: GestureDetector(
-              onTap: () => onTap(item),
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: isFirst ? Color(0x261BA424) : Colors.grey[300],
-                ),
-                child: Text(
-                  item,
-                  style: TextStyle(
-                    color: isFirst ? Color(0xFF1BA424) : Colors.black,
-                    fontWeight: FontWeight.w500,
+              return Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: GestureDetector(
+                  onTap: () => onTap(item),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: isFirst ? Color(0x261BA424) : Colors.grey[300],
+                    ),
+                    child: Text(
+                      item,
+                      style: TextStyle(
+                        color: isFirst ? Color(0xFF1BA424) : Colors.black,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-          );
-        }).toList(),
+              );
+            }).toList(),
       ),
     );
   }
@@ -219,13 +217,11 @@ class _PickLocationScreenState extends State<PickLocationScreen> {
                     children: [
                       FlutterMap(
                         mapController: mapController,
-                        options: MapOptions(
-                          center: currentLatLng,
-                          zoom: 13.0,
-                        ),
+                        options: MapOptions(center: currentLatLng, zoom: 13.0),
                         children: [
                           TileLayer(
-                            urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                            urlTemplate:
+                                "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
                             subdomains: ['a', 'b', 'c'],
                             userAgentPackageName: 'com.example.yourapp',
                           ),
@@ -235,7 +231,11 @@ class _PickLocationScreenState extends State<PickLocationScreen> {
                                 point: currentLatLng,
                                 width: 40,
                                 height: 40,
-                                child: Icon(Icons.location_pin, color: Colors.red, size: 40),
+                                child: Icon(
+                                  Icons.location_pin,
+                                  color: Colors.red,
+                                  size: 40,
+                                ),
                               ),
                             ],
                           ),
@@ -260,18 +260,22 @@ class _PickLocationScreenState extends State<PickLocationScreen> {
               ElevatedButton(
                 onPressed: () {
                   final selectedStore = storeLocations.entries.firstWhere(
-                        (entry) => entry.value == currentLatLng,
+                    (entry) => entry.value == currentLatLng,
                     orElse: () => MapEntry("Unknown", currentLatLng),
-                  ).key;
-
-                  Navigator.pop(context, selectedStore);
+                  );
+                  Navigator.pop(context, {
+                    'storeName': selectedStore.key,
+                    'latLng': selectedStore.value,
+                  });
                 },
                 child: Text("OK"),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFF1BA424),
                   foregroundColor: Colors.white,
                   padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
               ),
               SizedBox(height: 20),

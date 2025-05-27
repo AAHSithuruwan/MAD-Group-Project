@@ -21,6 +21,11 @@ class _CreateItemsState extends State<CreateItemsUser> {
   final TextEditingController categoryNameController = TextEditingController();
   final ItemService itemService = ItemService();
 
+  String capitalizeFirst(String s) {
+    if (s.isEmpty) return s;
+    return s[0].toUpperCase() + s.substring(1);
+  }
+
   List<String> suggestedUnits = [
     '1kg',
     '500g',
@@ -31,6 +36,7 @@ class _CreateItemsState extends State<CreateItemsUser> {
     '1 box',
     '1 piece',
     '1 pair',
+    '2 items',
   ];
   List<String> categoryNames = [];
   List<String> addedUnits = [];
@@ -377,10 +383,10 @@ class _CreateItemsState extends State<CreateItemsUser> {
                                                       setState(() {
                                                         categoryNames.add(
                                                           newCategoryName,
-                                                        ); // Add to local list for immediate UI update
+                                                        );
                                                         categoryNameController
                                                                 .text =
-                                                            newCategoryName; // Update the TextField
+                                                            newCategoryName;
                                                         addedCategories.add(
                                                           newCategoryName,
                                                         );
@@ -698,9 +704,13 @@ class _CreateItemsState extends State<CreateItemsUser> {
 
                             final item = Item(
                               docId: null,
-                              name: itemNameController.text,
+                              name: capitalizeFirst(
+                                itemNameController.text.trim(),
+                              ),
                               units: addedUnits,
-                              categoryName: categoryNameController.text,
+                              categoryName: capitalizeFirst(
+                                categoryNameController.text.trim(),
+                              ),
                               storeName: pickedStoreName ?? '',
                               location: pickedLocation,
                             );
@@ -715,6 +725,8 @@ class _CreateItemsState extends State<CreateItemsUser> {
                               itemNameController.clear();
                               unitController.clear();
                               categoryNameController.clear();
+                              pickedStoreName = null;
+                              pickedLocation = null;
                               //  storeNameController.clear();
                               addedUnits.clear();
                               setState(() {});
