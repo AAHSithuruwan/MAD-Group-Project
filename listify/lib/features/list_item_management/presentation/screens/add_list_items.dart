@@ -465,6 +465,15 @@ class _AddListItemsState extends State<AddListItems> {
           ],
         ),
       ),
+
+      floatingActionButton: FloatingActionButton.extended(
+          onPressed: () {
+            context.pushReplacement('/create_items_user');
+          },
+          label: Text("Create Item", style: TextStyle(fontSize: 17),),
+          backgroundColor: Colors.green,
+        foregroundColor: Colors.white,
+      ),
     );
   }
 }
