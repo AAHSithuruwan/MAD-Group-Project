@@ -2,15 +2,17 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import 'package:listify/core/services/auth_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:listify/core/services/item_service.dart';
+import 'package:listify/core/services/notification_service.dart';
 import '../Models/Item.dart';
 import '../Models/ListItem.dart';
 import '../Models/ListifyList.dart';
+import 'store_notification_service.dart';
 
 class ListifyListService {
-  Future<List<ListifyList>> getListsByDateRange({
-    DateTime? startDate,
-    DateTime? endDate,
-  }) async {
+
+  Future<List<ListifyList>> getListsByDateRange({DateTime? startDate, DateTime? endDate,}) async {
+
     AuthService authService = AuthService();
     User? user = await authService.getCurrentUserinstance();
     if (user == null) throw Exception("No logged-in user found");
@@ -19,47 +21,35 @@ class ListifyListService {
     List<ListifyList> filteredLists = [];
 
     QuerySnapshot listQuerySnapshot =
-        await FirebaseFirestore.instance
-            .collection('ListifyLists')
-            .where('members', arrayContains: uid)
-            .get();
+    await FirebaseFirestore.instance.collection('ListifyLists').get();
 
     for (var listDoc in listQuerySnapshot.docs) {
       ListifyList listifyList = ListifyList.fromDoc(listDoc);
 
-      QuerySnapshot itemsSnapshot =
-          await FirebaseFirestore.instance
-              .collection('ListifyLists')
-              .doc(listDoc.id)
-              .collection('ListItems')
-              .get();
+      // Check if the current user is a member
+      bool isMember = listifyList.members.any((m) => m.userId == uid);
+      if (!isMember) continue;
 
-      List<ListItem> filteredItems =
-          itemsSnapshot.docs
-              .map((doc) {
-                return ListItem.fromDoc(doc);
-              })
-              .where((item) {
-                try {
-                  DateTime itemDate = DateFormat(
-                    'yyyy/MM/dd',
-                  ).parse(item.requiredDate!);
-                  DateTime itemOnly = DateTime(
-                    itemDate.year,
-                    itemDate.month,
-                    itemDate.day,
-                  );
+      QuerySnapshot itemsSnapshot = await FirebaseFirestore.instance
+          .collection('ListifyLists')
+          .doc(listDoc.id)
+          .collection('ListItems')
+          .get();
 
-                  if (startDate != null && itemOnly.isBefore(startDate))
-                    return false;
-                  if (endDate != null && itemOnly.isAfter(endDate))
-                    return false;
-                  return true;
-                } catch (_) {
-                  return false;
-                }
-              })
-              .toList();
+      List<ListItem> filteredItems = itemsSnapshot.docs
+          .map((doc) => ListItem.fromDoc(doc))
+          .where((item) {
+        try {
+          DateTime itemDate = DateFormat('yyyy/MM/dd').parse(item.requiredDate!);
+          DateTime itemOnly = DateTime(itemDate.year, itemDate.month, itemDate.day);
+
+          if (startDate != null && itemOnly.isBefore(startDate)) return false;
+          if (endDate != null && itemOnly.isAfter(endDate)) return false;
+          return true;
+        } catch (_) {
+          return false;
+        }
+      }).toList();
 
       if (filteredItems.isNotEmpty) {
         listifyList.items = filteredItems;
@@ -71,15 +61,13 @@ class ListifyListService {
     filteredLists.sort((a, b) {
       bool aAllChecked = a.items.every((item) => item.checked == true);
       bool bAllChecked = b.items.every((item) => item.checked == true);
-
       if (aAllChecked == bAllChecked) return 0;
-      return aAllChecked
-          ? 1
-          : -1; // Fully-checked lists come after partially checked ones
+      return aAllChecked ? 1 : -1;
     });
 
     return filteredLists;
   }
+
 
   Future<void> checkItem(bool value, String listItemId, String listId) async {
     try {
@@ -89,11 +77,19 @@ class ListifyListService {
           .collection("ListItems")
           .doc(listItemId)
           .update({'checked': value});
+
+      if(value){
+        AuthService authService = AuthService();
+        User? user = await authService.getCurrentUserinstance();
+        if (user == null) throw Exception("No logged-in user found");
+
+        StoreNotificationService storeNotificationService = StoreNotificationService();
+        await storeNotificationService.storeCheckItemNotifications(listId: listId, changedUserId: user.uid, listItemId: listItemId);
+      }
     } catch (e) {
       print(e);
     }
   }
-
 
   Future<List<ListifyList>> getSelectionLists() async {
     AuthService authService = AuthService();
@@ -103,19 +99,24 @@ class ListifyListService {
     String uid = user.uid;
     List<ListifyList> lists = [];
 
-    QuerySnapshot listQuerySnapshot = await FirebaseFirestore.instance
-        .collection('ListifyLists')
-        .where('members', arrayContains: uid)
-        .get();
+    QuerySnapshot listQuerySnapshot =
+    await FirebaseFirestore.instance.collection('ListifyLists').get();
 
     for (var listDoc in listQuerySnapshot.docs) {
       ListifyList listifyList = ListifyList.fromDoc(listDoc);
-      lists.add(listifyList);
+
+      // Keep only lists where the user is a member with role 'editor'
+      bool isEditor = listifyList.members.any(
+            (member) => member.userId == uid && member.role == 'editor',
+      );
+
+      if (isEditor) {
+        lists.add(listifyList);
+      }
     }
+
     return lists;
   }
-
-
 
   Future<bool> addListItem(
     Item item,
@@ -124,6 +125,7 @@ class ListifyListService {
     String requiredDate,
   ) async {
     AuthService authService = AuthService();
+    print(item.isUserSpecificItem);
 
     User? user = await authService.getCurrentUserinstance();
     if (user == null) throw Exception("No logged-in user found");
@@ -142,6 +144,10 @@ class ListifyListService {
             'checked': false,
           });
 
+      ItemService itemService = ItemService();
+      await itemService.addRecentItem(itemId: item.docId!, name: item.name, categoryName: item.categoryName, isUserSpecificItem: item.isUserSpecificItem);
+      StoreNotificationService storeNotificationService = StoreNotificationService();
+      await storeNotificationService.storeAddItemNotifications(listId: listId, changedUserId: user.uid, item: item);
       return true;
     } catch (e) {
       print(e);
@@ -207,31 +213,6 @@ class ListifyListService {
     }
   }
 
-  Future<bool> addRecurringItem({
-    required String itemName,
-    required String targetListId,
-    required String quantity,
-    required String categoryName,
-    required String requiredDate,
-    required String recurringType,
-  }) async {
-    final now = DateTime.now();
-    try {
-      await FirebaseFirestore.instance.collection("RecurringItems").add({
-        "itemName": itemName,
-        "targetListId": targetListId,
-        "quantity": quantity,
-        "categoryName": categoryName,
-        "requiredDate": requiredDate,
-        "recurring": recurringType, // "daily", "weekly", or "monthly"
-        "lastAdded": now.toIso8601String(),
-      });
-      return true;
-    } catch (e) {
-      print(e);
-      return false;
-    }
-  }
 
   // sample JSON structure for a list with members and roles
   // {

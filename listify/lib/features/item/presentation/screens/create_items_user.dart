@@ -1,18 +1,20 @@
 import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:listify/core/Models/Item.dart';
 import 'package:listify/core/services/item_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:listify/features/pick_location/presentation/screens/pick_location_screen.dart';
+import 'package:listify/features/auth/presentation/screens/sign_in_screen.dart';
+import 'package:listify/features/pick_location/presentation/screens/pick_location_screen.dart'; // Import the PickLocationScreen
 
-class CreateItems extends StatefulWidget {
-  const CreateItems({Key? key}) : super(key: key);
+class CreateItemsUser extends StatefulWidget {
+  const CreateItemsUser({Key? key}) : super(key: key);
 
   @override
-  State<CreateItems> createState() => _CreateItemsState();
+  State<CreateItemsUser> createState() => _CreateItemsState();
 }
 
-class _CreateItemsState extends State<CreateItems> {
+class _CreateItemsState extends State<CreateItemsUser> {
   final TextEditingController itemNameController = TextEditingController();
   final TextEditingController unitController = TextEditingController();
   //final TextEditingController storeNameController = TextEditingController();
@@ -98,7 +100,7 @@ class _CreateItemsState extends State<CreateItems> {
               offset: const Offset(0, -30),
               child: Container(
                 padding: const EdgeInsets.fromLTRB(30, 40, 30, 0),
-                height: screenHeight + 48, // Full height minus image height
+                //height: screenHeight + 48, // Full height minus image height
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: const BorderRadius.only(
@@ -677,7 +679,7 @@ class _CreateItemsState extends State<CreateItems> {
                                 categoryNameController.text.isEmpty ||
                                 (addedUnits.isEmpty &&
                                     unitController.text.isEmpty)
-                            //  ||storeNameController.text.isEmpty
+                            //|| storeNameController.text.isEmpty
                             ) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
@@ -704,7 +706,7 @@ class _CreateItemsState extends State<CreateItems> {
                             );
 
                             try {
-                              await itemService.addItem(item);
+                              await itemService.addItembyUser(item);
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text('Item added successfully!'),
@@ -713,7 +715,7 @@ class _CreateItemsState extends State<CreateItems> {
                               itemNameController.clear();
                               unitController.clear();
                               categoryNameController.clear();
-                              //storeNameController.clear();
+                              //  storeNameController.clear();
                               addedUnits.clear();
                               setState(() {});
                             } catch (e) {
@@ -738,6 +740,8 @@ class _CreateItemsState extends State<CreateItems> {
                         ),
                       ),
                     ),
+
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),

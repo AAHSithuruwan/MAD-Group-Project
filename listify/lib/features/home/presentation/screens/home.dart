@@ -260,7 +260,28 @@ class _HomeState extends State<Home> {
                                                 child: Row(
                                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                   children: [
-                                                    Text(item.name, style: TextStyle(fontSize: 18),),
+                                                    GestureDetector(
+                                                        onTap: () {
+                                                          showDialog(
+                                                            context: context,
+                                                            builder: (BuildContext context) {
+                                                              return AlertDialog(
+                                                                title: Text("Item Details",textAlign: TextAlign.center, style: TextStyle(color: Colors.green),),
+                                                                content: Text("Name:  ${item.name} \n\nCategory:  ${item.category} \n\nQuantity:  ${item.quantity} \n\nRequired Date:  ${item.requiredDate}"),
+                                                                actions: [
+                                                                  TextButton(
+                                                                    child: Text("Close", style: TextStyle(color: Colors.green),),
+                                                                    onPressed: () {
+                                                                      Navigator.of(context).pop();
+                                                                    },
+                                                                  ),
+                                                                ],
+                                                              );
+                                                            },
+                                                          );
+                                                        },
+                                                        child: Text(item.name, style: TextStyle(fontSize: 18),)
+                                                    ),
                                                     Row(
                                                       children: [
                                                             Container(),
@@ -328,17 +349,6 @@ class _HomeState extends State<Home> {
             ],
           ),
       );
-  }
-
-  @override
-  void dispose() {
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ]);
-    super.dispose();
   }
 }
 
