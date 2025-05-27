@@ -45,6 +45,29 @@ class ItemService {
     }
   }
 
+  Future<List<Item>> getAllUserItems() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) throw Exception('No user logged in');
+    final snapshot =
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .collection('items')
+            .get();
+    return snapshot.docs.map((doc) => Item.fromDoc(doc)).toList();
+  }
+
+  Future<void> deleteUserItem(String docId) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) throw Exception('No user logged in');
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .collection('items')
+        .doc(docId)
+        .delete();
+  }
+
   Future<List<ListifyCategory>> getCategoriesWithItems() async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
 
