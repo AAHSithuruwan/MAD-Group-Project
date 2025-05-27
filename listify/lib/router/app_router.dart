@@ -43,7 +43,7 @@ class AppRouter {
       name: 'home',
       builder:
           (BuildContext context, GoRouterState state) => const MainContainer(),
-          // (BuildContext context, GoRouterState state) => const ListSharingScreen(),
+      // (BuildContext context, GoRouterState state) => const ListSharingScreen(),
     ),
 
     GoRoute(
@@ -180,9 +180,8 @@ class AppRouter {
           name: 'pick_location',
           builder:
               (BuildContext context, GoRouterState state) =>
-              PickLocationScreen(),
+                  PickLocationScreen(),
         ),
-
 
         // Include all protected routes
         ...protectedRoutes,
