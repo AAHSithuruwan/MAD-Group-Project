@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:listify/features/menu/presentation/screens/menu_screen.dart';
+import 'package:listify/features/shopping/presentation/screens/shopping_screen.dart';
 import '../../../../common/widgets/custom_app_bar.dart';
 import '../../../../common/widgets/custom_floating_action_button.dart';
 import '../../../home/presentation/screens/home.dart';
@@ -34,18 +36,18 @@ class _MainContainerState extends State<MainContainer> {
           : ( _selectedIndex == 1 ?
               CustomAppBar(title: "Notifications", selectHomePage:selectHomePage, displayTitle: true,)
               : (_selectedIndex == 2 ?
-                null
-                : null
-      )
-      ),
+                CustomAppBar(title: "Shopping", displayTitle: true, selectHomePage:selectHomePage,)
+                : CustomAppBar(title: "Menu", displayTitle: true, selectHomePage: selectHomePage,)
+               )
+            ),
 
       body: _selectedIndex == 0 ?
             Home()
           : ( _selectedIndex == 1 ?
             Notifications()
           : (_selectedIndex == 2 ?
-            null
-          : null
+            ShoppingScreen()
+          : MenuScreen()
       )
       ),
 

@@ -21,16 +21,23 @@ class Item {
 
   factory Item.fromDoc(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+
+    GeoPoint? location;
+    if (data.containsKey('location') && data['location'] is GeoPoint) {
+      location = data['location'] as GeoPoint;
+    }
+
     return Item(
       docId: doc.id,
       name: data['name'] ?? '',
       units: List<String>.from(data['units'] ?? []),
-      storeName: data['storeName'],
+      storeName: data['storeName'] ?? '',
       categoryName: data['categoryName'] ?? '',
-      location: data['location'] != null ? data['location'] as GeoPoint : null,
+      location: location,
       isUserSpecificItem: data['isUserSpecificItem'] ?? false,
     );
   }
+
 
   Map<String, dynamic> toMap() {
     return {

@@ -25,27 +25,22 @@ class _CustomAppBarState extends State<CustomAppBar> {
   Widget build(BuildContext context) {
     return AppBar(
       automaticallyImplyLeading: false,
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          IconButton(
-              onPressed: (){
-                if(widget.selectHomePage != null){
-                  widget.selectHomePage!();
-                }
-                else{
-                Navigator.pop(context);
-                }
-              },
-              icon: Icon(Icons.arrow_back_ios,size: 35,)),
-          widget.displayTitle == true ?
+      leading: IconButton(
+          onPressed: (){
+            if(widget.selectHomePage != null){
+              widget.selectHomePage!();
+            }
+            else{
+              Navigator.pop(context);
+            }
+          },
+          icon: Icon(Icons.arrow_back_ios,size: 35,)),
+      title: widget.displayTitle == true ?
               Text(widget.title)
               :
               Text(""),
-          Text(""),
-        ],
-      ),
       backgroundColor:  Colors.white,
+      centerTitle: true,
     );
   }
 }
