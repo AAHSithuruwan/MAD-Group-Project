@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:go_router/go_router.dart';
 import 'package:listify/core/Models/ListifyList.dart';
 import 'package:listify/core/services/listify_list_service.dart';
@@ -17,6 +18,7 @@ class Home extends StatefulWidget{
 
 class _HomeState extends State<Home> {
 
+  bool isLoading = true;
   List<ListifyList> lists = [];
   ListifyListService listifyListService = ListifyListService();
 
@@ -24,6 +26,7 @@ class _HomeState extends State<Home> {
     List<ListifyList> listifyLists = await listifyListService.getListsByDateRange(startDate: startDate, endDate: endDate);
     setState(() {
       lists = listifyLists;
+      isLoading = false;
     });
   }
 
@@ -120,6 +123,7 @@ class _HomeState extends State<Home> {
                                   onTap: () {
                                     //Fetch the relevant list and set it.
                                     setState(() {
+                                      isLoading = true;
                                       for(var i in listTypes){
                                         i.isSelected = false;
                                       }
@@ -184,7 +188,20 @@ class _HomeState extends State<Home> {
                   ),
                 ),
               ),
-              lists.isEmpty == true ?
+              isLoading ?
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Center(child: SpinKitThreeBounce(
+                        color: Colors.green,
+                        size: 40.0,
+                      ),),
+                    ],
+                  ),
+                )
+                  :
+              (lists.isEmpty == true ?
                   Expanded(child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -357,7 +374,7 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                 ),
-              ),
+              )),
             ],
           ),
       );
