@@ -34,6 +34,7 @@ flutter:
   assets:
     - assets/images/
 
+
   fonts:
     - family: InknutAntiqua
       fonts:
