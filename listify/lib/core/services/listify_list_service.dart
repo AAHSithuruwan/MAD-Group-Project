@@ -107,7 +107,7 @@ class ListifyListService {
 
       // Keep only lists where the user is a member with role 'editor'
       bool isEditor = listifyList.members.any(
-            (member) => member.userId == uid && member.role == 'editor',
+            (member) => member.userId == uid && ( member.role == 'editor' || member.role == 'owner' ),
       );
 
       if (isEditor) {
