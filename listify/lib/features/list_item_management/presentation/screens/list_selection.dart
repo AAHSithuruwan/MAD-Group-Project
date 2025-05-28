@@ -21,7 +21,7 @@ class _ListSelectionState extends State<ListSelection> {
 
   final TextEditingController requiredDateController = TextEditingController();
 
-  List<ListifyList> lists = [];
+  List<Map<String,dynamic>> lists = [];
   ListifyList? selectedList;
 
   ListifyListService listifyListService = ListifyListService();
@@ -32,7 +32,7 @@ class _ListSelectionState extends State<ListSelection> {
   int? selectedRecurringIndex;
 
   Future<void> getLists() async{
-    List<ListifyList> returnedLists = await listifyListService.getSelectionLists();
+    List<Map<String,dynamic>> returnedLists = await listifyListService.getSelectionLists();
     setState(() {
       lists = returnedLists;
     });
@@ -138,10 +138,30 @@ class _ListSelectionState extends State<ListSelection> {
                       value: selectedList,
                       items: lists.map((list) {
                         return DropdownMenuItem<ListifyList>(
-                          value: list,
-                          child: Text(list.name),
+                          value: list['list'],
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                list['list'].name,
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                list['ownerEmail'],
+                                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                              ),
+                            ],
+                          ),
                         );
                       }).toList(),
+                      selectedItemBuilder: (BuildContext context) {
+                        return lists.map((list) {
+                          return Text(
+                            list['list'].name,
+                            overflow: TextOverflow.ellipsis,
+                          );
+                        }).toList();
+                      },
                       onChanged: (value) {
                         setState(() {
                           selectedList = value;
@@ -150,10 +170,10 @@ class _ListSelectionState extends State<ListSelection> {
                       decoration: const InputDecoration(
                         contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                         enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Color(0xFF106A16), width: 1), // Green outline
+                          borderSide: BorderSide(color: Color(0xFF106A16), width: 1),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Color(0xFF106A16), width: 2), // Thicker green when focused
+                          borderSide: BorderSide(color: Color(0xFF106A16), width: 2),
                         ),
                       ),
                     ),

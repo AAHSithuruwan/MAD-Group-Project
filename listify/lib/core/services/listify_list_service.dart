@@ -91,28 +91,43 @@ class ListifyListService {
     }
   }
 
-  Future<List<ListifyList>> getSelectionLists() async {
+  Future<List<Map<String,dynamic>>> getSelectionLists() async {
     AuthService authService = AuthService();
     User? user = await authService.getCurrentUserinstance();
     if (user == null) throw Exception("No logged-in user found");
 
     String uid = user.uid;
-    List<ListifyList> lists = [];
+    List<Map<String,dynamic>> lists = [];
 
-    QuerySnapshot listQuerySnapshot =
-    await FirebaseFirestore.instance.collection('ListifyLists').get();
+    try{
+      QuerySnapshot listQuerySnapshot =
+      await FirebaseFirestore.instance.collection('ListifyLists').get();
 
-    for (var listDoc in listQuerySnapshot.docs) {
-      ListifyList listifyList = ListifyList.fromDoc(listDoc);
+      for (var listDoc in listQuerySnapshot.docs) {
+        ListifyList listifyList = ListifyList.fromDoc(listDoc);
 
-      // Keep only lists where the user is a member with role 'editor'
-      bool isEditor = listifyList.members.any(
-            (member) => member.userId == uid && ( member.role == 'editor' || member.role == 'owner' ),
-      );
+        DocumentSnapshot ownerSnapshot = await FirebaseFirestore.instance.collection("users").doc(listifyList.ownerId).get();
 
-      if (isEditor) {
-        lists.add(listifyList);
+        String ownerEmail = "";
+        if (ownerSnapshot.exists) {
+          ownerEmail = ownerSnapshot.get("email");
+        }
+
+        // Keep only lists where the user is a member with role 'editor'
+        bool isEditor = listifyList.members.any(
+              (member) => member.userId == uid && ( member.role == 'editor' || member.role == 'owner' ),
+        );
+
+        if (isEditor) {
+          lists.add({
+            'list' : listifyList,
+            'ownerEmail': ownerEmail
+          });
+        }
       }
+    }
+    catch(e){
+      print(e);
     }
 
     return lists;
