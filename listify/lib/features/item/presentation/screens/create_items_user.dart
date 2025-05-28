@@ -367,6 +367,12 @@ class _CreateItemsState extends State<CreateItemsUser> {
                                                   onPressed: () async {
                                                     if (newCategoryName
                                                         .isNotEmpty) {
+                                                      final capitalizedCategory =
+                                                          capitalizeFirst(
+                                                            newCategoryName
+                                                                .trim(),
+                                                          );
+
                                                       // Add to Firestore
                                                       final docRef =
                                                           FirebaseFirestore
@@ -376,19 +382,20 @@ class _CreateItemsState extends State<CreateItemsUser> {
                                                               )
                                                               .doc();
                                                       await docRef.set({
-                                                        'name': newCategoryName,
+                                                        'name':
+                                                            capitalizedCategory,
                                                         'docId': docRef.id,
                                                       });
 
                                                       setState(() {
                                                         categoryNames.add(
-                                                          newCategoryName,
+                                                          capitalizedCategory,
                                                         );
                                                         categoryNameController
                                                                 .text =
-                                                            newCategoryName;
+                                                            capitalizedCategory;
                                                         addedCategories.add(
-                                                          newCategoryName,
+                                                          capitalizedCategory,
                                                         );
                                                       });
                                                     }
@@ -730,6 +737,7 @@ class _CreateItemsState extends State<CreateItemsUser> {
                               //  storeNameController.clear();
                               addedUnits.clear();
                               setState(() {});
+                              Navigator.pop(context, true);
                             } catch (e) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(

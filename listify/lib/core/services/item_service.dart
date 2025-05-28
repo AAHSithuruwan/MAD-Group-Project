@@ -52,7 +52,7 @@ class ItemService {
         await FirebaseFirestore.instance
             .collection('users')
             .doc(user.uid)
-            .collection('items')
+            .collection('UserSpecificItems')
             .get();
     return snapshot.docs.map((doc) => Item.fromDoc(doc)).toList();
   }
@@ -63,7 +63,7 @@ class ItemService {
     await FirebaseFirestore.instance
         .collection('users')
         .doc(user.uid)
-        .collection('items')
+        .collection('UserSpecificItems')
         .doc(docId)
         .delete();
   }
@@ -74,7 +74,7 @@ class ItemService {
     await FirebaseFirestore.instance
         .collection('users')
         .doc(user.uid)
-        .collection('items')
+        .collection('UserSpecificItems')
         .doc(item.docId)
         .update(item.toMap());
   }
@@ -86,7 +86,7 @@ class ItemService {
         await FirebaseFirestore.instance
             .collection('users')
             .doc(user.uid)
-            .collection('items')
+            .collection('UserSpecificItems')
             .get();
     return snapshot.docs.length;
   }
