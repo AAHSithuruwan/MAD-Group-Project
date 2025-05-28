@@ -6,12 +6,19 @@ import 'package:listify/core/services/item_service.dart';
 
 final ItemService itemService = ItemService();
 
-class MenuScreen extends StatelessWidget {
+class MenuScreen extends StatefulWidget {
   final String? title;
   final String? body;
   final Map<String, dynamic>? data;
 
   const MenuScreen({super.key, this.title, this.body, this.data});
+
+  @override
+  State<MenuScreen> createState() => _MenuScreenState();
+}
+
+class _MenuScreenState extends State<MenuScreen> {
+  final ItemService itemService = ItemService();
 
   @override
   Widget build(BuildContext context) {
@@ -27,20 +34,27 @@ class MenuScreen extends StatelessWidget {
             builder: (context, snapshot) {
               final profile = snapshot.data;
               final photoURL = profile?['photoURL'] as String? ?? '';
-              final displayName = profile?['displayName'] as String? ?? 'No Name';
+              final displayName =
+                  profile?['displayName'] as String? ?? 'No Name';
               final email = profile?['email'] as String? ?? 'No Email';
 
               return Container(
-                padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 50),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 5,
+                  horizontal: 50,
+                ),
                 color: Colors.white,
                 child: Row(
-
                   children: [
                     CircleAvatar(
                       radius: 30,
-                      backgroundImage: photoURL.isNotEmpty
-                          ? NetworkImage(photoURL)
-                          : const AssetImage("assets/images/placeholder.png") as ImageProvider,
+                      backgroundImage:
+                          photoURL.isNotEmpty
+                              ? NetworkImage(photoURL)
+                              : const AssetImage(
+                                    "assets/images/placeholder.png",
+                                  )
+                                  as ImageProvider,
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -180,8 +194,9 @@ class MenuScreen extends StatelessWidget {
                 ),
               )
               : null,
-      onTap: () {
-        context.push(route);
+      onTap: () async {
+        await context.push(route);
+        setState(() {});
       },
     );
   }

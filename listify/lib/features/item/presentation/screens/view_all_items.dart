@@ -71,46 +71,56 @@ class _UserItemsPageState extends State<ViewAllItemsScreen> {
                       top: 25,
                       right: 12,
                       child: PopupMenuButton<int>(
-                        icon: IconButton(
-                          icon: const Icon(
-                            Icons.more_vert,
-                            color: Colors.black,
-                            size: 26,
-                          ),
-                          style: ButtonStyle(
-                            shape: WidgetStateProperty.all(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
+                        icon: Tooltip(
+                          message: 'Create Item', // Tooltip text
+                          child: IconButton(
+                            icon: const Icon(
+                              Icons.more_vert,
+                              color: Colors.black,
+                              size: 26,
                             ),
-                            overlayColor:
-                                WidgetStateProperty.resolveWith<Color?>((
-                                  states,
-                                ) {
-                                  if (states.contains(WidgetState.pressed)) {
-                                    return const Color.fromARGB(
-                                      255,
-                                      120,
-                                      219,
-                                      120,
-                                    ); // pressed color
-                                  }
-                                  if (states.contains(WidgetState.hovered)) {
-                                    return const Color.fromARGB(
-                                      255,
-                                      228,
-                                      241,
-                                      231,
-                                    ); // hover color
-                                  }
-                                  return null;
-                                }),
+                            style: ButtonStyle(
+                              shape: WidgetStateProperty.all(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              overlayColor:
+                                  WidgetStateProperty.resolveWith<Color?>((
+                                    states,
+                                  ) {
+                                    if (states.contains(WidgetState.pressed)) {
+                                      return const Color.fromARGB(
+                                        255,
+                                        120,
+                                        219,
+                                        120,
+                                      );
+                                    }
+                                    if (states.contains(WidgetState.hovered)) {
+                                      return const Color.fromARGB(
+                                        255,
+                                        228,
+                                        241,
+                                        231,
+                                      );
+                                    }
+                                    return null;
+                                  }),
+                            ),
+                            onPressed: null,
                           ),
-                          onPressed: null,
                         ),
-                        onSelected: (value) {
+                        onSelected: (value) async {
                           if (value == 0) {
-                            context.push('/create_items_user');
+                            final result = await context.push(
+                              '/create_items_user',
+                            );
+                            if (result == true) {
+                              setState(() {
+                                _itemsFuture = itemService.getAllUserItems();
+                              });
+                            }
                           }
                         },
                         itemBuilder:
@@ -163,9 +173,17 @@ class _UserItemsPageState extends State<ViewAllItemsScreen> {
                                             return null;
                                           }),
                                     ),
-                                    onPressed: () {
+                                    onPressed: () async {
                                       Navigator.pop(context); // Close the menu
-                                      context.push('/create_items_user');
+                                      final result = await context.push(
+                                        '/create_items_user',
+                                      );
+                                      if (result == true) {
+                                        setState(() {
+                                          _itemsFuture =
+                                              itemService.getAllUserItems();
+                                        });
+                                      }
                                     },
                                     child: const Align(
                                       alignment: Alignment.centerLeft,
@@ -200,7 +218,37 @@ class _UserItemsPageState extends State<ViewAllItemsScreen> {
                     }
                     final items = snapshot.data ?? [];
                     if (items.isEmpty) {
-                      return const Center(child: Text('No items found.'));
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text('No items found.'),
+                            const SizedBox(height: 16),
+                            ElevatedButton(
+                              onPressed: () async {
+                                final result = await context.push(
+                                  '/create_items_user',
+                                );
+                                if (result == true) {
+                                  setState(() {
+                                    _itemsFuture =
+                                        itemService.getAllUserItems();
+                                  });
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF106A16),
+                                foregroundColor: Colors.white,
+                                textStyle: const TextStyle(fontSize: 16),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              child: const Text('Create Item'),
+                            ),
+                          ],
+                        ),
+                      );
                     }
 
                     final Map<String, List<Item>> itemsByCategory = {};
@@ -245,7 +293,6 @@ class _UserItemsPageState extends State<ViewAllItemsScreen> {
                                         ),
                                       );
                                       if (result != null) {
-                                        // Item was updated, so refresh the list
                                         setState(() {
                                           _itemsFuture =
                                               itemService.getAllUserItems();
