@@ -209,16 +209,7 @@ class _HomeState extends State<Home> {
                         height: 300,
                           width: 200,
                           child: Image(image: AssetImage("assets/images/list.png"),)),
-                          ElevatedButton(
-                            onPressed: () {
-                              LocalNotificationService.showNotification(
-                                'Hello',
-                                'This is a notification',
-                                data: {'foo': 'bar', 'id': 123},
-                              );
-                            },
-                            child: Text("Create a new list"),
-                          ),
+                          
                     ],
                   ))
                   :
