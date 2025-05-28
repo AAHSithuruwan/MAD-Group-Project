@@ -53,8 +53,8 @@ class ListifyListService {
 
       if (filteredItems.isNotEmpty) {
         listifyList.items = filteredItems;
-        filteredLists.add(listifyList);
       }
+      filteredLists.add(listifyList);
     }
 
     // Sort: Lists with all items checked go to the bottom

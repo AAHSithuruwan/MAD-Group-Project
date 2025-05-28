@@ -201,18 +201,6 @@ class _HomeState extends State<Home> {
                   ),
                 )
                   :
-              (lists.isEmpty == true ?
-                  Expanded(child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        height: 300,
-                          width: 200,
-                          child: Image(image: AssetImage("assets/images/list.png"),)),
-                          
-                    ],
-                  ))
-                  :
               Expanded(
                 child: SingleChildScrollView(
                   child: Container(
@@ -269,6 +257,12 @@ class _HomeState extends State<Home> {
                                         ],
                                       ),
                                     ),
+                                    list.items.isEmpty ?
+                                        Padding(
+                                          padding: const EdgeInsets.fromLTRB(0,0,0,30),
+                                          child: Text("No items in the list"),
+                                        )
+                                    :
                                     Column(
                                       children: list.items
                                           .take(list.showAllItems ? list.items.length : 4)
@@ -365,7 +359,7 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                 ),
-              )),
+              ),
             ],
           ),
       );
