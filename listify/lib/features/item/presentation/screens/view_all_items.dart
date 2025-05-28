@@ -68,7 +68,7 @@ class _UserItemsPageState extends State<ViewAllItemsScreen> {
                     ),
 
                     Positioned(
-                      top: 25,
+                      top: 10,
                       right: 12,
                       child: PopupMenuButton<int>(
                         icon: Tooltip(
