@@ -43,6 +43,6 @@ flutter:
       fonts:
         - asset: assets/fonts/Pacifico-Regular.ttf
 
-# Temporary fix for Flutter 3.22+ compatibility
+#  Temporary fix for Flutter 3.22+ compatibility
 dependency_overrides:
   value_layout_builder: ^0.5.0
