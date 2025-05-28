@@ -83,11 +83,11 @@ class _CategoryScreenState extends State<CategoryScreen> {
                     child: IconButton(
                       icon: Icon(Icons.edit, color: Colors.white),
                       onPressed : () {
-                        Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => CategoriesView()),
-            );
-              },
+                      Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => CategoriesView()),
+                      );
+                      },
                     ),
                   ),
                 ),
