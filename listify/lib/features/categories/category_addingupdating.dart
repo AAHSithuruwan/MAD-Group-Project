@@ -1,4 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:listify/features/categories/category_view.dart';
+import 'package:listify/features/menu/presentation/screens/menu_screen.dart';
 
 class Categoryaddup extends StatelessWidget {
   @override
@@ -19,6 +22,27 @@ class _CategoryScreenState extends State<CategoryScreen> {
   List<String> categories = ['Category 1', 'Category 2', 'Category 3', 'Category 4', 'Category 5'];
   List<bool> isChecked = List.filled(5, false);
 
+
+
+
+@override
+void initState() {
+  super.initState();
+  fetchCategories();
+}
+
+void fetchCategories() async {
+  var snapshot = await FirebaseFirestore.instance.collection('categories').get();
+  List<String> fetched = snapshot.docs.map((doc) => doc['name'] as String).toList();
+
+  setState(() {
+    categories = fetched;
+    isChecked = List.filled(fetched.length, false);
+  });
+}
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,7 +51,12 @@ class _CategoryScreenState extends State<CategoryScreen> {
         backgroundColor: Color(0xFF1BA424),
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {},
+          onPressed : () {
+                        Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => CategoriesView()),
+            );
+          },
         ),
         title: Center(
           child: Text(
@@ -42,7 +71,12 @@ class _CategoryScreenState extends State<CategoryScreen> {
         actions: [
           IconButton(
             icon: Icon(Icons.more_vert, color: Colors.white),
-            onPressed: () {},
+             onPressed : () {
+                        Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => MenuScreen()),
+            );
+          },
           ),
         ],
       ),
@@ -51,7 +85,46 @@ class _CategoryScreenState extends State<CategoryScreen> {
         child: Column(
           children: [
             ElevatedButton.icon(
-              onPressed: () {},
+              onPressed: () async {
+  String? newCategory = await showDialog(
+    context: context,
+    builder: (context) {
+      TextEditingController controller = TextEditingController();
+      return AlertDialog(
+        title: Text("Add New Category"),
+        content: TextField(
+          controller: controller,
+          decoration: InputDecoration(hintText: "Enter category name"),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text("Cancel"),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context, controller.text);
+            },
+            child: Text("Add"),
+          ),
+        ],
+      );
+    },
+  );
+
+  if (newCategory != null && newCategory.trim().isNotEmpty) {
+    await FirebaseFirestore.instance.collection('categories').add({
+      'name': newCategory.trim(),
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+
+    setState(() {
+      categories.add(newCategory.trim());
+      isChecked.add(false);
+    });
+  }
+},
+
               icon: Icon(Icons.add_circle_outline),
               label: Text("Add /Update Categories"),
               style: ElevatedButton.styleFrom(
@@ -120,39 +193,9 @@ class _CategoryScreenState extends State<CategoryScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomAppBar(
-        shape: CircularNotchedRectangle(),
-        notchMargin: 8.0,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            IconButton(
-              icon: Icon(Icons.home, color: Colors.black),
-              onPressed: () {},
-            ),
-            IconButton(
-              icon: Icon(Icons.notifications_none, color: Colors.black),
-              onPressed: () {},
-            ),
-            SizedBox(width: 40), // space for center FAB
-            IconButton(
-              icon: Icon(Icons.shopping_cart_outlined, color: Colors.black),
-              onPressed: () {},
-            ),
-            IconButton(
-              icon: Icon(Icons.menu, color: Colors.black),
-              onPressed: () {},
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        child: Icon(Icons.add, size: 30),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+
+    
+      
     );
   }
 }

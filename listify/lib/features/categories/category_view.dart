@@ -1,4 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:listify/features/categories/categories_view.dart';
+import 'package:listify/features/categories/category_addingupdating.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CategoriesView extends StatefulWidget {
   @override
@@ -13,7 +17,15 @@ class _CategoriesViewState extends State<CategoriesView> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF1BA424),
-        iconTheme: IconThemeData(color: Colors.white),
+       leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed : () {
+                        Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => CategoriesViewPage()),
+            );
+          },
+        ),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -25,9 +37,15 @@ class _CategoriesViewState extends State<CategoriesView> {
                 ),
               ),
             ),
+
             IconButton(
               icon: Icon(Icons.more_vert, color: Colors.white),
-              onPressed: () {},
+              onPressed : () {
+                        Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => CategoriesViewPage()),
+            );
+              },
             ),
           ],
         ),
@@ -38,9 +56,12 @@ class _CategoriesViewState extends State<CategoriesView> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             ElevatedButton(
-              onPressed: () {
-                // Handle add categories action
-              },
+               onPressed : () {
+                        Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => Categoryaddup()),
+            );
+                      },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
                 padding: EdgeInsets.symmetric(vertical: 16),
@@ -49,9 +70,13 @@ class _CategoriesViewState extends State<CategoriesView> {
                   side: BorderSide(color: Colors.grey),
                 ),
               ),
+
               child: Text(
                 'Add Categories',
                 style: TextStyle(color: Colors.black),
+
+
+                
               ),
             ),
             SizedBox(height: 20),

@@ -21,6 +21,8 @@ import './initial_route_helper.dart';
 import '../features/welcome/presentation/screens/welcome_screen.dart';
 import 'package:listify/main.dart';
 import 'package:listify/features/categories/categories_view.dart';
+import 'package:listify/features/categories/category_view.dart';
+import 'package:listify/features/categories/category_addingupdating.dart';
 
 class AppRouter {
   // Define route paths
@@ -184,12 +186,15 @@ class AppRouter {
               PickLocationScreen(),
         ),
 
-  GoRoute(
-      path: '/categories',
-      name:'categories_view',
-      builder: (context, state) => CategoriesViewPage(),
-    ),
+        //categories route
 
+        GoRoute(
+          path: '/categories',
+          name:'categories_view',
+           builder: (context, state) => CategoriesViewPage(),
+        ),
+
+      
 
         // Include all protected routes
         ...protectedRoutes,
