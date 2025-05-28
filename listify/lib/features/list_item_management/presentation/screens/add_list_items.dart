@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:go_router/go_router.dart';
 import 'package:listify/core/Models/ListifyCategory.dart';
 import 'package:listify/core/services/item_service.dart';
@@ -14,6 +15,9 @@ class AddListItems extends StatefulWidget {
 }
 
 class _AddListItemsState extends State<AddListItems> {
+
+  bool isLoading = true;
+
   List<ListifyCategory> categoriesWithItems = [];
 
   List<ListifyCategory> filteredCategoryWithItems = [];
@@ -55,6 +59,7 @@ class _AddListItemsState extends State<AddListItems> {
           ),
         ),
       );
+      isLoading = false;
     });
   }
 
@@ -70,7 +75,18 @@ class _AddListItemsState extends State<AddListItems> {
       appBar: CustomAppBar(title: "Add Items", displayTitle: true),
       backgroundColor: Color(0xFFF0F4F0),
 
-      body: SingleChildScrollView(
+      body: isLoading ?
+      Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Center(child: SpinKitThreeBounce(
+            color: Colors.green,
+            size: 40.0,
+          ),),
+        ],
+      )
+      :
+      SingleChildScrollView(
         child: Column(
           children: [
             Padding(
