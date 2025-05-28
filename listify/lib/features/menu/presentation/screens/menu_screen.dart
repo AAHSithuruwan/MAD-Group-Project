@@ -99,6 +99,15 @@ class MenuScreen extends StatelessWidget {
                     "5",
                     "/history",
                   ),
+
+                  _buildMenuItem(
+                    context,
+                    "assets/Categorize.png",
+                    "Categories",
+                    "5",
+                    "/categories",
+                  ),
+
                 ],
               ),
             ),
