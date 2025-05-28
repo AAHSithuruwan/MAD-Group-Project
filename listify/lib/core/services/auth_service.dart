@@ -29,9 +29,9 @@ class AuthService {
           'provider': 'email'
         });
 
-        // Create default "Personal List" in ListifyLists
+        // Create default "My List" in ListifyLists
         await FirebaseFirestore.instance.collection('ListifyLists').add({
-          'name': 'Personal List',
+          'name': 'My List',
           'ownerId': user.uid,
           'members': [
             {
@@ -114,7 +114,7 @@ class AuthService {
             'provider': 'google',
           });
 
-          // Create default "Personal List" in ListifyLists
+          // Create default "My List" in ListifyLists
           await FirebaseFirestore.instance.collection('ListifyLists').add({
             'name': 'My List',
             'ownerId': user.uid,
