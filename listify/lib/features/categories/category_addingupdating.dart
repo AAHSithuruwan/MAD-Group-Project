@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:listify/features/categories/category_view.dart';
+import 'package:listify/core/Models/ListifyCategory.dart';
+import 'package:listify/features/categories/categories_view.dart';
 import 'package:listify/features/menu/presentation/screens/menu_screen.dart';
+
 
 class Categoryaddup extends StatelessWidget {
   @override
@@ -19,7 +21,7 @@ class CategoryScreen extends StatefulWidget {
 }
 
 class _CategoryScreenState extends State<CategoryScreen> {
-  List<Map<String, dynamic>> categories = [];
+  List<ListifyCategory> categories = [];
 
   @override
   void initState() {
@@ -29,8 +31,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
 
   void fetchCategories() async {
     var snapshot = await FirebaseFirestore.instance.collection('categories').get();
-    List<Map<String, dynamic>> fetched = snapshot.docs
-        .map((doc) => {'id': doc.id, 'name': doc['name']})
+    List<ListifyCategory> fetched = snapshot.docs
+        .map((doc) => ListifyCategory.fromDoc(doc))
         .toList();
 
     setState(() {
@@ -38,45 +40,54 @@ class _CategoryScreenState extends State<CategoryScreen> {
     });
   }
 
-  Future<void> addCategory() async {
-    String? newCategory = await showDialog(
-      context: context,
-      builder: (context) {
-        TextEditingController controller = TextEditingController();
-        return AlertDialog(
-          title: Text("Add New Category"),
-          content: TextField(
-            controller: controller,
-            decoration: InputDecoration(hintText: "Enter category name"),
+Future<void> addCategory() async {
+  String? newCategory = await showDialog(
+    context: context,
+    builder: (context) {
+      TextEditingController controller = TextEditingController();
+      return AlertDialog(
+        title: Text("Add New Category"),
+        content: TextField(
+          controller: controller,
+          decoration: InputDecoration(hintText: "Enter category name"),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text("Cancel"),
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text("Cancel"),
-            ),
-            ElevatedButton(
-              onPressed: () => Navigator.pop(context, controller.text),
-              child: Text("Add"),
-            ),
-          ],
-        );
-      },
-    );
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, controller.text),
+            child: Text("Add"),
+          ),
+        ],
+      );
+    },
+  );
 
-    if (newCategory != null && newCategory.trim().isNotEmpty) {
-      var docRef = await FirebaseFirestore.instance.collection('categories').add({
-        'name': newCategory.trim(),
-        'timestamp': FieldValue.serverTimestamp(),
-      });
+  if (newCategory != null && newCategory.trim().isNotEmpty) {
+    //  Create doc reference to get ID before saving
+    final docRef = FirebaseFirestore.instance.collection("ListifyCategories").doc();
 
-      setState(() {
-        categories.add({'id': docRef.id, 'name': newCategory.trim()});
-      });
-    }
+    // Include the generated doc ID in the object
+    final category = ListifyCategory(docId: docRef.id, name: newCategory.trim());
+
+    //  Convert to map and add docId manually to Firestore
+    final data = category.toMap();
+    data['docId'] = docRef.id; // this saves the docId inside Firestore
+
+    await docRef.set(data); // set instead of add
+
+    // Add to local state
+    setState(() {
+      categories.add(category);
+    });
   }
+}
 
-  Future<void> updateCategory(String docId, String currentName, int index) async {
-    TextEditingController controller = TextEditingController(text: currentName);
+
+  Future<void> updateCategory(ListifyCategory category, int index) async {
+    TextEditingController controller = TextEditingController(text: category.name);
 
     String? updatedName = await showDialog(
       context: context,
@@ -102,12 +113,41 @@ class _CategoryScreenState extends State<CategoryScreen> {
     );
 
     if (updatedName != null && updatedName.trim().isNotEmpty) {
-      await FirebaseFirestore.instance.collection('categories').doc(docId).update({
-        'name': updatedName.trim(),
-      });
+      await FirebaseFirestore.instance
+          .collection("ListifyCategories")
+          .doc(category.docId)
+          .update({'name': updatedName.trim()});
 
       setState(() {
-        categories[index]['name'] = updatedName.trim();
+        categories[index] = ListifyCategory(docId: category.docId, name: updatedName.trim());
+      });
+    }
+  }
+
+  Future<void> deleteCategory(String docId, int index) async {
+    bool? confirmed = await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Delete Category"),
+        content: Text("Are you sure you want to delete this category?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text("Cancel"),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text("Delete"),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      await FirebaseFirestore.instance.collection("ListifyCategories").doc(docId).delete();
+      setState(() {
+        categories.removeAt(index);
       });
     }
   }
@@ -121,9 +161,10 @@ class _CategoryScreenState extends State<CategoryScreen> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (_) => CategoriesView()));
-          },
+              Navigator.push(context, MaterialPageRoute(builder: (_) => CategoriesViewPage()));
+            },// Back to previous screen
         ),
+        
         title: Center(
           child: Text(
             'Category adding, Viewing,\nupdating',
@@ -168,26 +209,44 @@ class _CategoryScreenState extends State<CategoryScreen> {
                 child: ListView.builder(
                   itemCount: categories.length,
                   itemBuilder: (context, index) {
-                    String name = categories[index]['name'];
-                    String id = categories[index]['id'];
+                    final category = categories[index];
 
                     return Column(
                       children: [
                         ListTile(
-                          title: Text(name),
-                          trailing: ElevatedButton(
-                            onPressed: () => updateCategory(id, name, index),
-                            child: Text("Update"),
-                            style: ElevatedButton.styleFrom(
-                              padding: EdgeInsets.symmetric(horizontal: 12),
-                              minimumSize: Size(20, 30),
-                              backgroundColor: Colors.white,
-                              foregroundColor: Colors.black,
-                              side: BorderSide(color: Colors.grey),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
+                          title: Text(category.name),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              ElevatedButton(
+                                onPressed: () => updateCategory(category, index),
+                                child: Text("Update"),
+                                style: ElevatedButton.styleFrom(
+                                  padding: EdgeInsets.symmetric(horizontal: 12),
+                                  minimumSize: Size(20, 30),
+                                  backgroundColor: Colors.white,
+                                  foregroundColor: Colors.black,
+                                  side: BorderSide(color: Colors.grey),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
                               ),
-                            ),
+                              const SizedBox(width: 8),
+                              ElevatedButton(
+                                onPressed: () => deleteCategory(category.docId!, index),
+                                child: Icon(Icons.delete, size: 18),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.redAccent,
+                                  foregroundColor: Colors.white,
+                                  padding: EdgeInsets.symmetric(horizontal: 8),
+                                  minimumSize: Size(20, 30),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                         if (index < categories.length - 1)
