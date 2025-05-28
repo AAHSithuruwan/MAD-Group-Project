@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:listify/core/services/auth_service.dart'; // Import your AuthService
 
 class SignInSelectionScreen extends StatefulWidget {
   const SignInSelectionScreen({super.key});
@@ -9,6 +10,8 @@ class SignInSelectionScreen extends StatefulWidget {
 }
 
 class _SignInSelectionScreenState extends State<SignInSelectionScreen> {
+  bool _isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,6 +56,19 @@ class _SignInSelectionScreenState extends State<SignInSelectionScreen> {
                     context,
                     "Sign In with Google",
                     "assets/images/googleIcon.png",
+                    onPressed: () async {
+                      setState(() => _isLoading = true);
+                      final user = await AuthService().signInWithGoogle();
+                      setState(() => _isLoading = false);
+                      if (user != null) {
+                        // Navigate to home or your main screen
+                        context.go('/');
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Google sign-in failed')),
+                        );
+                      }
+                    },
                   ),
                   SizedBox(height: 15),
                   _buildSignInButton(
@@ -71,6 +87,7 @@ class _SignInSelectionScreenState extends State<SignInSelectionScreen> {
                   SizedBox(height: 30),
                   _buildUsernamePasswordButton(context),
                   SizedBox(height: 30),
+                  if (_isLoading) CircularProgressIndicator(),
                 ],
               ),
             ),
@@ -81,11 +98,11 @@ class _SignInSelectionScreenState extends State<SignInSelectionScreen> {
   }
 
   Widget _buildSignInButton(
-      BuildContext context, String text, String iconPath) {
+      BuildContext context, String text, String iconPath, {VoidCallback? onPressed}) {
     return Container(
       constraints: BoxConstraints(maxWidth: 380, minHeight: 50),
       child: MaterialButton(
-        onPressed: () {},
+        onPressed: onPressed,
         shape: RoundedRectangleBorder(
           side: BorderSide(color: Color(0x33000000)),
           borderRadius: BorderRadius.circular(15),
