@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:listify/core/Models/ListifyCategory.dart';
 import 'package:listify/features/categories/categories_view.dart';
 import 'package:listify/features/categories/category_addingupdating.dart';
 
@@ -9,7 +10,7 @@ class CategoriesView extends StatefulWidget {
 }
 
 class _CategoriesViewState extends State<CategoriesView> {
-  List<Map<String, dynamic>> categories = [];
+  List<ListifyCategory> categories = [];
   List<bool> categorySelections = [];
 
   @override
@@ -19,9 +20,12 @@ class _CategoriesViewState extends State<CategoriesView> {
   }
 
   void fetchCategories() async {
-    var snapshot = await FirebaseFirestore.instance.collection('categories').get();
-    List<Map<String, dynamic>> fetched = snapshot.docs
-        .map((doc) => {'id': doc.id, 'name': doc['name']})
+    final snapshot = await FirebaseFirestore.instance
+        .collection('ListifyCategories') // 🔄 Updated to your correct collection name
+        .get();
+
+    final fetched = snapshot.docs
+        .map((doc) => ListifyCategory.fromDoc(doc))
         .toList();
 
     setState(() {
@@ -37,12 +41,12 @@ class _CategoriesViewState extends State<CategoriesView> {
         backgroundColor: Color(0xFF1BA424),
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
-           onPressed : () {
-                        Navigator.push(
+          onPressed: () {
+            Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => CategoriesViewPage()),
             );
-           },
+          },
         ),
         title: Center(
           child: Text('View Categories', style: TextStyle(color: Colors.white)),
@@ -81,6 +85,7 @@ class _CategoriesViewState extends State<CategoriesView> {
               child: ListView.builder(
                 itemCount: categories.length,
                 itemBuilder: (context, index) {
+                  final category = categories[index];
                   return Card(
                     margin: EdgeInsets.symmetric(vertical: 8),
                     child: Padding(
@@ -89,7 +94,7 @@ class _CategoriesViewState extends State<CategoriesView> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            categories[index]['name'],
+                            category.name,
                             style: TextStyle(fontSize: 16),
                           ),
                           Checkbox(
