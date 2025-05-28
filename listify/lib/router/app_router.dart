@@ -10,7 +10,7 @@ import 'package:listify/features/list_item_management/presentation/screens/quant
 
 import 'package:listify/features/list_item_management/presentation/screens/list_sharing_screen.dart';
 
-import 'package:listify/features/notifications/presentation/notification_screen.dart';
+import 'package:listify/features/notifications/presentation/screens/notification_screen.dart';
 import 'package:listify/features/list_item_management/presentation/screens/add_list_items.dart';
 import 'package:listify/features/main_container/presentation/screens/main_container.dart';
 import '../core/Models/Item.dart';

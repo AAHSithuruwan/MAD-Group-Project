@@ -28,6 +28,19 @@ class AuthService {
           'createdAt': FieldValue.serverTimestamp(),
           'provider': 'email'
         });
+
+        // Create default "Personal List" in ListifyLists
+        await FirebaseFirestore.instance.collection('ListifyLists').add({
+          'name': 'Personal List',
+          'ownerId': user.uid,
+          'members': [
+            {
+              'role': 'owner',
+              'userId': user.uid,
+            }
+          ],
+        });
+
         // Optionally update displayName in FirebaseAuth profile
         await user.updateDisplayName(username);
 
@@ -99,6 +112,18 @@ class AuthService {
             'photoURL': user.photoURL,
             'createdAt': FieldValue.serverTimestamp(),
             'provider': 'google',
+          });
+
+          // Create default "Personal List" in ListifyLists
+          await FirebaseFirestore.instance.collection('ListifyLists').add({
+            'name': 'My List',
+            'ownerId': user.uid,
+            'members': [
+              {
+                'role': 'owner',
+                'userId': user.uid,
+              }
+            ],
           });
         }
       }
