@@ -115,7 +115,7 @@ class _MenuScreenState extends State<MenuScreen> {
                     context,
                     "assets/images/Account.png",
                     "Account",
-                    "5",
+                    " ",
                     "/account",
                   ),
                   _buildMenuItem(
@@ -136,13 +136,9 @@ class _MenuScreenState extends State<MenuScreen> {
                     context,
                     "assets/images/Graph.png",
                     "History",
-                    "5",
+                    " ",
                     "/history",
                   ),
-
-                
-                
-
                 ],
               ),
             ),
