@@ -42,10 +42,7 @@ class _CategoriesViewState extends State<CategoriesView> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => CategoriesViewPage()),
-            );
+            Navigator.pop(context);
           },
         ),
         title: Center(
@@ -67,7 +64,7 @@ class _CategoriesViewState extends State<CategoriesView> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => Categoryaddup()),
+                  MaterialPageRoute(builder: (context) => CategoryAddUpScreen()),
                 ).then((_) => fetchCategories()); // refresh after returning
               },
               style: ElevatedButton.styleFrom(

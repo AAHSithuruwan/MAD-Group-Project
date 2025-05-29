@@ -5,23 +5,12 @@ import 'package:listify/features/categories/categories_view.dart';
 import 'package:listify/features/categories/category_view.dart';
 import 'package:listify/features/menu/presentation/screens/menu_screen.dart';
 
-
-class Categoryaddup extends StatelessWidget {
+class CategoryAddUpScreen extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: CategoryScreen(),
-      debugShowCheckedModeBanner: false,
-    );
-  }
+  _CategoryAddUpScreenState createState() => _CategoryAddUpScreenState();
 }
 
-class CategoryScreen extends StatefulWidget {
-  @override
-  _CategoryScreenState createState() => _CategoryScreenState();
-}
-
-class _CategoryScreenState extends State<CategoryScreen> {
+class _CategoryAddUpScreenState extends State<CategoryAddUpScreen> {
   List<ListifyCategory> categories = [];
 
   @override
@@ -162,7 +151,7 @@ Future<void> addCategory() async {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) => CategoriesView()));
+            Navigator.pop(context);
             },// Back to previous screen
         ),
         
