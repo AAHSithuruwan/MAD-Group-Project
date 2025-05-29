@@ -54,7 +54,7 @@ class _SignInSelectionScreenState extends State<SignInSelectionScreen> {
                   SizedBox(height: 25),
                   _buildSignInButton(
                     context,
-                    "Sign In with Google",
+                    "Sign In with Google    ",
                     "assets/images/googleIcon.png",
                     onPressed: () async {
                       setState(() => _isLoading = true);

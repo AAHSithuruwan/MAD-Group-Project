@@ -36,7 +36,7 @@ class _SignUpSelectionScreenState extends State<SignUpSelectionScreen> {
                   ),
                   Center(
                     child: Text(
-                      "Register",
+                      "Sign up",
                       style: TextStyle(fontSize: 48),
                     ),
                   ),
@@ -46,7 +46,7 @@ class _SignUpSelectionScreenState extends State<SignUpSelectionScreen> {
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        "Choose your preferred method to register",
+                        "Choose your preferred method to Sign up",
                         style: TextStyle(fontSize: 16),
                       ),
                     ),
@@ -54,7 +54,7 @@ class _SignUpSelectionScreenState extends State<SignUpSelectionScreen> {
                   SizedBox(height: 25),
                   _buildSignUpButton(
                     context,
-                    "Register with Google",
+                    "Sign up with Google     ",
                     "assets/images/googleIcon.png",
                     onPressed: () async {
                       setState(() => _isLoading = true);
@@ -73,13 +73,13 @@ class _SignUpSelectionScreenState extends State<SignUpSelectionScreen> {
                   SizedBox(height: 15),
                   _buildSignUpButton(
                     context,
-                    "Register with Facebook",
+                    "Sign up with Facebook",
                     "assets/images/fbIcon.png",
                   ),
                   SizedBox(height: 15),
                   _buildSignUpButton(
                     context,
-                    "Register with Microsoft",
+                    "Sign up with Microsoft",
                     "assets/images/microsoftIcon.png",
                   ),
                   SizedBox(height: 30),
