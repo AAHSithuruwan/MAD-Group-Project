@@ -2,24 +2,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:listify/features/categories/category_view.dart';
 
+class CategoriesViewScreen extends StatefulWidget {
+  const CategoriesViewScreen({super.key});
 
-
-class CategoriesViewPage extends StatelessWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: CategoryScreen(),
-      debugShowCheckedModeBanner: false,
-    );
-  }
+  _CategoriesViewScreenState createState() => _CategoriesViewScreenState();
 }
 
-class CategoryScreen extends StatefulWidget {
-  @override
-  _CategoryScreenState createState() => _CategoryScreenState();
-}
-
-class _CategoryScreenState extends State<CategoryScreen> {
+class _CategoriesViewScreenState extends State<CategoriesViewScreen> {
   List<String> categories = [
     "Vegetables", "Fruits", "Rice", "Snacks & Confectionery",
     "Baby Products", "Food Cupboard", "Bakery", "Dairy",
@@ -56,6 +46,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                       icon: Icon(Icons.close, color: Colors.white),
                       onPressed: () {
                         print("Close button pressed");
+                        Navigator.pop(context);
                       },
                     ),
                   ),
