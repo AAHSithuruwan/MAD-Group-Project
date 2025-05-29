@@ -14,6 +14,7 @@ import 'package:listify/features/list_item_management/presentation/screens/quant
 import 'package:listify/features/notifications/presentation/screens/notification_screen.dart';
 import 'package:listify/features/list_item_management/presentation/screens/add_list_items.dart';
 import 'package:listify/features/main_container/presentation/screens/main_container.dart';
+import 'package:listify/features/settings/presentation/screens/delete_account.dart';
 import '../core/Models/Item.dart';
 import '../core/Models/ListItem.dart';
 import '../features/auth/presentation/screens/auth_selection.dart';
@@ -47,6 +48,7 @@ class AppRouter {
   static const String ViewAllItemsRoute = '/view_all_items';
   static const String CreateItemsUserRoute = '/create_items_user';
   static const String quantityUpdateRoute = '/quantity-update';
+  static const String deleteAccountRoute = '/delete-account';
 
   // List of protected routes (requires user to be signed in)
   static final List<GoRoute> protectedRoutes = [
@@ -241,6 +243,13 @@ class AppRouter {
             final listId = extra['listId'] as String;
             return QuantityUpdate(listItem: listItem, listId: listId);
           },
+        ),
+
+        GoRoute(
+          path: deleteAccountRoute,
+          name: 'delete-account',
+          builder:
+              (BuildContext context, GoRouterState state) => DeleteAccountPage(),
         ),
         // Include all protected routes
         ...protectedRoutes,
