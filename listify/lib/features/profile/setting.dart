@@ -1,5 +1,6 @@
 // settings.dart
 import 'package:flutter/material.dart';
+import 'package:listify/common/widgets/custom_app_bar.dart';
 import 'package:listify/features/menu/presentation/screens/menu_screen.dart';
 import 'package:listify/features/profile/profile.dart'; // ✅ Make sure this import path is correct
 
@@ -96,24 +97,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: const Color.fromARGB(255, 0, 0, 0),
-          ),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => MenuScreen()),
-            );
-          },
-        ),
-        title: const Text("Settings"),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        elevation: 0,
-      ),
+      appBar: CustomAppBar(title: "Settings", displayTitle: true),
       backgroundColor: Colors.white,
       body: ListView(
         children: [
@@ -133,7 +117,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
               );
             },
           ),
-          _buildSimpleTile(Icons.shield_outlined, "Security"),
           ListTile(
             leading: const Icon(
               Icons.brightness_6_outlined,
@@ -142,13 +125,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: const Text("Theme", style: TextStyle(fontSize: 16)),
             onTap: _showThemeDialog,
           ),
-          _buildSimpleTile(Icons.star_border, "Rate App"),
-          _buildSimpleTile(Icons.share_outlined, "Share App"),
-          _buildSimpleTile(Icons.lock_outline, "Privacy Policy"),
-          _buildSimpleTile(Icons.description_outlined, "Terms and Conditions"),
-          _buildSimpleTile(Icons.article_outlined, "Cookies Policy"),
-          _buildSimpleTile(Icons.mail_outline, "Contact"),
-          _buildSimpleTile(Icons.feedback_outlined, "Feedback"),
+
           const Divider(),
           _buildSimpleTile(Icons.logout, "Logout"),
         ],

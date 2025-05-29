@@ -141,8 +141,8 @@ class _MenuScreenState extends State<MenuScreen> {
                   ),
                   _buildMenuItem(
                     context,
-                    "assets/Settings.png",
-                    "Setting",
+                    "assets/images/settings.png",
+                    "Settings",
                     "5",
                     "/setting",
                   ),

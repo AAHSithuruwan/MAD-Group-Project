@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:go_router/go_router.dart';
 import 'package:listify/core/Models/UserModel.dart';
 
 class profile extends StatelessWidget {
@@ -157,7 +158,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       context,
                       'Change Password',
                       onTap: () {
-                        showEditDialog(context, 'Password', 'password', '');
+                        context.push("/change-password");
                       },
                     ),
                     _buildButton(
@@ -174,16 +175,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       'Delete Account',
                       textColor: Colors.black,
                       centerText: false,
-                      onTap: () async {
-                        try {
-                          await FirebaseFirestore.instance
-                              .collection('users')
-                              .doc(uid)
-                              .delete();
-                          await user?.delete();
-                        } catch (e) {
-                          print('Error deleting account: $e');
-                        }
+                      onTap: () {
+                        context.push('/delete-account');
                       },
                     ),
                     SizedBox(height: 80),
