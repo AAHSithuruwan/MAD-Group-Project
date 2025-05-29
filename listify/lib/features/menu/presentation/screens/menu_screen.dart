@@ -104,7 +104,7 @@ class _MenuScreenState extends State<MenuScreen> {
                           snapshot.hasData ? snapshot.data.toString() : '';
                       return _buildMenuItem(
                         context,
-                        "assets/Carrot.png",
+                        "assets/images/Carrot.png",
                         "Items",
                         count,
                         "/view_all_items",
@@ -113,36 +113,39 @@ class _MenuScreenState extends State<MenuScreen> {
                   ),
                   _buildMenuItem(
                     context,
-                    "assets/Account.png",
+                    "assets/images/Account.png",
                     "Account",
                     "5",
                     "/account",
                   ),
                   _buildMenuItem(
                     context,
-                    "assets/Categorize.png",
+                    "assets/images/Categorize.png",
                     "Categories",
                     "5",
                     "/categories",
                   ),
                   _buildMenuItem(
                     context,
-                    "assets/To Do List.png",
+                    "assets/images/To Do List.png",
                     "Lists",
                     "4",
                     "/lists",
                   ),
                   _buildMenuItem(
                     context,
-                    "assets/Graph.png",
+                    "assets/images/Graph.png",
                     "History",
                     "5",
                     "/history",
                   ),
-
-                
-                
-
+                  _buildMenuItem(
+                    context,
+                    "assets/images/settings.png",
+                    "Settings",
+                    "5",
+                    "/setting",
+                  ),
                 ],
               ),
             ),
@@ -185,7 +188,7 @@ class _MenuScreenState extends State<MenuScreen> {
       ),
       title: Text(title),
       trailing:
-          (count != null && count.trim().isNotEmpty)
+          (count.trim().isNotEmpty)
               ? CircleAvatar(
                 radius: 12,
                 backgroundColor: Colors.grey[300],

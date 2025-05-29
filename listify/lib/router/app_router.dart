@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:listify/core/providers/auth_provider.dart';
+import 'package:listify/features/auth/presentation/screens/change_password.dart';
 import 'package:listify/features/auth/presentation/screens/forgot_password.dart';
 import 'package:listify/features/item/presentation/screens/create_items_user.dart';
 import 'package:listify/features/item/presentation/screens/view_all_items.dart';
@@ -9,19 +10,25 @@ import 'package:listify/features/list_item_management/presentation/screens/list_
 import 'package:listify/features/list_item_management/presentation/screens/quantity_selection.dart';
 
 import 'package:listify/features/list_item_management/presentation/screens/list_sharing_screen.dart';
+import 'package:listify/features/list_item_management/presentation/screens/quantity_update.dart';
 
 import 'package:listify/features/notifications/presentation/screens/notification_screen.dart';
 import 'package:listify/features/list_item_management/presentation/screens/add_list_items.dart';
 import 'package:listify/features/main_container/presentation/screens/main_container.dart';
+import 'package:listify/features/settings/presentation/screens/delete_account.dart';
 import '../core/Models/Item.dart';
+import '../core/Models/ListItem.dart';
 import '../features/auth/presentation/screens/auth_selection.dart';
 import '../features/auth/presentation/screens/sign_in_screen.dart';
 import '../features/auth/presentation/screens/sign_up_screen.dart';
+// ignore: unused_import
 import '../features/home/presentation/screens/home.dart';
 import '../features/pick_location/presentation/screens/pick_location_screen.dart';
 import './initial_route_helper.dart';
 import '../features/welcome/presentation/screens/welcome_screen.dart';
 import 'package:listify/main.dart';
+import 'package:listify/features/profile/profile.dart';
+import 'package:listify/features/profile/setting.dart';
 import 'package:listify/features/categories/categories_view.dart';
 import 'package:listify/features/categories/category_view.dart';
 
@@ -41,6 +48,9 @@ class AppRouter {
   static const String pickLocationRoute = '/pick_location';
   static const String ViewAllItemsRoute = '/view_all_items';
   static const String CreateItemsUserRoute = '/create_items_user';
+  static const String quantityUpdateRoute = '/quantity-update';
+  static const String deleteAccountRoute = '/delete-account';
+  static const String changePasswordRoute = '/change-password';
 
   // List of protected routes (requires user to be signed in)
   static final List<GoRoute> protectedRoutes = [
@@ -212,6 +222,43 @@ class AppRouter {
           name: 'create_items_user',
           builder:
               (BuildContext context, GoRouterState state) => CreateItemsUser(),
+        ),
+
+        GoRoute(
+          path: '/profile',
+          name: 'profile',
+          builder: (context, state) => ProfileScreen(),
+        ),
+
+        GoRoute(
+          path: '/setting',
+          name: 'setting',
+          builder: (context, state) => Settings(),
+        ),
+
+        GoRoute(
+          path: quantityUpdateRoute,
+          name: 'quantity_update',
+          builder: (BuildContext context, GoRouterState state) {
+            final extra = state.extra as Map<String, dynamic>;
+            final listItem = extra['listItem'] as ListItem;
+            final listId = extra['listId'] as String;
+            return QuantityUpdate(listItem: listItem, listId: listId);
+          },
+        ),
+
+        GoRoute(
+          path: deleteAccountRoute,
+          name: 'delete-account',
+          builder:
+              (BuildContext context, GoRouterState state) => DeleteAccountPage(),
+        ),
+
+        GoRoute(
+          path: changePasswordRoute,
+          name: 'change-password',
+          builder:
+              (BuildContext context, GoRouterState state) => ChangePasswordScreen(),
         ),
         // Include all protected routes
         ...protectedRoutes,
