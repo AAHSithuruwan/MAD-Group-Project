@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:listify/core/Models/ListifyCategory.dart';
 import 'package:listify/features/categories/categories_view.dart';
+import 'package:listify/features/categories/category_view.dart';
 import 'package:listify/features/menu/presentation/screens/menu_screen.dart';
 
 
@@ -30,7 +31,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
   }
 
   void fetchCategories() async {
-    var snapshot = await FirebaseFirestore.instance.collection('ListifyCategory').get();
+    var snapshot = await FirebaseFirestore.instance.collection('ListifyCategories').get();
     List<ListifyCategory> fetched = snapshot.docs
         .map((doc) => ListifyCategory.fromDoc(doc))
         .toList();
@@ -161,7 +162,7 @@ Future<void> addCategory() async {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) => CategoriesViewPage()));
+              Navigator.push(context, MaterialPageRoute(builder: (_) => CategoriesView()));
             },// Back to previous screen
         ),
         
@@ -246,6 +247,10 @@ Future<void> addCategory() async {
                                   ),
                                 ),
                               ),
+                            
+
+
+
                             ],
                           ),
                         ),
