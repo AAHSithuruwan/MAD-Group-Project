@@ -158,7 +158,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       context,
                       'Change Password',
                       onTap: () {
-                        showEditDialog(context, 'Password', 'password', '');
+                        context.push("/change-password");
                       },
                     ),
                     _buildButton(

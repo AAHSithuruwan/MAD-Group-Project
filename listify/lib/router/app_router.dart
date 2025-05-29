@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:listify/core/providers/auth_provider.dart';
+import 'package:listify/features/auth/presentation/screens/change_password.dart';
 import 'package:listify/features/auth/presentation/screens/forgot_password.dart';
 import 'package:listify/features/item/presentation/screens/create_items_user.dart';
 import 'package:listify/features/item/presentation/screens/view_all_items.dart';
@@ -49,6 +50,7 @@ class AppRouter {
   static const String CreateItemsUserRoute = '/create_items_user';
   static const String quantityUpdateRoute = '/quantity-update';
   static const String deleteAccountRoute = '/delete-account';
+  static const String changePasswordRoute = '/change-password';
 
   // List of protected routes (requires user to be signed in)
   static final List<GoRoute> protectedRoutes = [
@@ -250,6 +252,13 @@ class AppRouter {
           name: 'delete-account',
           builder:
               (BuildContext context, GoRouterState state) => DeleteAccountPage(),
+        ),
+
+        GoRoute(
+          path: changePasswordRoute,
+          name: 'change-password',
+          builder:
+              (BuildContext context, GoRouterState state) => ChangePasswordScreen(),
         ),
         // Include all protected routes
         ...protectedRoutes,
