@@ -1,19 +1,5 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(DeleteAccountApp());
-}
-
-class DeleteAccountApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: DeleteAccountPage(),
-    );
-  }
-}
-
 class DeleteAccountPage extends StatefulWidget {
   @override
   _DeleteAccountPageState createState() => _DeleteAccountPageState();
