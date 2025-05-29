@@ -10,6 +10,26 @@ import '../Models/ListifyList.dart';
 import 'store_notification_service.dart';
 
 class ListifyListService {
+  Future<bool> createList(String name) async{
+    try {
+      AuthService authService = AuthService();
+      User? user = await authService.getCurrentUserinstance();
+      if (user == null) throw Exception("No logged-in user found");
+
+      await FirebaseFirestore.instance
+          .collection("ListifyLists")
+          .add({
+        'name' : name,
+        'ownerId': user.uid,
+        'members' : [{'role': 'owner', 'userId': user.uid}]
+      });
+      return true;
+    }
+    catch(e){
+      print(e);
+      return false;
+    }
+  }
 
   Future<List<ListifyList>> getListsByDateRange({DateTime? startDate, DateTime? endDate,}) async {
 
@@ -169,6 +189,36 @@ class ListifyListService {
       return false;
     }
   }
+
+  Future<bool> updateListItemQuantity(
+      ListItem item,
+      String listId,
+      String quantity,
+      ) async {
+    try {
+      AuthService authService = AuthService();
+
+      User? user = await authService.getCurrentUserinstance();
+      if (user == null) throw Exception("No logged-in user found");
+
+      await FirebaseFirestore.instance
+          .collection("ListifyLists")
+          .doc(listId)
+          .collection("ListItems")
+          .doc(item.docId)
+          .update({
+        'quantity': quantity,
+        'checked': false,
+      });
+      StoreNotificationService storeNotificationService = StoreNotificationService();
+      await storeNotificationService.storeUpdateQuantityNotifications(listId: listId, changedUserId: user.uid, listItemId: item.docId!);
+      return true;
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
+
 
   Future<void> checkAndAddRecurringItems() async {
     try {

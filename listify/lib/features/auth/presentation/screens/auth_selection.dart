@@ -162,7 +162,7 @@ class _AuthSelectionState extends State<AuthSelection> {
                               side: BorderSide(color: Colors.white, width: 3)),
                           color: Colors.transparent,
                           child: Text(
-                            "Register",
+                            "Sign up",
                             style: TextStyle(
                                 fontSize: 22,
                                 fontFamily: "Pacifico",

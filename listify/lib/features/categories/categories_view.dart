@@ -1,23 +1,15 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:listify/features/categories/category_view.dart';
 
+class CategoriesViewScreen extends StatefulWidget {
+  const CategoriesViewScreen({super.key});
 
-
-class CategoriesViewPage extends StatelessWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: CategoryScreen(),
-      debugShowCheckedModeBanner: false,
-    );
-  }
+  _CategoriesViewScreenState createState() => _CategoriesViewScreenState();
 }
 
-class CategoryScreen extends StatefulWidget {
-  @override
-  _CategoryScreenState createState() => _CategoryScreenState();
-}
-
-class _CategoryScreenState extends State<CategoryScreen> {
+class _CategoriesViewScreenState extends State<CategoriesViewScreen> {
   List<String> categories = [
     "Vegetables", "Fruits", "Rice", "Snacks & Confectionery",
     "Baby Products", "Food Cupboard", "Bakery", "Dairy",
@@ -25,39 +17,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
     "Tea & Coffee", "Meats", "Cooking Essentials"
   ];
 
-  void _addCategory() async {
-    String? newCategory = await showDialog<String>(
-      context: context,
-      builder: (context) {
-        String categoryInput = '';
-        return AlertDialog(
-          title: Text('Add Category'),
-          content: TextField(
-            onChanged: (value) {
-              categoryInput = value;
-            },
-            decoration: InputDecoration(hintText: "Enter category name"),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () => Navigator.of(context).pop(categoryInput),
-              child: Text('Add'),
-            ),
-          ],
-        );
-      },
-    );
-
-    if (newCategory != null && newCategory.trim().isNotEmpty) {
-      setState(() {
-        categories.add(newCategory.trim());
-      });
-    }
-  }
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +32,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   height: 200,
                   width: double.infinity,
                   child: Image.asset(
-                    'assets/category.png',
+                    'assets/images/category.jpg',
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -86,6 +46,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                       icon: Icon(Icons.close, color: Colors.white),
                       onPressed: () {
                         print("Close button pressed");
+                        Navigator.pop(context);
                       },
                     ),
                   ),
@@ -112,8 +73,11 @@ class _CategoryScreenState extends State<CategoryScreen> {
                     backgroundColor: Colors.green,
                     child: IconButton(
                       icon: Icon(Icons.edit, color: Colors.white),
-                      onPressed: () {
-                        print("Edit image button pressed");
+                      onPressed : () {
+                      Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => CategoriesView()),
+                      );
                       },
                     ),
                   ),
@@ -125,7 +89,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
 
             // Category Name Title (Tappable to add)
             GestureDetector(
-              onTap: _addCategory,
+             
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Row(
@@ -176,7 +140,12 @@ class _CategoryScreenState extends State<CategoryScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.green,
-        onPressed: _addCategory,
+        onPressed : () {
+                        Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => CategoriesView()),
+            );
+                      },
         child: Icon(Icons.add),
       ),
     );

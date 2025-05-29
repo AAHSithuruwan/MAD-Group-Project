@@ -1,4 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:listify/core/Models/ListifyCategory.dart';
+import 'package:listify/features/categories/categories_view.dart';
+import 'package:listify/features/categories/category_addingupdating.dart';
 
 class CategoriesView extends StatefulWidget {
   @override
@@ -6,31 +10,50 @@ class CategoriesView extends StatefulWidget {
 }
 
 class _CategoriesViewState extends State<CategoriesView> {
-  List<bool> _categorySelections = List.generate(5, (index) => false);
+  List<ListifyCategory> categories = [];
+  List<bool> categorySelections = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchCategories();
+  }
+
+  void fetchCategories() async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('ListifyCategories') // 🔄 Updated to your correct collection name
+        .get();
+
+    final fetched = snapshot.docs
+        .map((doc) => ListifyCategory.fromDoc(doc))
+        .toList();
+
+    setState(() {
+      categories = fetched;
+      categorySelections = List.filled(fetched.length, false);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF1BA424),
-        iconTheme: IconThemeData(color: Colors.white),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Center(
-                child: Text(
-                  'View Categories',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ),
-            IconButton(
-              icon: Icon(Icons.more_vert, color: Colors.white),
-              onPressed: () {},
-            ),
-          ],
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
+        title: Center(
+          child: Text('View Categories', style: TextStyle(color: Colors.white)),
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.more_vert, color: Colors.white),
+            onPressed: () {}, // add menu logic here if needed
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -39,7 +62,10 @@ class _CategoriesViewState extends State<CategoriesView> {
           children: [
             ElevatedButton(
               onPressed: () {
-                // Handle add categories action
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CategoryAddUpScreen()),
+                ).then((_) => fetchCategories()); // refresh after returning
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
@@ -49,16 +75,14 @@ class _CategoriesViewState extends State<CategoriesView> {
                   side: BorderSide(color: Colors.grey),
                 ),
               ),
-              child: Text(
-                'Add Categories',
-                style: TextStyle(color: Colors.black),
-              ),
+              child: Text('Add Categories', style: TextStyle(color: Colors.black)),
             ),
             SizedBox(height: 20),
             Expanded(
               child: ListView.builder(
-                itemCount: 5,
+                itemCount: categories.length,
                 itemBuilder: (context, index) {
+                  final category = categories[index];
                   return Card(
                     margin: EdgeInsets.symmetric(vertical: 8),
                     child: Padding(
@@ -67,14 +91,14 @@ class _CategoriesViewState extends State<CategoriesView> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Category ${index + 1}',
+                            category.name,
                             style: TextStyle(fontSize: 16),
                           ),
                           Checkbox(
-                            value: _categorySelections[index],
+                            value: categorySelections[index],
                             onChanged: (bool? value) {
                               setState(() {
-                                _categorySelections[index] = value ?? false;
+                                categorySelections[index] = value ?? false;
                               });
                             },
                           ),
