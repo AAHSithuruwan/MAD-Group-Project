@@ -68,7 +68,7 @@ class _UserItemsPageState extends State<ViewAllItemsScreen> {
                     ),
 
                     Positioned(
-                      top: 25,
+                      top: 10,
                       right: 12,
                       child: PopupMenuButton<int>(
                         icon: Tooltip(
@@ -237,11 +237,16 @@ class _UserItemsPageState extends State<ViewAllItemsScreen> {
                                 }
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF106A16),
-                                foregroundColor: Colors.white,
-                                textStyle: const TextStyle(fontSize: 16),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
+                                backgroundColor: const Color(0xFFE8F6E9),
+                                foregroundColor: const Color(0xFF106A16),
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(7),
+                                  ),
+                                ),
+                                side: const BorderSide(
+                                  color: Color(0xFF106A16),
+                                  width: 1,
                                 ),
                               ),
                               child: const Text('Create Item'),
