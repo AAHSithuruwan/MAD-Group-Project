@@ -16,7 +16,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   @override
   void initState() {
     super.initState();
-    _notificationsFuture = NotificationService.getUserNotifications(widget.userId);
+    _notificationsFuture = NotificationService.getUserNotifications(
+      widget.userId,
+    );
   }
 
   @override
@@ -47,11 +49,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 onTap: () {
                   context.push(
                     '/notification',
-                    extra: {
-                      'title': n.title,
-                      'body': n.body,
-                      'data': n.data,
-                    },
+                    extra: {'title': n.title, 'body': n.body, 'data': n.data},
                   );
                 },
                 child: Card(
@@ -61,7 +59,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 18),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 20,
+                      horizontal: 18,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -76,7 +77,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          "${n.body}",
+                          n.body,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(

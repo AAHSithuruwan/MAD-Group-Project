@@ -139,6 +139,14 @@ class _MenuScreenState extends State<MenuScreen> {
                     "5",
                     "/history",
                   ),
+
+                  _buildMenuItem(
+                    context,
+                    "assets/Settings.png",
+                    "Setting",
+                    "5",
+                    "/setting",
+                  ),
                 ],
               ),
             ),
@@ -181,7 +189,7 @@ class _MenuScreenState extends State<MenuScreen> {
       ),
       title: Text(title),
       trailing:
-          (count != null && count.trim().isNotEmpty)
+          (count.trim().isNotEmpty)
               ? CircleAvatar(
                 radius: 12,
                 backgroundColor: Colors.grey[300],
