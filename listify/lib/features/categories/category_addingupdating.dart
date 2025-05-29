@@ -30,7 +30,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
   }
 
   void fetchCategories() async {
-    var snapshot = await FirebaseFirestore.instance.collection('categories').get();
+    var snapshot = await FirebaseFirestore.instance.collection('ListifyCategory').get();
     List<ListifyCategory> fetched = snapshot.docs
         .map((doc) => ListifyCategory.fromDoc(doc))
         .toList();
