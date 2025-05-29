@@ -52,7 +52,7 @@ class _MenuScreenState extends State<MenuScreen> {
                           photoURL.isNotEmpty
                               ? NetworkImage(photoURL)
                               : const AssetImage(
-                                    "assets/images/placeholder.png",
+                                    "assets/images/Ellipse 30.png",
                                   )
                                   as ImageProvider,
                     ),
