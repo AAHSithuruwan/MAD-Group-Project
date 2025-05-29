@@ -58,26 +58,27 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
       // Show dialog after deletion
       showDialog(
         context: context,
-        builder: (_) => AlertDialog(
-          title: Text("Account Deleted"),
-          content: Text("Your account has been successfully deleted."),
-          actions: [
-            TextButton(
-              onPressed: () {
-              //  Navigator.of(context).pushAndRemoveUntil(
-                  //MaterialPageRoute(builder: (_) => SignUpScreen()),
-                //  (route) => false,
-               // );
-              },
-              child: Text("OK"),
+        builder:
+            (_) => AlertDialog(
+              title: Text("Account Deleted"),
+              content: Text("Your account has been successfully deleted."),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    //  Navigator.of(context).pushAndRemoveUntil(
+                    //MaterialPageRoute(builder: (_) => SignUpScreen()),
+                    //  (route) => false,
+                    // );
+                  },
+                  child: Text("OK"),
+                ),
+              ],
             ),
-          ],
-        ),
       );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: ${e.toString()}")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Error: ${e.toString()}")));
     }
   }
 
@@ -96,10 +97,7 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
           children: [
             Text(
               'Delete Account',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 32),
             Text('Email'),
@@ -152,10 +150,14 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
                 onPressed: _deleteAccount,
                 child: Text(
                   'Delete',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),
