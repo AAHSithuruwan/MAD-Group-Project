@@ -39,6 +39,7 @@ flutter:
   assets:
     - assets/images/
     - assets/appIcons/transparent_lg.png
+    
 
   fonts:
     - family: InknutAntiqua
