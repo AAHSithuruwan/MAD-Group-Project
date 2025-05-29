@@ -281,7 +281,11 @@ class _HomeState extends State<Home> {
                                                 child: Row(
                                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                   children: [
-                                                    GestureDetector(
+                                                    Expanded(
+                                                      child: GestureDetector(
+                                                        onLongPress: () {
+                                                          context.push('/quantity-update', extra: {'listItem': item, 'listId': list.docId});
+                                                        },
                                                         onTap: () {
                                                           //context.push('/quantity-update', extra: {'listItem': item, 'listId': list.docId});
                                                           showDialog(
@@ -302,7 +306,17 @@ class _HomeState extends State<Home> {
                                                             },
                                                           );
                                                         },
-                                                        child: Text("${item.name} - ${item.quantity}", style: TextStyle(fontSize: 18),)
+                                                        child: Padding(
+                                                          padding: const EdgeInsets.fromLTRB(0, 8, 10, 8),
+                                                          child: Row(
+                                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                            children: [
+                                                              Flexible(child: Text(item.name, style: TextStyle(fontSize: 18))),
+                                                              Flexible(child: Text(item.quantity, style: TextStyle(fontSize: 18))),
+                                                            ],
+                                                          ),
+                                                        )
+                                                      ),
                                                     ),
                                                     Row(
                                                       children: [
