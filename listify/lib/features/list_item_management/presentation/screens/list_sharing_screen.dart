@@ -174,6 +174,10 @@ class _ListSharingScreenState extends State<ListSharingScreen> {
                     itemCount: _members.length,
                     itemBuilder: (context, index) {
                       final member = _members[index];
+                      // Skip rendering if the member's role is 'owner'
+                      if (member['role'] == 'owner') {
+                        return const SizedBox.shrink();
+                      }
                       return Card(
                         margin: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 6),

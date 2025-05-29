@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Add this import
 import 'package:listify/features/menu/presentation/screens/menu_screen.dart';
+import 'package:listify/features/notifications/presentation/screens/notifications_screen.dart';
 import 'package:listify/features/shopping/presentation/screens/shopping_screen.dart';
 import '../../../../common/widgets/custom_app_bar.dart';
 import '../../../../common/widgets/custom_floating_action_button.dart';
 import '../../../home/presentation/screens/home.dart';
-import '../../../notifications/presentation/screens/notifications.dart';
 
 class MainContainer extends StatefulWidget {
   const MainContainer({super.key});
@@ -30,6 +31,9 @@ class _MainContainerState extends State<MainContainer> {
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+    final userId = user?.uid;
+
     return Scaffold(
       appBar: _selectedIndex == 0 ?
         null
@@ -44,7 +48,9 @@ class _MainContainerState extends State<MainContainer> {
       body: _selectedIndex == 0 ?
             Home()
           : ( _selectedIndex == 1 ?
-            Notifications()
+            (userId != null
+              ? NotificationsScreen(userId: userId)
+              : const Center(child: Text("User not logged in")))
           : (_selectedIndex == 2 ?
             ShoppingScreen()
           : MenuScreen()

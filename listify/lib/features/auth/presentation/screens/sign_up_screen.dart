@@ -9,30 +9,55 @@ final signUpErrorProvider = StateProvider<String?>((ref) => null);
 
 class SignUpScreen extends ConsumerWidget {
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
   bool _isPasswordVisible = false;
 
+  SignUpScreen({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authService = ref.watch(authServiceProvider);
-    final errorMessage = ref.watch(signUpErrorProvider); // Watch the error message state
+    final errorMessage = ref.watch(signUpErrorProvider);
+
+    void _showVerificationDialog() {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => AlertDialog(
+          title: const Text('Registration Successful'),
+          content: const Text(
+            'A verification email has been sent to your email address. '
+            'Please check your inbox and verify your email before signing in.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close dialog
+                context.go('/sign-in'); // Go to sign-in screen
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+    }
 
     void _signUp() async {
-      // Clear the error message before validation
       ref.read(signUpErrorProvider.notifier).state = null;
 
       String email = _emailController.text.trim();
+      String username = _usernameController.text.trim();
       String password = _passwordController.text.trim();
       String confirmPassword = _confirmPasswordController.text.trim();
 
-      if (email.isNotEmpty && password.isNotEmpty && confirmPassword.isNotEmpty) {
+      if (email.isNotEmpty && username.isNotEmpty && password.isNotEmpty && confirmPassword.isNotEmpty) {
         if (password == confirmPassword) {
           try {
-            User? user = await authService.signUpWithEmailAndPassword(email, password);
+            User? user = await authService.signUpWithEmailAndPassword(email, password, username);
             if (user != null) {
-              print("Signed up as: ${user.email}");
-              context.go('/'); // Redirect to home
+              _showVerificationDialog();
             } else {
               ref.read(signUpErrorProvider.notifier).state = "Failed to sign up. Please try again.";
             }
@@ -82,11 +107,24 @@ class SignUpScreen extends ConsumerWidget {
                   child: Text(
                     errorMessage,
                     style: TextStyle(
-                      color: Colors.red, // Error message color
+                      color: Colors.red,
                       fontSize: 14,
                     ),
                   ),
                 ),
+
+              // Username TextField
+              Text('Username'),
+              TextField(
+                controller: _usernameController,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 20),
 
               // Email TextField
               Text('Email'),
@@ -103,22 +141,26 @@ class SignUpScreen extends ConsumerWidget {
 
               // Password TextField
               Text('Password'),
-              TextField(
-                controller: _passwordController,
-                obscureText: !_isPasswordVisible,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _isPasswordVisible
-                          ? Icons.visibility
-                          : Icons.visibility_off,
+              StatefulBuilder(
+                builder: (context, setState) => TextField(
+                  controller: _passwordController,
+                  obscureText: !_isPasswordVisible,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    onPressed: () {
-                      _isPasswordVisible = !_isPasswordVisible;
-                    },
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isPasswordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isPasswordVisible = !_isPasswordVisible;
+                        });
+                      },
+                    ),
                   ),
                 ),
               ),
@@ -127,22 +169,26 @@ class SignUpScreen extends ConsumerWidget {
 
               // Confirm Password TextField
               Text('Confirm Password'),
-              TextField(
-                controller: _confirmPasswordController,
-                obscureText: !_isPasswordVisible,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _isPasswordVisible
-                          ? Icons.visibility
-                          : Icons.visibility_off,
+              StatefulBuilder(
+                builder: (context, setState) => TextField(
+                  controller: _confirmPasswordController,
+                  obscureText: !_isPasswordVisible,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    onPressed: () {
-                      _isPasswordVisible = !_isPasswordVisible;
-                    },
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isPasswordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isPasswordVisible = !_isPasswordVisible;
+                        });
+                      },
+                    ),
                   ),
                 ),
               ),
@@ -180,7 +226,7 @@ class SignUpScreen extends ConsumerWidget {
                   ),
                   TextButton(
                     onPressed: () {
-                      context.pop(); // Navigate back to the sign-in screen
+                      context.pop();
                     },
                     child: Text(
                       "Sign In",

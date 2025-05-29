@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:go_router/go_router.dart';
 import 'package:listify/core/Models/ListifyList.dart';
 import 'package:listify/core/services/listify_list_service.dart';
 import 'package:listify/core/services/local_notification_service.dart';
+import 'package:listify/core/services/notification_handler.dart';
+import 'package:listify/core/services/auth_service.dart';
 import '../../../../core/Models/ListItem.dart';
 
 class Home extends StatefulWidget{
@@ -15,6 +18,10 @@ class Home extends StatefulWidget{
 
 class _HomeState extends State<Home> {
 
+  bool isLoading = true;
+  String listEmptyMessage = "No items in the list for today";
+  final TextEditingController _listNameController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
   List<ListifyList> lists = [];
   ListifyListService listifyListService = ListifyListService();
 
@@ -22,6 +29,7 @@ class _HomeState extends State<Home> {
     List<ListifyList> listifyLists = await listifyListService.getListsByDateRange(startDate: startDate, endDate: endDate);
     setState(() {
       lists = listifyLists;
+      isLoading = false;
     });
   }
 
@@ -42,6 +50,7 @@ class _HomeState extends State<Home> {
   @override
   void initState(){
     super.initState();
+    NotificationHandler().startListeningToNotifications();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
@@ -79,9 +88,18 @@ class _HomeState extends State<Home> {
                           Text("Simplify your shopping list", style: TextStyle(fontFamily: "Khmer", fontSize: 12),)
                         ],
                       ),
-                      CircleAvatar(
-                        radius: 25, // Adjust the size
-                        backgroundImage: AssetImage("assets/images/profileImg.png") // Replace with your image URL
+                      FutureBuilder<Map<String, dynamic>?>(
+                        future: AuthService().getCurrentUserProfile(),
+                        builder: (context, snapshot) {
+                          final profile = snapshot.data;
+                          final photoURL = profile?['photoURL'] as String? ?? '';
+                          return CircleAvatar(
+                            radius: 25,
+                            backgroundImage: photoURL.isNotEmpty
+                                ? NetworkImage(photoURL)
+                                : const AssetImage("assets/images/placeholder.png") as ImageProvider,
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -108,6 +126,7 @@ class _HomeState extends State<Home> {
                                   onTap: () {
                                     //Fetch the relevant list and set it.
                                     setState(() {
+                                      isLoading = true;
                                       for(var i in listTypes){
                                         i.isSelected = false;
                                       }
@@ -118,15 +137,19 @@ class _HomeState extends State<Home> {
 
                                       if(index == 0){
                                         getLists(todayOnly,todayOnly);
+                                        listEmptyMessage = "No items in the list for today";
                                       }
                                       else if(index == 1){
                                         getLists(todayOnly.add(Duration(days: 1)), todayOnly.add(Duration(days: 1)));
+                                        listEmptyMessage = "No items in the list for tomorrow";
                                       }
                                       else if(index == 2){
                                         getLists(todayOnly.add(Duration(days: 2)),null);
+                                        listEmptyMessage = "No items in the list for later";
                                       }
                                       else{
                                         getLists(null,null);
+                                        listEmptyMessage = "No items in the list";
                                       }
                                     });
                                   },
@@ -172,26 +195,18 @@ class _HomeState extends State<Home> {
                   ),
                 ),
               ),
-              lists.isEmpty == true ?
-                  Expanded(child: Column(
+              isLoading ?
+                Expanded(
+                  child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SizedBox(
-                        height: 300,
-                          width: 200,
-                          child: Image(image: AssetImage("assets/images/list.png"),)),
-                          ElevatedButton(
-                            onPressed: () {
-                              LocalNotificationService.showNotification(
-                                'Hello',
-                                'This is a notification',
-                                data: {'foo': 'bar', 'id': 123},
-                              );
-                            },
-                            child: Text("Create a new list"),
-                          ),
+                      Center(child: SpinKitThreeBounce(
+                        color: Colors.green,
+                        size: 40.0,
+                      ),),
                     ],
-                  ))
+                  ),
+                )
                   :
               Expanded(
                 child: SingleChildScrollView(
@@ -249,6 +264,12 @@ class _HomeState extends State<Home> {
                                         ],
                                       ),
                                     ),
+                                    list.items.isEmpty ?
+                                        Padding(
+                                          padding: const EdgeInsets.fromLTRB(0,0,0,30),
+                                          child: Text(listEmptyMessage),
+                                        )
+                                    :
                                     Column(
                                       children: list.items
                                           .take(list.showAllItems ? list.items.length : 4)
@@ -260,7 +281,28 @@ class _HomeState extends State<Home> {
                                                 child: Row(
                                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                   children: [
-                                                    Text(item.name, style: TextStyle(fontSize: 18),),
+                                                    GestureDetector(
+                                                        onTap: () {
+                                                          showDialog(
+                                                            context: context,
+                                                            builder: (BuildContext context) {
+                                                              return AlertDialog(
+                                                                title: Text("Item Details",textAlign: TextAlign.center, style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),),
+                                                                content: Text("Name:  ${item.name} \n\nCategory:  ${item.category} \n\nQuantity:  ${item.quantity} \n\nRequired Date:  ${item.requiredDate}"),
+                                                                actions: [
+                                                                  TextButton(
+                                                                    child: Text("Close", style: TextStyle(color: Colors.green),),
+                                                                    onPressed: () {
+                                                                      Navigator.of(context).pop();
+                                                                    },
+                                                                  ),
+                                                                ],
+                                                              );
+                                                            },
+                                                          );
+                                                        },
+                                                        child: Text(item.name, style: TextStyle(fontSize: 18),)
+                                                    ),
                                                     Row(
                                                       children: [
                                                             Container(),
@@ -327,7 +369,72 @@ class _HomeState extends State<Home> {
               ),
             ],
           ),
+
+        floatingActionButton: FloatingActionButton.extended(
+          heroTag: 'fab2',
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Center(child: Text('Create New List',style: TextStyle(color: Colors.green,fontWeight: FontWeight.bold),)),
+                  content: Form(
+                    key: _formKey,
+                    child: TextFormField(
+                      decoration: InputDecoration(
+                        hintText: "Enter List Name",
+                      ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'List name cannot be empty';
+                        }
+                        return null;
+                      },
+                      controller: _listNameController,
+                    ),
+                  ),
+                  actions: <Widget>[
+                    TextButton(
+                      child: Text('Create',style: TextStyle(color: Colors.green),),
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
+                          String listName = _listNameController.text;
+                          String message = "List Creation Unsuccessful";
+                          if (await listifyListService.createList(listName)) {
+                            message = "List Created Successfully";
+                          }
+                          Navigator.of(context).pop();
+                          _listNameController.clear();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Container(
+                                  width: double.infinity,
+                                  alignment: Alignment.center,
+                                  child: Text(message)),
+                              duration: Duration(seconds: 2), // Optional
+                              backgroundColor: Colors.green,
+                              behavior: SnackBarBehavior.floating, // Optional
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                  ],
+                );
+              }
+            );
+          },
+          label: Text("Create List", style: TextStyle(fontSize: 17),),
+          backgroundColor: Colors.green,
+          foregroundColor: Colors.white,
+        ),
       );
+  }
+
+  @override
+  void dispose() {
+    _listNameController.dispose();
+    super.dispose();
   }
 }
 

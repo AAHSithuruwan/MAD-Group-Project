@@ -3,11 +3,33 @@ import 'package:intl/intl.dart';
 import 'package:listify/core/services/auth_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:listify/core/services/item_service.dart';
+import 'package:listify/core/services/notification_service.dart';
 import '../Models/Item.dart';
 import '../Models/ListItem.dart';
 import '../Models/ListifyList.dart';
+import 'store_notification_service.dart';
 
 class ListifyListService {
+  Future<bool> createList(String name) async{
+    try {
+      AuthService authService = AuthService();
+      User? user = await authService.getCurrentUserinstance();
+      if (user == null) throw Exception("No logged-in user found");
+
+      await FirebaseFirestore.instance
+          .collection("ListifyLists")
+          .add({
+        'name' : name,
+        'ownerId': user.uid,
+        'members' : [{'role': 'owner', 'userId': user.uid}]
+      });
+      return true;
+    }
+    catch(e){
+      print(e);
+      return false;
+    }
+  }
 
   Future<List<ListifyList>> getListsByDateRange({DateTime? startDate, DateTime? endDate,}) async {
 
@@ -51,8 +73,8 @@ class ListifyListService {
 
       if (filteredItems.isNotEmpty) {
         listifyList.items = filteredItems;
-        filteredLists.add(listifyList);
       }
+      filteredLists.add(listifyList);
     }
 
     // Sort: Lists with all items checked go to the bottom
@@ -75,33 +97,57 @@ class ListifyListService {
           .collection("ListItems")
           .doc(listItemId)
           .update({'checked': value});
+
+      if(value){
+        AuthService authService = AuthService();
+        User? user = await authService.getCurrentUserinstance();
+        if (user == null) throw Exception("No logged-in user found");
+
+        StoreNotificationService storeNotificationService = StoreNotificationService();
+        await storeNotificationService.storeCheckItemNotifications(listId: listId, changedUserId: user.uid, listItemId: listItemId);
+      }
     } catch (e) {
       print(e);
     }
   }
 
-  Future<List<ListifyList>> getSelectionLists() async {
+  Future<List<Map<String,dynamic>>> getSelectionLists() async {
     AuthService authService = AuthService();
     User? user = await authService.getCurrentUserinstance();
     if (user == null) throw Exception("No logged-in user found");
 
     String uid = user.uid;
-    List<ListifyList> lists = [];
+    List<Map<String,dynamic>> lists = [];
 
-    QuerySnapshot listQuerySnapshot =
-    await FirebaseFirestore.instance.collection('ListifyLists').get();
+    try{
+      QuerySnapshot listQuerySnapshot =
+      await FirebaseFirestore.instance.collection('ListifyLists').get();
 
-    for (var listDoc in listQuerySnapshot.docs) {
-      ListifyList listifyList = ListifyList.fromDoc(listDoc);
+      for (var listDoc in listQuerySnapshot.docs) {
+        ListifyList listifyList = ListifyList.fromDoc(listDoc);
 
-      // Keep only lists where the user is a member with role 'editor'
-      bool isEditor = listifyList.members.any(
-            (member) => member.userId == uid && member.role == 'editor',
-      );
+        DocumentSnapshot ownerSnapshot = await FirebaseFirestore.instance.collection("users").doc(listifyList.ownerId).get();
 
-      if (isEditor) {
-        lists.add(listifyList);
+        String ownerEmail = "";
+        if (ownerSnapshot.exists) {
+          ownerEmail = ownerSnapshot.get("email");
+        }
+
+        // Keep only lists where the user is a member with role 'editor'
+        bool isEditor = listifyList.members.any(
+              (member) => member.userId == uid && ( member.role == 'editor' || member.role == 'owner' ),
+        );
+
+        if (isEditor) {
+          lists.add({
+            'list' : listifyList,
+            'ownerEmail': ownerEmail
+          });
+        }
       }
+    }
+    catch(e){
+      print(e);
     }
 
     return lists;
@@ -135,6 +181,8 @@ class ListifyListService {
 
       ItemService itemService = ItemService();
       await itemService.addRecentItem(itemId: item.docId!, name: item.name, categoryName: item.categoryName, isUserSpecificItem: item.isUserSpecificItem);
+      StoreNotificationService storeNotificationService = StoreNotificationService();
+      await storeNotificationService.storeAddItemNotifications(listId: listId, changedUserId: user.uid, item: item);
       return true;
     } catch (e) {
       print(e);

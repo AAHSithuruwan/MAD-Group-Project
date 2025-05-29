@@ -3,12 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:listify/core/providers/auth_provider.dart';
 import 'package:listify/features/auth/presentation/screens/forgot_password.dart';
+import 'package:listify/features/item/presentation/screens/create_items_user.dart';
+import 'package:listify/features/item/presentation/screens/view_all_items.dart';
 import 'package:listify/features/list_item_management/presentation/screens/list_selection.dart';
 import 'package:listify/features/list_item_management/presentation/screens/quantity_selection.dart';
 
 import 'package:listify/features/list_item_management/presentation/screens/list_sharing_screen.dart';
 
-import 'package:listify/features/notifications/presentation/notification_screen.dart';
+import 'package:listify/features/notifications/presentation/screens/notification_screen.dart';
 import 'package:listify/features/list_item_management/presentation/screens/add_list_items.dart';
 import 'package:listify/features/main_container/presentation/screens/main_container.dart';
 import '../core/Models/Item.dart';
@@ -38,6 +40,8 @@ class AppRouter {
   static const String listSelectionRoute = '/list-selection';
   static const String listSharingRoute = '/list-sharing';
   static const String pickLocationRoute = '/pick_location';
+  static const String ViewAllItemsRoute = '/view_all_items';
+  static const String CreateItemsUserRoute = '/create_items_user';
 
   // List of protected routes (requires user to be signed in)
   static final List<GoRoute> protectedRoutes = [
@@ -46,7 +50,7 @@ class AppRouter {
       name: 'home',
       builder:
           (BuildContext context, GoRouterState state) => const MainContainer(),
-          // (BuildContext context, GoRouterState state) => const ListSharingScreen(),
+      // (BuildContext context, GoRouterState state) => const ListSharingScreen(),
     ),
 
     GoRoute(
@@ -183,7 +187,7 @@ class AppRouter {
           name: 'pick_location',
           builder:
               (BuildContext context, GoRouterState state) =>
-              PickLocationScreen(),
+                  PickLocationScreen(),
         ),
 
         //categories route
@@ -194,8 +198,21 @@ class AppRouter {
            builder: (context, state) => CategoriesViewPage(),
         ),
 
-      
+        // pick location screen route
+        GoRoute(
+          path: ViewAllItemsRoute,
+          name: 'view_all_items',
+          builder:
+              (BuildContext context, GoRouterState state) =>
+                  ViewAllItemsScreen(),
+        ),
 
+        GoRoute(
+          path: CreateItemsUserRoute,
+          name: 'create_items_user',
+          builder:
+              (BuildContext context, GoRouterState state) => CreateItemsUser(),
+        ),
         // Include all protected routes
         ...protectedRoutes,
       ],

@@ -21,6 +21,11 @@ class _CreateItemsState extends State<CreateItemsUser> {
   final TextEditingController categoryNameController = TextEditingController();
   final ItemService itemService = ItemService();
 
+  String capitalizeFirst(String s) {
+    if (s.isEmpty) return s;
+    return s[0].toUpperCase() + s.substring(1);
+  }
+
   List<String> suggestedUnits = [
     '1kg',
     '500g',
@@ -31,6 +36,7 @@ class _CreateItemsState extends State<CreateItemsUser> {
     '1 box',
     '1 piece',
     '1 pair',
+    '2 items',
   ];
   List<String> categoryNames = [];
   List<String> addedUnits = [];
@@ -361,6 +367,12 @@ class _CreateItemsState extends State<CreateItemsUser> {
                                                   onPressed: () async {
                                                     if (newCategoryName
                                                         .isNotEmpty) {
+                                                      final capitalizedCategory =
+                                                          capitalizeFirst(
+                                                            newCategoryName
+                                                                .trim(),
+                                                          );
+
                                                       // Add to Firestore
                                                       final docRef =
                                                           FirebaseFirestore
@@ -370,19 +382,20 @@ class _CreateItemsState extends State<CreateItemsUser> {
                                                               )
                                                               .doc();
                                                       await docRef.set({
-                                                        'name': newCategoryName,
+                                                        'name':
+                                                            capitalizedCategory,
                                                         'docId': docRef.id,
                                                       });
 
                                                       setState(() {
                                                         categoryNames.add(
-                                                          newCategoryName,
-                                                        ); // Add to local list for immediate UI update
+                                                          capitalizedCategory,
+                                                        );
                                                         categoryNameController
                                                                 .text =
-                                                            newCategoryName; // Update the TextField
+                                                            capitalizedCategory;
                                                         addedCategories.add(
-                                                          newCategoryName,
+                                                          capitalizedCategory,
                                                         );
                                                       });
                                                     }
@@ -698,9 +711,13 @@ class _CreateItemsState extends State<CreateItemsUser> {
 
                             final item = Item(
                               docId: null,
-                              name: itemNameController.text,
+                              name: capitalizeFirst(
+                                itemNameController.text.trim(),
+                              ),
                               units: addedUnits,
-                              categoryName: categoryNameController.text,
+                              categoryName: capitalizeFirst(
+                                categoryNameController.text.trim(),
+                              ),
                               storeName: pickedStoreName ?? '',
                               location: pickedLocation,
                             );
@@ -715,9 +732,12 @@ class _CreateItemsState extends State<CreateItemsUser> {
                               itemNameController.clear();
                               unitController.clear();
                               categoryNameController.clear();
+                              pickedStoreName = null;
+                              pickedLocation = null;
                               //  storeNameController.clear();
                               addedUnits.clear();
                               setState(() {});
+                              Navigator.pop(context, true);
                             } catch (e) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
