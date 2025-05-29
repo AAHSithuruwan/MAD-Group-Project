@@ -259,7 +259,7 @@ class _HomeState extends State<Home> {
                                                           },
                                                         );
                                               
-                                            }, icon: Icon(Icons.manage_search)),
+                                            }, icon: Icon(Icons.share ,size:  23,)),
                                           ),
                                         ],
                                       ),
