@@ -283,6 +283,7 @@ class _HomeState extends State<Home> {
                                                   children: [
                                                     GestureDetector(
                                                         onTap: () {
+                                                          //context.push('/quantity-update', extra: {'listItem': item, 'listId': list.docId});
                                                           showDialog(
                                                             context: context,
                                                             builder: (BuildContext context) {
@@ -301,7 +302,7 @@ class _HomeState extends State<Home> {
                                                             },
                                                           );
                                                         },
-                                                        child: Text(item.name, style: TextStyle(fontSize: 18),)
+                                                        child: Text("${item.name} - ${item.quantity}", style: TextStyle(fontSize: 18),)
                                                     ),
                                                     Row(
                                                       children: [

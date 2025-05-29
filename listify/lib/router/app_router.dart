@@ -9,11 +9,13 @@ import 'package:listify/features/list_item_management/presentation/screens/list_
 import 'package:listify/features/list_item_management/presentation/screens/quantity_selection.dart';
 
 import 'package:listify/features/list_item_management/presentation/screens/list_sharing_screen.dart';
+import 'package:listify/features/list_item_management/presentation/screens/quantity_update.dart';
 
 import 'package:listify/features/notifications/presentation/screens/notification_screen.dart';
 import 'package:listify/features/list_item_management/presentation/screens/add_list_items.dart';
 import 'package:listify/features/main_container/presentation/screens/main_container.dart';
 import '../core/Models/Item.dart';
+import '../core/Models/ListItem.dart';
 import '../features/auth/presentation/screens/auth_selection.dart';
 import '../features/auth/presentation/screens/sign_in_screen.dart';
 import '../features/auth/presentation/screens/sign_up_screen.dart';
@@ -41,6 +43,7 @@ class AppRouter {
   static const String pickLocationRoute = '/pick_location';
   static const String ViewAllItemsRoute = '/view_all_items';
   static const String CreateItemsUserRoute = '/create_items_user';
+  static const String quantityUpdateRoute = '/quantity-update';
 
   // List of protected routes (requires user to be signed in)
   static final List<GoRoute> protectedRoutes = [
@@ -212,6 +215,17 @@ class AppRouter {
           name: 'create_items_user',
           builder:
               (BuildContext context, GoRouterState state) => CreateItemsUser(),
+        ),
+
+        GoRoute(
+          path: quantityUpdateRoute,
+          name: 'quantity_update',
+          builder: (BuildContext context, GoRouterState state) {
+            final extra = state.extra as Map<String, dynamic>;
+            final listItem = extra['listItem'] as ListItem;
+            final listId = extra['listId'] as String;
+            return QuantityUpdate(listItem: listItem, listId: listId);
+          },
         ),
         // Include all protected routes
         ...protectedRoutes,
