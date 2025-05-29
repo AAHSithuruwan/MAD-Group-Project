@@ -10,6 +10,26 @@ import '../Models/ListifyList.dart';
 import 'store_notification_service.dart';
 
 class ListifyListService {
+  Future<bool> createList(String name) async{
+    try {
+      AuthService authService = AuthService();
+      User? user = await authService.getCurrentUserinstance();
+      if (user == null) throw Exception("No logged-in user found");
+
+      await FirebaseFirestore.instance
+          .collection("ListifyLists")
+          .add({
+        'name' : name,
+        'ownerId': user.uid,
+        'members' : [{'role': 'owner', 'userId': user.uid}]
+      });
+      return true;
+    }
+    catch(e){
+      print(e);
+      return false;
+    }
+  }
 
   Future<List<ListifyList>> getListsByDateRange({DateTime? startDate, DateTime? endDate,}) async {
 

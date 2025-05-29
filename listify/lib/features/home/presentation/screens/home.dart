@@ -19,6 +19,9 @@ class Home extends StatefulWidget{
 class _HomeState extends State<Home> {
 
   bool isLoading = true;
+  String listEmptyMessage = "No items in the list for today";
+  final TextEditingController _listNameController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
   List<ListifyList> lists = [];
   ListifyListService listifyListService = ListifyListService();
 
@@ -134,15 +137,19 @@ class _HomeState extends State<Home> {
 
                                       if(index == 0){
                                         getLists(todayOnly,todayOnly);
+                                        listEmptyMessage = "No items in the list for today";
                                       }
                                       else if(index == 1){
                                         getLists(todayOnly.add(Duration(days: 1)), todayOnly.add(Duration(days: 1)));
+                                        listEmptyMessage = "No items in the list for tomorrow";
                                       }
                                       else if(index == 2){
                                         getLists(todayOnly.add(Duration(days: 2)),null);
+                                        listEmptyMessage = "No items in the list for later";
                                       }
                                       else{
                                         getLists(null,null);
+                                        listEmptyMessage = "No items in the list";
                                       }
                                     });
                                   },
@@ -260,7 +267,7 @@ class _HomeState extends State<Home> {
                                     list.items.isEmpty ?
                                         Padding(
                                           padding: const EdgeInsets.fromLTRB(0,0,0,30),
-                                          child: Text("No items in the list"),
+                                          child: Text(listEmptyMessage),
                                         )
                                     :
                                     Column(
@@ -280,7 +287,7 @@ class _HomeState extends State<Home> {
                                                             context: context,
                                                             builder: (BuildContext context) {
                                                               return AlertDialog(
-                                                                title: Text("Item Details",textAlign: TextAlign.center, style: TextStyle(color: Colors.green),),
+                                                                title: Text("Item Details",textAlign: TextAlign.center, style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),),
                                                                 content: Text("Name:  ${item.name} \n\nCategory:  ${item.category} \n\nQuantity:  ${item.quantity} \n\nRequired Date:  ${item.requiredDate}"),
                                                                 actions: [
                                                                   TextButton(
@@ -362,7 +369,72 @@ class _HomeState extends State<Home> {
               ),
             ],
           ),
+
+        floatingActionButton: FloatingActionButton.extended(
+          heroTag: 'fab2',
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Center(child: Text('Create New List',style: TextStyle(color: Colors.green,fontWeight: FontWeight.bold),)),
+                  content: Form(
+                    key: _formKey,
+                    child: TextFormField(
+                      decoration: InputDecoration(
+                        hintText: "Enter List Name",
+                      ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'List name cannot be empty';
+                        }
+                        return null;
+                      },
+                      controller: _listNameController,
+                    ),
+                  ),
+                  actions: <Widget>[
+                    TextButton(
+                      child: Text('Create',style: TextStyle(color: Colors.green),),
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
+                          String listName = _listNameController.text;
+                          String message = "List Creation Unsuccessful";
+                          if (await listifyListService.createList(listName)) {
+                            message = "List Created Successfully";
+                          }
+                          Navigator.of(context).pop();
+                          _listNameController.clear();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Container(
+                                  width: double.infinity,
+                                  alignment: Alignment.center,
+                                  child: Text(message)),
+                              duration: Duration(seconds: 2), // Optional
+                              backgroundColor: Colors.green,
+                              behavior: SnackBarBehavior.floating, // Optional
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                  ],
+                );
+              }
+            );
+          },
+          label: Text("Create List", style: TextStyle(fontSize: 17),),
+          backgroundColor: Colors.green,
+          foregroundColor: Colors.white,
+        ),
       );
+  }
+
+  @override
+  void dispose() {
+    _listNameController.dispose();
+    super.dispose();
   }
 }
 
