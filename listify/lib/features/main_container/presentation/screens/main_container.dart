@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // Add this import
+import 'package:listify/features/item/presentation/screens/create_items_user.dart';
 import 'package:listify/features/menu/presentation/screens/menu_screen.dart';
 import 'package:listify/features/notifications/presentation/screens/notifications_screen.dart';
-import 'package:listify/features/shopping/presentation/screens/shopping_screen.dart';
 import '../../../../common/widgets/custom_app_bar.dart';
 import '../../../../common/widgets/custom_floating_action_button.dart';
 import '../../../home/presentation/screens/home.dart';
@@ -23,7 +23,7 @@ class _MainContainerState extends State<MainContainer> {
     });
   }
 
-  void selectHomePage(){
+  void selectHomePage() {
     setState(() {
       _selectedIndex = 0;
     });
@@ -35,39 +35,51 @@ class _MainContainerState extends State<MainContainer> {
     final userId = user?.uid;
 
     return Scaffold(
-      appBar: _selectedIndex == 0 ?
-        null
-          : ( _selectedIndex == 1 ?
-              CustomAppBar(title: "Notifications", selectHomePage:selectHomePage, displayTitle: true,)
-              : (_selectedIndex == 2 ?
-                CustomAppBar(title: "Shopping", displayTitle: true, selectHomePage:selectHomePage,)
-                : CustomAppBar(title: "Menu", displayTitle: true, selectHomePage: selectHomePage,)
-               )
-            ),
+      appBar:
+          _selectedIndex == 0
+              ? null
+              : (_selectedIndex == 1
+                  ? CustomAppBar(
+                    title: "Notifications",
+                    selectHomePage: selectHomePage,
+                    displayTitle: true,
+                  )
+                  : (_selectedIndex == 2
+                      ? CustomAppBar(
+                        title: "Shopping",
+                        displayTitle: false,
+                        selectHomePage: selectHomePage,
+                      )
+                      : CustomAppBar(
+                        title: "Menu",
+                        displayTitle: true,
+                        selectHomePage: selectHomePage,
+                      ))),
 
-      body: _selectedIndex == 0 ?
-            Home()
-          : ( _selectedIndex == 1 ?
-            (userId != null
-              ? NotificationsScreen(userId: userId)
-              : const Center(child: Text("User not logged in")))
-          : (_selectedIndex == 2 ?
-            ShoppingScreen()
-          : MenuScreen()
-      )
-      ),
+      body:
+          _selectedIndex == 0
+              ? Home()
+              : (_selectedIndex == 1
+                  ? (userId != null
+                      ? NotificationsScreen(userId: userId)
+                      : const Center(child: Text("User not logged in")))
+                  : (_selectedIndex == 2 ? CreateItemsUser() : MenuScreen())),
 
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(top: 30),
         child: CustomFloatingActionButton(),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked, // FAB in center
+      floatingActionButtonLocation:
+          FloatingActionButtonLocation.centerDocked, // FAB in center
 
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,
           border: Border(
-            top: BorderSide(color: Colors.grey.shade300, width: 2), // Top border
+            top: BorderSide(
+              color: Colors.grey.shade300,
+              width: 2,
+            ), // Top border
           ),
         ),
         child: BottomAppBar(
@@ -97,7 +109,10 @@ class _MainContainerState extends State<MainContainer> {
       child: Container(
         padding: EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: isSelected ? Color(0x1A1BA424) : Colors.transparent, // Green background for selected icon
+          color:
+              isSelected
+                  ? Color(0x1A1BA424)
+                  : Colors.transparent, // Green background for selected icon
           shape: BoxShape.circle,
         ),
         child: Icon(
