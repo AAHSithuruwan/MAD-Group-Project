@@ -246,7 +246,7 @@ class _QuantityUpdateState extends State<QuantityUpdate> {
                               if(await listifyListService.updateListItemQuantity(widget.listItem, widget.listId, "${quantityController.text}$selectedMetric")){
                                 message = "Quantity Updated Successfully";
                               }
-                              context.pushReplacement("/");
+                              Navigator.of(context).pop();
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Container(
