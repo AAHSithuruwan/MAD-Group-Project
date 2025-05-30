@@ -226,7 +226,7 @@ class SignUpScreen extends ConsumerWidget {
                   ),
                   TextButton(
                     onPressed: () {
-                      context.pop();
+                      context.push('/sign-in');
                     },
                     child: Text(
                       "Sign In",
