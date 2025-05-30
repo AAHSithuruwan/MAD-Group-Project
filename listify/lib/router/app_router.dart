@@ -51,6 +51,7 @@ class AppRouter {
   static const String quantityUpdateRoute = '/quantity-update';
   static const String deleteAccountRoute = '/delete-account';
   static const String changePasswordRoute = '/change-password';
+  static const String mainContainerRoute = '/main-container';
 
   // List of protected routes (requires user to be signed in)
   static final List<GoRoute> protectedRoutes = [
@@ -259,6 +260,13 @@ class AppRouter {
           name: 'change-password',
           builder:
               (BuildContext context, GoRouterState state) => ChangePasswordScreen(),
+        ),
+
+        GoRoute(
+          path: mainContainerRoute,
+          name: 'main-container',
+          builder:
+              (BuildContext context, GoRouterState state) => MainContainer(),
         ),
         // Include all protected routes
         ...protectedRoutes,

@@ -1,5 +1,6 @@
 // settings.dart
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:listify/common/widgets/custom_app_bar.dart';
 import 'package:listify/features/menu/presentation/screens/menu_screen.dart';
 import 'package:listify/features/profile/profile.dart'; // ✅ Make sure this import path is correct
@@ -97,7 +98,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: "Settings", displayTitle: true),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            color: const Color.fromARGB(255, 0, 0, 0),
+          ),
+          onPressed: () {
+            context.pushReplacement('/main-container');
+          },
+        ),
+        title: const Text("Settings"),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        elevation: 0,
+      ),
       backgroundColor: Colors.white,
       body: ListView(
         children: [
