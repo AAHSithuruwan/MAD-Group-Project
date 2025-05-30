@@ -8,7 +8,11 @@ import 'package:listify/features/auth/presentation/screens/sign_in_screen.dart';
 import 'package:listify/features/pick_location/presentation/screens/pick_location_screen.dart'; // Import the PickLocationScreen
 
 class CreateItemsUser extends StatefulWidget {
-  const CreateItemsUser({Key? key}) : super(key: key);
+
+  //optional back button function
+  final Function? selectHomePage;
+
+  const CreateItemsUser({Key? key, this.selectHomePage}) : super(key: key);
 
   @override
   State<CreateItemsUser> createState() => _CreateItemsState();
@@ -83,13 +87,18 @@ class _CreateItemsState extends State<CreateItemsUser> {
 
                 // Back button
                 Positioned(
-                  top: 25,
+                  top: 50,
                   left: 12,
                   child: GestureDetector(
                     onTap: () {
-                      Navigator.pop(
-                        context,
-                      ); // Navigate back to the previous screen
+                      if(widget.selectHomePage != null){
+                        widget.selectHomePage!();
+                      }
+                      else {
+                        Navigator.pop(
+                          context,
+                        );
+                      }// Navigate back to the previous screen
                     },
                     child: Image.asset(
                       'assets/images/back.png',

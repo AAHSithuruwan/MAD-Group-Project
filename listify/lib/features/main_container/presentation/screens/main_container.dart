@@ -45,11 +45,7 @@ class _MainContainerState extends State<MainContainer> {
                     displayTitle: true,
                   )
                   : (_selectedIndex == 2
-                      ? CustomAppBar(
-                        title: "Shopping",
-                        displayTitle: false,
-                        selectHomePage: selectHomePage,
-                      )
+                      ? null
                       : CustomAppBar(
                         title: "Menu",
                         displayTitle: true,
@@ -63,7 +59,7 @@ class _MainContainerState extends State<MainContainer> {
                   ? (userId != null
                       ? NotificationsScreen(userId: userId)
                       : const Center(child: Text("User not logged in")))
-                  : (_selectedIndex == 2 ? CreateItemsUser() : MenuScreen())),
+                  : (_selectedIndex == 2 ? CreateItemsUser(selectHomePage: selectHomePage,) : MenuScreen())),
 
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(top: 30),
